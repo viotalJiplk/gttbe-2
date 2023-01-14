@@ -1,0 +1,7 @@
+PyCryptodome
+requests
+flask_restful
+flask
+time
+datetime
+jwcrypto

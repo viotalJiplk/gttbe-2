@@ -1,0 +1,8 @@
+Flask
+flask_restful
+mysql
+pycryptodome
+requests
+datetime
+jwcrypto
+mysql-connector-python
