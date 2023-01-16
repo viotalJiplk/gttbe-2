@@ -18,5 +18,6 @@ register_routes(api, discordRoutes, '/discord')
 
 if(os.getenv("PROD") is None):
     register_routes(api, testRoutes, '/test')
+    print("Test build DO NOT USE IN PRODUCTION!")
 
 #app.run(port=5000)
