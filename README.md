@@ -14,6 +14,7 @@ Second version of backend for gttournament.
 8. grant db account access to database
 9. create new app on https://discord.com/developers/applications
 10. go to OAuth2 and fill config.py with info from here
+11. add http://127.0.0.1:5000/test/testpages/discord/login.html#getjws to Redirects
 
 ## Running application
 1. set enviroment variable `FLASK_APP=app.py`
