@@ -1,4 +1,3 @@
-from routes.discord.auth import Auth, Redirected
-from routes.discord.tets import Test
+from routes.discord.auth import Auth, TokenEndpoint
 
-discordRoutes = [(Auth, '/auth'), (Redirected, '/redirected'), (Test, '/test') ]
+discordRoutes = [(Auth, '/auth'), (TokenEndpoint, '/token') ]

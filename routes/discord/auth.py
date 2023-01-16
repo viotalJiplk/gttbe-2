@@ -7,7 +7,7 @@ from config import discord, selfref
 from utils.db import getConnection
 from routes.discord.api_connector import getuserobject, insertTokens, insertState, testState
 from routes.discord.jws import generateJWS
-
+import json
 
 class Auth(Resource):
     scopes = ["identify"]
@@ -15,22 +15,22 @@ class Auth(Resource):
         state = insertState()
         if type(state) is dict:
             return weberrorlog(state["msg"], 500)
-        return redirect(endpoint_url(state, "none"), 307)
+        return {"redirect_url": endpoint_url(state, "none")}, 200
         #could technicaly throw error if state is not unique
-class Redirected(Resource):
-    def get(self):
-        code = request.args.get('code', default = '', type = str)
-        state = request.args.get('state', default = '', type = str)
-        if(code == '' or state == ''):
-            return {"state": 1, "msg": "Missing code or state."}, 401
-        if(testState(state) == False):
+
+class TokenEndpoint(Resource):
+    def post(self):
+        data = request.get_json()
+        if(data["code"] == '' or data["state"] == '' or data["redirect_uri"] == ''):
+            return {"state": 1, "msg": "Missing code or state or redirect_uri."}, 401
+        if(testState(data["state"]) == False):
             return {"state": 1, "msg": "Invalid state."}, 401
         data = {
             'client_id': discord["client_id"],
             'client_secret': discord["client_secret"],
             'grant_type': 'authorization_code',
-            'code': code,
-            'redirect_uri': discord["redir_url"]
+            'code': data["code"],
+            'redirect_uri': data["redirect_uri"]
         }
         headers = {
             'Content-Type': 'application/x-www-form-urlencoded'

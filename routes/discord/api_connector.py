@@ -3,6 +3,9 @@ import datetime
 import requests
 from config import discord
 from Crypto.Random import random
+import string
+
+alnum = list(string.ascii_letters)
 
 def getuserobject(access_token):
     headers = {
@@ -47,9 +50,8 @@ def insertTokens(token_response, userid):
     return 200
 
 def genState():
-    """ Generate a 100-char alnum string. 190 bits of entropy. """
-    alnum = ''.join(c for c in map(chr, range(256)) if c.isalnum())
-    return ''.join(random.choice(alnum) for _ in range(100))
+    
+    return ''.join(random.choice(alnum) for _ in range(200))
 
 def insertState():
     state = genState()

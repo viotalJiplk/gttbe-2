@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flow testing page</title>
+    <script src="../js/main.js"></script>
+    <script src="js/login.js" defer></script>
+</head>
+<body>
+    <req-custom id="getDiscordURL" data-options='{"method":"GET", "url":"/discord/auth"}'></req-custom>
+    <p>Now you should add <span style="font-style: italic;">&redirect_uri=$uri$</span> to redirect_url and redirect user to it.</p>
+    <p>Uri is client suplied addres to redirect to after sucessfull authentifation. Which must be added as redirect url in discord app settings in dev portal.</p>
+    <a id="redirectLink" href="">nothing</a>
+    <req-custom id="getjws" data-options='{"method":"POST", "url":"/discord/token", "mime":"application/json"}'></req-custom>
+    <p>code and state are url parameters of page at redirect_uri</p>
+    <p>Jws is base 64 encoded json with userinfo, that has been signed by the server. It is used to authenticate to server.</p>
+    <p>userobject is discords userobject see: <a href="https://discord.com/developers/docs/resources/user">https://discord.com/developers/docs/resources/user</a></p>
+</body>
+</html>

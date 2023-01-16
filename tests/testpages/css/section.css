@@ -1,0 +1,31 @@
+textarea{
+    width: 20rem;
+    height: 20rem;
+    display: block;
+}
+body{
+    height: 100%;
+}
+html{
+    height: 100%;
+}
+button{
+    color:white;
+    cursor: pointer;
+    background-color: #4CAF50;  
+    border: none;
+    font-size: 16px;
+    margin: 4px 2px;
+    padding: 15px 32px;
+    border-radius: 15px;
+    box-shadow: 0 9px#999;
+}
+button:hover {
+    background-color: 
+    #3e8e41;
+}
+button:active {
+	background-color: #3e8e41;
+	box-shadow: 0 5px #666;
+	transform: translateY(4px);
+}
