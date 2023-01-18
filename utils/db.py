@@ -7,6 +7,9 @@ def getConnection(autocommit=True):
         user=config['user'],
         password=config['password'],
         database=config['database'],
+        charset='utf8mb4',
+        collation='utf8mb4_czech_ci',
+        use_unicode=True,
         autocommit=autocommit
     )
     return db

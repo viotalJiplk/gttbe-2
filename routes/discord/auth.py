@@ -5,7 +5,7 @@ import requests
 from utils.errorlog import weberrorlog
 from config import discord, selfref
 from utils.db import getConnection
-from routes.discord.api_connector import getuserobject, insertTokens, insertState, testState
+from routes.discord.api_connector import getuserobject, insertInfo, insertState, testState
 from routes.discord.jws import generateJWS
 import json
 
@@ -21,8 +21,9 @@ class Auth(Resource):
 class TokenEndpoint(Resource):
     def post(self):
         data = request.get_json()
+        req = data
         if(data["code"] == '' or data["state"] == '' or data["redirect_uri"] == ''):
-            return {"state": 1, "msg": "Missing code or state or redirect_uri."}, 401
+            return {"state": 1, "msg": "Missing something in request."}, 401
         if(testState(data["state"]) == False):
             return {"state": 1, "msg": "Invalid state."}, 401
         data = {
@@ -55,7 +56,7 @@ class TokenEndpoint(Resource):
         if 'state' in user.keys():
             if(user["state"] == 1):
                 return weberrorlog(user["msg"], 500)
-        insertTok = insertTokens(r, user["user"]["id"])
+        insertTok = insertInfo(r, user["user"]["id"], req)
         if(insertTok != 200):
              return weberrorlog(insertTok["msg"], 500)
         claims = {}

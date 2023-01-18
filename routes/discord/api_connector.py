@@ -21,12 +21,12 @@ def getuserobject(access_token):
         #discord token endpoint error
     return r.json()
 
-def insertTokens(token_response, userid):
+def insertInfo(token_response, userid, reqinfo):
     values = {
         'userid': userid,
         'refresh_token': token_response["refresh_token"],
         'access_token': token_response["access_token"],
-        'expires_in': datetime.datetime.now() + datetime.timedelta(0,token_response["expires_in"])
+        'expires_in': datetime.datetime.now() + datetime.timedelta(0,token_response["expires_in"]),
     }
 
     try:
@@ -35,16 +35,30 @@ def insertTokens(token_response, userid):
         return {"state": 1, "msg": "Cannot connect to database"}
     cursor = db.cursor(buffered=True)
     try:
-        query = "INSERT INTO users (`userid`, `access_token`, `refresh_token`, `expires_in`) VALUES (%(userid)s, %(access_token)s, %(refresh_token)s, %(expires_in)s);"
+        query = "UPDATE users SET `refresh_token` = %(refresh_token)s, `access_token` = %(access_token)s, `expires_in` = %(expires_in)s WHERE `userid` = %(userid)s;"
         cursor.execute(query, values)
+        if(cursor.rowcount != 1):
+            raise Exception("Not yet signued up.")
     except Exception as e:
         try:
-            query = "UPDATE users SET `refresh_token` = %(refresh_token)s, `access_token` = %(access_token)s, `expires_in` = %(expires_in)s WHERE `userid` = %(userid)s;"
+            if(reqinfo["name"] == '' or reqinfo["surname"] == '' or reqinfo["adult"] == '' or reqinfo["school_id"] == ''):
+                return {"state": 1, "msg": "Missing name, surname or adult or schoolid"}, 401
+            values = {
+                'userid': userid,
+                'refresh_token': token_response["refresh_token"],
+                'access_token': token_response["access_token"],
+                'expires_in': datetime.datetime.now() + datetime.timedelta(0,token_response["expires_in"]),
+                'name': reqinfo["name"],
+                'surname': reqinfo["surname"],
+                'adult': reqinfo["adult"],
+                'schoolId': reqinfo["school_id"],
+            }
+            query = "INSERT INTO users (`userid`, `access_token`, `refresh_token`, `expires_in`, `surname`, `name`, `adult`, `schoolId`) VALUES (%(userid)s, %(access_token)s, %(refresh_token)s, %(expires_in)s, %(surname)s, %(name)s, %(adult)s, %(schoolId)s);"
             cursor.execute(query, values)
         except Exception as e:
             cursor.close()
             db.close()
-            return {"state": 1, "msg": "Cannot insert tokens to database"}
+            return {"state": 1, "msg": "Something went wrong while processing your request"}, 401
     cursor.close()
     db.close()
     return 200

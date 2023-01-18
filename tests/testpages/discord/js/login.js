@@ -10,5 +10,5 @@ params = new URLSearchParams(location.search);
 code = params.get("code");
 state = params.get("state");
 if(code != null & state != null){
-    document.getElementById("getjws").setAttribute("data-options", JSON.stringify({"body":"{\"code\":\"" + code +"\", \"state\":\"" + state +"\", \"redirect_uri\":\"" + redirect_url +"\"}"}))    
+    document.getElementById("getjws").setAttribute("data-options", JSON.stringify({"body":"{\"code\":\"" + code +"\", \"state\":\"" + state +"\", \"redirect_uri\":\"" + redirect_url +"\", \"name\":\"Name\", \"surname\":\"surName\",\"adult\":1, \"school_id\":1}"}))    
 }
