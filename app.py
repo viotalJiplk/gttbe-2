@@ -7,6 +7,7 @@ import os
 # ROUTES
 from routes.discord import discordRoutes
 from routes.schools import schoolsRoutes
+from routes.user import userRoutes
 from tests import testRoutes
 
 app = Flask(__name__)
@@ -17,6 +18,7 @@ api = Api(app)
 
 register_routes(api, discordRoutes, '/discord')
 register_routes(api, schoolsRoutes, '/schools')
+# register_routes(api, userRoutes, '/user')
 
 if(os.getenv("PROD") is None):
     register_routes(api, testRoutes, '/test')
