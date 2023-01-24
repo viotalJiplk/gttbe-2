@@ -15,93 +15,172 @@ class ReqElem extends HTMLElement{
         super();
         let selfref = this;
         this.callbacks = new Array();
+        const div = document.createElement("div");
+        const p = document.createElement("p");
 
         this.shadowRootReference = this.attachShadow({mode: 'closed'});
         this.root_element = this;
         
-        //adding stylesheet
-        let link = document.createElement("link");
-        link.setAttribute("rel","stylesheet");
-        link.setAttribute("href", "../css/section.css");
-        this.shadowRootReference.appendChild(link);
-
-        //body textarea
-        let textarea = document.createElement("textarea");
-        textarea.setAttribute("id", "textarea");
-        this.shadowRootReference.appendChild(textarea);
-        
-        //mime selector
-        let mime = document.createElement("select");
-        mime.setAttribute("id", "selectMime");
-        mimes.forEach(function(element){
-            let option = document.createElement("option");
-            option.setAttribute("value", element);
-            option.innerText = element;
-            mime.appendChild(option);
-        });
-        this.shadowRootReference.appendChild(mime);
-
-        //method selection
-        let select = document.createElement("select");
-        select.setAttribute("id", "selectMethod");
-        for (const key in methodes) {
-            let element = methodes[key]
-            let option = document.createElement("option");
-            option.setAttribute("value", element.name);
-            option.innerText = element.name;
-            select.appendChild(option);
+        {
+            //adding stylesheet
+            let link = document.createElement("link");
+            link.setAttribute("rel","stylesheet");
+            link.setAttribute("href", "../css/section.css");
+            this.shadowRootReference.appendChild(link);
         }
-        select.addEventListener('change', function (event){
-            if(methodes[event.target.value].body == "unused"){
-                selfref.shadowRootReference.getElementById("textarea").style.display = "none";
-                selfref.shadowRootReference.getElementById("selectMime").style.display = "none";
-            }else{
-                selfref.shadowRootReference.getElementById("textarea").style.display = "";
-                selfref.shadowRootReference.getElementById("selectMime").style.display = "";
+
+        {
+            //headers textarea
+            let reqheaders = div.cloneNode();
+            
+            let reqp = p.cloneNode();
+            reqp.innerText = "request headers:";
+            reqheaders.appendChild(reqp);
+
+            reqheaders.setAttribute("id", "headers");
+            let textarea = document.createElement("textarea");
+            textarea.setAttribute("id", "headersarea");
+            reqheaders.appendChild(textarea);
+            
+            this.shadowRootReference.appendChild(reqheaders);
+        }
+
+        {
+            //body textarea
+            let reqbody = div.cloneNode();
+            
+            let reqp = p.cloneNode();
+            reqp.innerText = "request body:";
+            reqbody.appendChild(reqp);
+
+            reqbody.setAttribute("id", "body");
+            let textarea = document.createElement("textarea");
+            textarea.setAttribute("id", "textarea");
+            reqbody.appendChild(textarea);
+            
+            this.shadowRootReference.appendChild(reqbody);
+        }
+
+        // {
+        //     //mime selector
+        //     let mimediv = div.cloneNode()
+        //     mimediv.setAttribute("id", "divMime");
+
+        //     let mimep = p.cloneNode();
+        //     mimep.innerText = "select mime:";
+        //     mimediv.appendChild(mimep);
+            
+        //     let mime = document.createElement("select");
+        //     mime.setAttribute("id", "selectMime");
+        //     mimes.forEach(function(element){
+        //         let option = document.createElement("option");
+        //         option.setAttribute("value", element);
+        //         option.innerText = element;
+        //         mime.appendChild(option);
+        //     });
+        //     mimediv.appendChild(mime);
+
+        //     this.shadowRootReference.appendChild(mimediv);
+        // }
+        
+        {
+            //method selection
+            let selectdiv = div.cloneNode()
+            selectdiv.setAttribute("id", "selectMime");
+
+            let selectp = p.cloneNode();
+            selectp.innerText = "select method:";
+            selectdiv.appendChild(selectp);
+
+            let select = document.createElement("select");
+            select.setAttribute("id", "selectMethod");
+            for (const key in methodes) {
+                let element = methodes[key]
+                let option = document.createElement("option");
+                option.setAttribute("value", element.name);
+                option.innerText = element.name;
+                select.appendChild(option);
             }
-        });
-        this.shadowRootReference.appendChild(select);
-        this.shadowRootReference.getElementById("selectMethod").dispatchEvent(new Event("change"));
-        
-        //url selection
-        let url =  document.createElement("input");
-        url.setAttribute("id", "url");
-        this.shadowRootReference.appendChild(url);
+            select.addEventListener('change', function (event){
+                if(methodes[event.target.value].body == "unused"){
+                    selfref.shadowRootReference.getElementById("body").style.display = "none";
+                    // selfref.shadowRootReference.getElementById("divMime").style.display = "none";
+                }else{
+                    selfref.shadowRootReference.getElementById("body").style.display = "";
+                    // selfref.shadowRootReference.getElementById("divMime").style.display = "";
+                }
+            });
+            selectdiv.appendChild(select)
+            this.shadowRootReference.appendChild(selectdiv);
+            this.shadowRootReference.getElementById("selectMethod").dispatchEvent(new Event("change"));
+        }
 
-        // submit button
-        let button = document.createElement("button");
-        button.setAttribute("id", "submitButton");
-        button.innerText = "Try";
-        button.addEventListener("click",function(event){
-            // TODO lets send this
-            selfref.execute(event);
-        });
-        this.shadowRootReference.appendChild(button);
-        
-        //httprescode bar
-        let httprescode = document.createElement("p");
-        let span = document.createElement("span");
-        span.setAttribute("id", "httprescode");
-        httprescode.innerText = "Response code: ";
-        httprescode.appendChild(span);
-        this.shadowRootReference.appendChild(httprescode);
+        {
+            //url selection
 
-        //output textarea
-        let outtextarea = document.createElement("textarea");
-        outtextarea.setAttribute("id", "outtextarea");
-        this.shadowRootReference.appendChild(outtextarea);
+            let urldiv = div.cloneNode()
+            urldiv.setAttribute("id", "selectUrl");
+
+            let urlp = p.cloneNode();
+            urlp.innerText = "select url:";
+            urldiv.appendChild(urlp);
+            
+            let url =  document.createElement("input");
+            url.setAttribute("id", "url");
+            
+            urldiv.appendChild(url);
+            this.shadowRootReference.appendChild(urldiv);
+        }
+
+        {
+            // submit button
+            let button = document.createElement("button");
+            button.setAttribute("id", "submitButton");
+            button.innerText = "Try";
+            button.addEventListener("click",function(event){
+                // TODO lets send this
+                selfref.execute(event);
+            });
+            this.shadowRootReference.appendChild(button);
+        }
+
+        {
+            //httprescode bar
+            let httprescode = document.createElement("p");
+            let span = document.createElement("span");
+            span.setAttribute("id", "httprescode");
+            httprescode.innerText = "Response code: ";
+            httprescode.appendChild(span);
+            this.shadowRootReference.appendChild(httprescode);
+        }
+        
+        {
+            //output textarea
+            let outtextarea = document.createElement("textarea");
+            outtextarea.setAttribute("id", "outtextarea");
+            this.shadowRootReference.appendChild(outtextarea);
+        }
     }
     
     static get observedAttributes(){return ["data-options", "class"];}
 
     getInputs(){
+        let headers = this.shadowRootReference.getElementById("headersarea").value;
+        if(headers != ""){
+            headers = JSON.parse(this.shadowRootReference.getElementById("headersarea").value);
+        }
+        else{
+            headers = undefined;
+        }
+
         return { 
             "body": this.shadowRootReference.getElementById("textarea").value,
             "method": this.shadowRootReference.getElementById("selectMethod").value,
             "url": this.shadowRootReference.getElementById("url").value,
             "outcode": this.shadowRootReference.getElementById("httprescode"),
             "out": this.shadowRootReference.getElementById("outtextarea"),
-            "mime": this.shadowRootReference.getElementById("selectMime").value
+            "mime": this.shadowRootReference.getElementById("selectMime").value,
+            "headers": headers
         }
     }
 
@@ -111,14 +190,15 @@ class ReqElem extends HTMLElement{
         try {
             let result;
             if(methodes[inputs.method].body == "unused"){
-                result = await fetch(inputs.url, {method:inputs.method});
+                result = await fetch(inputs.url, {
+                    method:inputs.method,
+                    headers: inputs.headers
+                });
             }else{
                 result = await fetch(inputs.url, {
                     method:inputs.method,
                     body: inputs.body,
-                    headers: {
-                        'Content-Type': inputs.mime 
-                    },
+                    headers: inputs.headers
                 });
             }
             inputs.outcode.innerText = result.status;
@@ -150,8 +230,8 @@ class ReqElem extends HTMLElement{
             if(newValue.url){
                 this.shadowRootReference.getElementById("url").value = newValue.url;
             }
-            if(newValue.mime){
-                this.shadowRootReference.getElementById("selectMime").value = newValue.mime;
+            if (newValue.headers){
+                this.shadowRootReference.getElementById("headersarea").value = newValue.headers;
             }
         }
         this.shadowRootReference.firstChild.setAttribute("data-sheet-name", newValue);

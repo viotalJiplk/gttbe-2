@@ -23,15 +23,24 @@ class TokenEndpoint(Resource):
         except:
             return {"state": 1, "msg": "This is json endpoint."}, 401
         req = data
-        if(data["code"] == '' or data["state"] == '' or data["redirect_uri"] == ''):
+        if("code" not in data or "state" not in data or "redirect_uri" not in data):
             return {"state": 1, "msg": "Missing something in request."}, 401
         if(testState(data["state"]) == False):
             return {"state": 1, "msg": "Invalid state."}, 401
 
+        if("name" not in data):
+            data["name"] = ''
+        if("surname" not in data):
+            data["surname"] = ''
+        if("adult" not in data):
+            data["adult"] = ''
+        if("school_id" not in data):
+            data["school_id"] = ''
+
         user = UserModel.getByCode(data["code"], data["redirect_uri"], data["name"], data["surname"], data["adult"], data["school_id"])
 
         claims = {}
-        claims[selfref["root_url"] + "/discord/userid"] = user.userId
+        claims[discord["userid_claim"]] = user.userId
         jws = generateJWS(claims)
         
         return {"jws":jws}

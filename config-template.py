@@ -9,7 +9,7 @@ selfref = {
 }
 discord = {
     'redir_url': selfref["root_url"] + "/discord/redirected",
-    'client_id': ,
+    'client_id': '',
     'client_secret': '',
     'api_endpoint': 'https://discord.com/api',
     'state_ttl': 300,

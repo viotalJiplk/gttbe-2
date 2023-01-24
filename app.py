@@ -18,7 +18,7 @@ api = Api(app)
 
 register_routes(api, discordRoutes, '/discord')
 register_routes(api, schoolsRoutes, '/schools')
-# register_routes(api, userRoutes, '/user')
+register_routes(api, userRoutes, '/user')
 
 if(os.getenv("PROD") is None):
     register_routes(api, testRoutes, '/test')

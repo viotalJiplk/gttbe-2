@@ -3,24 +3,43 @@ import datetime
 import requests
 from config import discord
 from requests import post
+from datetime import date, datetime, timedelta
 
 class UserModel:
     def __init__(self, userid = '', refresh_token = '', access_token = '', expires_in = '', name='', surname='', adult='', school_id='', dbsync=True):
+        if(not isinstance(expires_in, datetime)):
+            expires_in = datetime.utcfromtimestamp(expires_in)
         if(dbsync):
-            if(refresh_token == '' or access_token == '' or userid == ''):
+            if(refresh_token == '' or access_token == '' or userid == '' or userid == ''):
                     raise Exception("Missing something in request.")
             values = {
                 'userid': userid,
                 'refresh_token': refresh_token,
                 'access_token': access_token,
-                'expires_in': datetime.datetime.now() + datetime.timedelta(0,expires_in),
+                'expires_in': expires_in,
             }
 
             db = getConnection(autocommit=True)
             cursor = db.cursor(buffered=True)
 
             # try if user already exists
-            query = "UPDATE users SET `refresh_token` = %(refresh_token)s, `access_token` = %(access_token)s, `expires_in` = %(expires_in)s WHERE `userid` = %(userid)s;"
+            query = "UPDATE users SET `refresh_token` = %(refresh_token)s, `access_token` = %(access_token)s, `expires_in` = %(expires_in)s"
+
+            if(name != ''):
+                values["name"] = name
+                query += ", `name` = %(name)s"
+            if(surname != ''):
+                values["surname"] = surname
+                query += ", `surname` = %(surname)s"
+            if(adult != ''):
+                values["adult"] = adult
+                query += ", `adult` = %(adult)s"
+            if(school_id != ''):
+                values["school_id"] = school_id
+                query += ", `schoolId` = %(school_id)s"
+
+            query += " WHERE `userid` = %(userid)s;"
+
             cursor.execute(query, values)
             if(cursor.rowcount != 1):
                 # user does not exist yet
@@ -30,7 +49,7 @@ class UserModel:
                     'userid': userid,
                     'refresh_token': refresh_token,
                     'access_token': access_token,
-                    'expires_in': datetime.datetime.now() + datetime.timedelta(0,expires_in),
+                    'expires_in': expires_in,
                     'name': name,
                     'surname': surname,
                     'adult': adult,
@@ -59,6 +78,46 @@ class UserModel:
             'code': code,
             'redirect_uri': redirect_uri
         }
+        tokenReq = UserModel.tokenEndpoint(data)
+        
+        ''' now lets get discords user object'''
+        user = UserModel(access_token = tokenReq["access_token"], expires_in = tokenReq["expires_in"], dbsync = False)
+        userObject = user.getDiscordUserObject()
+
+        return UserModel(userid = userObject["id"], refresh_token = tokenReq["refresh_token"], access_token = tokenReq["access_token"], expires_in = tokenReq["expires_in"], name=name, surname=surname, adult=adult, school_id=school_id)
+
+    @staticmethod
+    def getById(userId):
+        sql = "SELECT userId, surname, name, adult, schoolId, access_token, refresh_token, expires_in  FROM users WHERE userId=%(userId)s"
+        db = getConnection(autocommit=True)
+        cursor = db.cursor(buffered=True)
+        cursor.execute(sql, {'userId': userId})
+        row = cursor.fetchone()
+        cursor.close()
+        db.close()
+        return UserModel(userid=row[0], surname= row[1], name = row[2], adult = row[3], school_id = row[4], access_token=row[5], refresh_token=row[6], expires_in=row[7], dbsync=False)
+    
+    def getDiscordUserObject(self):
+        today = datetime.today()
+        if(self.__expires_in < today):
+            self.__refresh_token_refresh()
+        try:
+            headers = {
+                "Authorization": "Bearer " + self.__access_token
+            }
+            userObjectReq = requests.get('%s/oauth2/@me' % discord['api_endpoint'], headers=headers)
+        except Exception as e:
+            raise Exception("discord /oauth2/@me error: " + e.args[0])
+            #discord token endpoint error
+        if(userObjectReq.status_code != 200):
+            raise Exception("discord /oauth2/@me responded: " + str(userObjectReq.status_code) + userObjectReq.text)
+            #discord token endpoint error
+        userObjectReq = userObjectReq.json()
+        return userObjectReq['user']
+    
+    @staticmethod
+    def tokenEndpoint(data):
+        
         headers = {
             'Content-Type': 'application/x-www-form-urlencoded'
         }
@@ -73,41 +132,34 @@ class UserModel:
             #discord token endpoint error
         tokenReq = tokenReq.json()
 
+        if("token_type" not in tokenReq):
+            raise Exception("discord token endpoint response missing token type")
         if(tokenReq["token_type"] != "Bearer"):
-            raise Exception("discord token endpoint response  unknown token type")
-        if(tokenReq["access_token"] == ""):
-            raise Exception("discord token endpoint response  missing access_token")
-        if(tokenReq["refresh_token"] == ""):
-            raise Exception("discord token endpoint response  missing refresh_token")
-        
-        ''' now lets get discords user object'''
-        user = UserModel(access_token = tokenReq["access_token"], dbsync = False)
-        userObject = user.getDiscordUserObject()
+            raise Exception("discord token endpoint response unknown token type")
+        if("access_token" not in tokenReq):
+            raise Exception("discord token endpoint response missing access_token")
+        if("refresh_token" not in tokenReq):
+            raise Exception("discord token endpoint response missing refresh_token")
+        if("expires_in" not in tokenReq):
+            raise Exception("discord token endpoint response missing expires_in")
 
-        return UserModel(userid = userObject["user"]["id"], refresh_token = tokenReq["refresh_token"], access_token = tokenReq["access_token"], expires_in = tokenReq["expires_in"], name=name, surname=surname, adult=adult, school_id=school_id)
+        tokenReq["expires_in"] = datetime.now() + timedelta(0, tokenReq["expires_in"])
+        return tokenReq
 
-    @staticmethod
-    def getById(userId):
-        self.userId = userId
-        sql = "SELECT userId, surname, name, adult, schoolId FROM users WHERE userId=%(userId)s"
-        db = getConnection(autocommit=True)
-        cursor = db.cursor(buffered=True)
-        cursor.execute(sql, {"userid": userId})
-        row = cursor.fetchone()
-        cursor.close()
-        db.close()
-        return UserModel(userId=row[1], surname = row[2], name = row[3], adult = row[4], schoolId = row[5], dbsync=False)
-    
-    def getDiscordUserObject(self):
-        try:
-            headers = {
-                "Authorization": "Bearer " + self.__access_token
-            }
-            userObjectReq = requests.get('%s/oauth2/@me' % discord['api_endpoint'], headers=headers)
-        except Exception as e:
-            raise Exception("discord /oauth2/@me error: " + e.args[0])
-            #discord token endpoint error
-        if(userObjectReq.status_code != 200):
-            raise Exception("discord /oauth2/@me responded: " + str(userObjectReq.status_code) + userObjectReq.text)
-            #discord token endpoint error
-        return userObjectReq.json()
+    def __refresh_token_refresh(self):
+        data = {
+            'client_id': discord["client_id"],
+            'client_secret': discord["client_secret"],
+            'grant_type': 'authorization_code',
+            'grant_type': 'refresh_token',
+            'refresh_token': self.__refresh_token
+        }
+        tokenReq = UserModel.tokenEndpoint(data)
+
+        UserModel(userid = self.userId, refresh_token = tokenReq["refresh_token"], access_token = tokenReq["access_token"], expires_in = tokenReq["expires_in"])
+
+        self.__refresh_token = tokenReq["refresh_token"]
+        self.__access_token = tokenReq["access_token"]
+        self.__expires_in = tokenReq["expires_in"]
+
+        return self

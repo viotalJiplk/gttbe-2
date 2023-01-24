@@ -8,6 +8,15 @@
     <script src="../js/main.js"></script>
 </head>
 <body>
-    <req-custom data-options="{}"></req-custom>    
+    
+    <req-custom id="getuserobject"></req-custom>    
 </body>
+    <script>
+        let jws = localStorage.getItem("jws");
+        if(jws == ""){
+            alert("Go to login page to get jws");
+        }else{
+            document.getElementById("getuserobject").setAttribute("data-options", '{"method":"GET", "url":"/user/@me", "headers":"{\\\"Authorization\\\": \\\"Bearer ' + jws + '\\\"}"}');
+        }
+    </script>
 </html>

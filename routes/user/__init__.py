@@ -1,3 +1,3 @@
-from routes.user.get import UserEndpoint
+from routes.user.user import UserEndpoint
 
-userRoutes = [(UserEndpoint, '/user') ]
+userRoutes = [(UserEndpoint, '/<uid>') ]
