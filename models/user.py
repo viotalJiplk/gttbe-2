@@ -163,3 +163,22 @@ class UserModel:
         self.__expires_in = tokenReq["expires_in"]
 
         return self
+    
+    def delete(self):
+        db = getConnection(autocommit=True)
+        cursor = db.cursor(buffered=True)
+
+        # try if user already exists
+        query = "DELETE FROM users WHERE `userId` = %(userId)s"
+        cursor.execute(query, {"userId": self.userId})
+        cursor.close()
+        db.close()
+
+        self.userId = ""
+        self.surname = ""
+        self.name = ""
+        self.adult = ""
+        self.schoolId = ""
+        self.__access_token = ""
+        self.__refresh_token = ""
+        self.__expires_in = ""

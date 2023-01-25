@@ -9,7 +9,7 @@ class TeamModel:
         return {'name': self.name, 'game': self.game}
 
     def insert(self):
-        db = getConnection()
+        db = getConnection(autocommit=False)
         cursor = db.cursor(buffered=True)
         query = "INSERT INTO teams (name, game) VALUES (%s, %s)"
         values = (self.name, self.game)

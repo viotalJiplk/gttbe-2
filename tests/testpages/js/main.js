@@ -6,6 +6,10 @@ methodes = {
     "POST":{
         "name": "POST",
         "body": "used"
+    },
+    "DELETE":{
+        "name": "DELETE",
+        "body": "unused"
     }
 };
 mimes = ["text/plain","application/json"]

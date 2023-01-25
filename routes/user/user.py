@@ -11,3 +11,14 @@ class UserEndpoint(Resource):
             return {"discord_user_object": user.getDiscordUserObject()}
         else:
             return {"msg":"admin section! to be implemented"}
+    def delete(self, uid):
+        if(uid == '@me'):
+            try:
+                auth_result = authorize(request)
+                user = UserModel.getById(auth_result["userid"])
+                user.delete()
+            except:
+                return 401
+            return 200
+        else:
+            return {"msg":"admin section! to be implemented"}
