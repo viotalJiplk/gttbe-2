@@ -7,7 +7,7 @@ class UserEndpoint(Resource):
     def get(self, uid):
         if(uid == '@me'):
             auth_result = authorize(request)
-            user = UserModel.getById(auth_result["userid"])
+            user = UserModel.getById(auth_result["userId"])
             return {"discord_user_object": user.getDiscordUserObject()}
         else:
             return {"msg":"admin section! to be implemented"}
@@ -15,7 +15,7 @@ class UserEndpoint(Resource):
         if(uid == '@me'):
             try:
                 auth_result = authorize(request)
-                user = UserModel.getById(auth_result["userid"])
+                user = UserModel.getById(auth_result["userId"])
                 user.delete()
             except:
                 return 401

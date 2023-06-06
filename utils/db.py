@@ -13,3 +13,10 @@ def getConnection(autocommit=True):
         autocommit=autocommit
     )
     return db
+
+def fetchAllWithNames(cursor):
+    columns = cursor.description 
+    return [{columns[index][0]:column for index, column in enumerate(value)} for value in cursor.fetchall()]
+
+# def fetchoneWithNames(cursor):
+#     return dict(zip(cursor.column_names, cursor.fetchone()))

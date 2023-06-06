@@ -36,4 +36,4 @@ def authorize(request):
         raise Exception("Untrusted issuer!")
     if(result[discord["userid_claim"]] == None):
         raise Exception("Missing userid!")
-    return {"userid": result[discord["userid_claim"]], "payload": result}
+    return {"userId": result[discord["userid_claim"]], "payload": result}
