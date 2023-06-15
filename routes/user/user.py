@@ -1,21 +1,23 @@
 from flask_restful import Resource, request
 from models.user import UserModel
-from utils.jws import authorize
+from utils.jws import jwsProtected
 
 
 class UserEndpoint(Resource):
-    def get(self, uid):
+
+    @jwsProtected
+    def get(self, authResult, uid):
         if(uid == '@me'):
-            auth_result = authorize(request)
-            user = UserModel.getById(auth_result["userId"])
+            user = UserModel.getById(authResult["userId"])
             return {"discord_user_object": user.getDiscordUserObject()}
         else:
             return {"msg":"admin section! to be implemented"}
-    def delete(self, uid):
+
+    @jwsProtected
+    def delete(self, authResult, uid):
         if(uid == '@me'):
             try:
-                auth_result = authorize(request)
-                user = UserModel.getById(auth_result["userId"])
+                user = UserModel.getById(authResult["userId"])
                 user.delete()
             except:
                 return 401

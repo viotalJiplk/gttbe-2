@@ -1,5 +1,8 @@
 from jwcrypto import jwk, jws
 from jwcrypto.common import json_encode, json_decode
+from jwcrypto.jws import InvalidJWSObject, InvalidJWSSignature
+from functools import wraps
+from flask_restful import request
 from config import selfref, discord
 import time
 import json
@@ -25,15 +28,23 @@ def verifyJWS(jwsin):
     # jwstoken.verify(key)
     return jwstoken.payload
 
-def authorize(request):
-    if(request.headers["Authorization"] == None):
-        raise Exception("Missing Authorization header!")
-    result = verifyJWS(request.headers["Authorization"].split(" ")[1])
-    result = json_decode(result)
-    if(result["exp"] <= int(time.time())):
-        raise Exception("Expired!")
-    if(result["iss"] != selfref["root_url"]):
-        raise Exception("Untrusted issuer!")
-    if(result[discord["userid_claim"]] == None):
-        raise Exception("Missing userid!")
-    return {"userId": result[discord["userid_claim"]], "payload": result}
+def jwsProtected(func):
+    @wraps(func)
+    def getAuth(*args, **kwargs):
+        if(request.headers["Authorization"] == None):
+            return {"kind": "JWS", "msg": "Missing Authorization header!"}, 401
+        try:
+            result = verifyJWS(request.headers["Authorization"].split(" ")[1])
+        except InvalidJWSObject:
+            return {"kind": "JWS", "msg": "Invalid JWS token!"}, 401
+        except InvalidJWSSignature:
+            return {"kind": "JWS", "msg": "Invalid signature!"}, 401
+        result = json_decode(result)
+        if(result["exp"] <= int(time.time())):
+            return {"kind": "JWS", "msg": "Expired!"}, 401
+        if(result["iss"] != selfref["root_url"]):
+            return {"kind": "JWS", "msg": "Untrusted issuer!"}, 401
+        if(result[discord["userid_claim"]] == None):
+            return {"kind": "JWS", "msg": "Missing userid!"}, 401
+        return func(authResult = {"userId": result[discord["userid_claim"]], "payload": result}, *args, **kwargs)
+    return getAuth

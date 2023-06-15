@@ -5,6 +5,7 @@ from config import selfref
 from routes.discord.api_connector import insertState, testState
 from utils.jws import generateJWS
 from models.user import UserModel
+from utils.utils import postJson
 import json
 
 class Auth(Resource):
@@ -16,13 +17,11 @@ class Auth(Resource):
         return {"redirect_url": endpoint_url(state, "none")}, 200
         # could technicaly throw error if state is not unique
 
+
 class TokenEndpoint(Resource):
-    def post(self):
-        try:
-            data = request.get_json()
-        except:
-            return {"state": 1, "msg": "This is json endpoint."}, 401
-        req = data
+    
+    @postJson
+    def post(self, data):
         if("code" not in data or "state" not in data or "redirect_uri" not in data):
             return {"state": 1, "msg": "Missing something in request."}, 401
         if(testState(data["state"]) == False):
