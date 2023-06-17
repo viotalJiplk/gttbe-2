@@ -5,7 +5,7 @@ from utils.jws import jwsProtected
 
 class UserEndpoint(Resource):
 
-    @jwsProtected
+    @jwsProtected()
     def get(self, authResult, uid):
         if(uid == '@me'):
             user = UserModel.getById(authResult["userId"])
@@ -13,7 +13,7 @@ class UserEndpoint(Resource):
         else:
             return {"msg":"admin section! to be implemented"}
 
-    @jwsProtected
+    @jwsProtected()
     def delete(self, authResult, uid):
         if(uid == '@me'):
             try:

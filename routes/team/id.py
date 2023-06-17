@@ -30,7 +30,7 @@ class Team(Resource):
 
 class TeamJoinstring(Resource):
     
-    @jwsProtected
+    @jwsProtected()
     @getTeam
     def get(self, authResult, team, teamId):
         if(team.getUsersRole(authResult["userId"]) != "Captain"):
@@ -40,7 +40,7 @@ class TeamJoinstring(Resource):
 
 class Join(Resource):
     
-    @jwsProtected
+    @jwsProtected()
     @getTeam
     @postJson
     def post(self, authResult, team, data, teamId, joinString):
@@ -57,7 +57,7 @@ class Join(Resource):
 
 class Kick(Resource):
     
-    @jwsProtected
+    @jwsProtected()
     @getTeam
     def delete(self, authResult, team, teamId, userId):
         try:

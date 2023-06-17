@@ -5,7 +5,7 @@ from utils.utils import postJson
 
 class createTeam(Resource):
 
-    @jwsProtected
+    @jwsProtected()
     @postJson
     def post(self, data, authResult):
         if("game_id" not in data or "name" not in data):

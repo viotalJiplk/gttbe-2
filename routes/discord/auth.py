@@ -1,20 +1,23 @@
 from flask_restful import Resource, request
-from routes.discord.constants import *
-from utils.errorlog import weberrorlog
+from models.state import StateModel
+from config import discord
 from config import selfref
-from routes.discord.api_connector import insertState, testState
 from utils.jws import generateJWS
 from models.user import UserModel
 from utils.utils import postJson
+import urllib
 import json
 
 class Auth(Resource):
-    scopes = ["identify"]
+    def __endpoint_url(self, state, prompt="consent"):
+        scope = "identify"
+        state = urllib.parse.quote(state, safe='')
+        # redir_url_urlencoded = urllib.parse.quote(discord["redir_url"], safe='')
+        return "https://discord.com/oauth2/authorize?response_type=code&client_id="+str(discord["client_id"])+"&scope="+ scope +"&state="+ state +"&prompt=" + prompt
+    
     def get(self):
-        state = insertState()
-        if type(state) is dict:
-            return weberrorlog(state["msg"], 500)
-        return {"redirect_url": endpoint_url(state, "none")}, 200
+        state = StateModel.create()
+        return {"redirect_url": self.__endpoint_url(state.state, "none")}, 200
         # could technicaly throw error if state is not unique
 
 
@@ -24,7 +27,7 @@ class TokenEndpoint(Resource):
     def post(self, data):
         if("code" not in data or "state" not in data or "redirect_uri" not in data):
             return {"state": 1, "msg": "Missing something in request."}, 401
-        if(testState(data["state"]) == False):
+        if(StateModel.testAndDelete(data["state"]) == False):
             return {"state": 1, "msg": "Invalid state."}, 401
 
         if("name" not in data):

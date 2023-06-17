@@ -1,4 +1,4 @@
-from utils.db import getConnection
+from utils.db import getConnection, dbConn
 import datetime
 import requests
 from config import discord
@@ -6,59 +6,10 @@ from requests import post
 from datetime import date, datetime, timedelta
 
 class UserModel:
-    def __init__(self, userid = '', refresh_token = '', access_token = '', expires_in = '', name='', surname='', adult='', school_id='', dbsync=True):
+
+    def __init__(self, userid = '', refresh_token = '', access_token = '', expires_in = '', name='', surname='', adult='', school_id=''):
         if(not isinstance(expires_in, datetime)):
             expires_in = datetime.utcfromtimestamp(expires_in)
-        if(dbsync):
-            if(refresh_token == '' or access_token == '' or userid == '' or userid == ''):
-                    raise Exception("Missing something in request.")
-            values = {
-                'userid': userid,
-                'refresh_token': refresh_token,
-                'access_token': access_token,
-                'expires_in': expires_in,
-            }
-
-            db = getConnection(autocommit=True)
-            cursor = db.cursor(buffered=True)
-
-            # try if user already exists
-            query = "UPDATE users SET `refresh_token` = %(refresh_token)s, `access_token` = %(access_token)s, `expires_in` = %(expires_in)s"
-
-            if(name != ''):
-                values["name"] = name
-                query += ", `name` = %(name)s"
-            if(surname != ''):
-                values["surname"] = surname
-                query += ", `surname` = %(surname)s"
-            if(adult != ''):
-                values["adult"] = adult
-                query += ", `adult` = %(adult)s"
-            if(school_id != ''):
-                values["school_id"] = school_id
-                query += ", `schoolId` = %(school_id)s"
-
-            query += " WHERE `userid` = %(userid)s;"
-
-            cursor.execute(query, values)
-            if(cursor.rowcount != 1):
-                # user does not exist yet
-                if(name == '' or surname == '' or adult == '' or school_id == ''):
-                    raise Exception("Missing something in request.")
-                values = {
-                    'userid': userid,
-                    'refresh_token': refresh_token,
-                    'access_token': access_token,
-                    'expires_in': expires_in,
-                    'name': name,
-                    'surname': surname,
-                    'adult': adult,
-                    'schoolId': school_id,
-                }
-                query = "INSERT INTO users (`userid`, `access_token`, `refresh_token`, `expires_in`, `surname`, `name`, `adult`, `schoolId`) VALUES (%(userid)s, %(access_token)s, %(refresh_token)s, %(expires_in)s, %(surname)s, %(name)s, %(adult)s, %(schoolId)s);"
-                cursor.execute(query, values)
-            cursor.close()
-            db.close()
         self.userId = userid
         self.surname = surname
         self.name = name
@@ -68,8 +19,59 @@ class UserModel:
         self.__refresh_token = refresh_token
         self.__expires_in = expires_in
 
-    @staticmethod
-    def getByCode(code, redirect_uri, name, surname, adult, school_id):
+    @classmethod
+    @dbConn(autocommit=True, buffered=True)
+    def updateOrCreateUser(cls, cursor, db, userid = '', refresh_token = '', access_token = '', expires_in = '', name='', surname='', adult='', school_id=''):
+        if(refresh_token == '' or access_token == '' or userid == '' or userid == ''):
+                raise Exception("Missing something in request.")
+       
+        values = {
+            'userid': userid,
+            'refresh_token': refresh_token,
+            'access_token': access_token,
+            'expires_in': expires_in,
+        }
+
+        # try if user already exists
+        query = "UPDATE users SET `refresh_token` = %(refresh_token)s, `access_token` = %(access_token)s, `expires_in` = %(expires_in)s"
+
+        if(name != ''):
+            values["name"] = name
+            query += ", `name` = %(name)s"
+        if(surname != ''):
+            values["surname"] = surname
+            query += ", `surname` = %(surname)s"
+        if(adult != ''):
+            values["adult"] = adult
+            query += ", `adult` = %(adult)s"
+        if(school_id != ''):
+            values["school_id"] = school_id
+            query += ", `schoolId` = %(school_id)s"
+
+        query += " WHERE `userid` = %(userid)s;"
+
+        cursor.execute(query, values)
+        if(cursor.rowcount != 1):
+            # user does not exist yet
+            if(name == '' or surname == '' or adult == '' or school_id == ''):
+                raise Exception("Missing something in request.")
+            values = {
+                'userid': userid,
+                'refresh_token': refresh_token,
+                'access_token': access_token,
+                'expires_in': expires_in,
+                'name': name,
+                'surname': surname,
+                'adult': adult,
+                'schoolId': school_id,
+            }
+            query = "INSERT INTO users (`userid`, `access_token`, `refresh_token`, `expires_in`, `surname`, `name`, `adult`, `schoolId`) VALUES (%(userid)s, %(access_token)s, %(refresh_token)s, %(expires_in)s, %(surname)s, %(name)s, %(adult)s, %(schoolId)s);"
+            cursor.execute(query, values)
+            
+        return UserModel(userid=userid, refresh_token=refresh_token, access_token=access_token, expires_in=expires_in, name=name, surname=surname, adult=adult, school_id=school_id)
+
+    @classmethod
+    def getByCode(cls, code, redirect_uri, name, surname, adult, school_id):
         '''exchange code for access and refresh tokens'''
         data = {
             'client_id': discord["client_id"],
@@ -81,13 +83,13 @@ class UserModel:
         tokenReq = UserModel.tokenEndpoint(data)
         
         ''' now lets get discords user object'''
-        user = UserModel(access_token = tokenReq["access_token"], expires_in = tokenReq["expires_in"], dbsync = False)
+        user = UserModel(access_token = tokenReq["access_token"], expires_in = tokenReq["expires_in"])
         userObject = user.getDiscordUserObject()
 
-        return UserModel(userid = userObject["id"], refresh_token = tokenReq["refresh_token"], access_token = tokenReq["access_token"], expires_in = tokenReq["expires_in"], name=name, surname=surname, adult=adult, school_id=school_id)
+        return UserModel.updateOrCreateUser(userid = userObject["id"], refresh_token = tokenReq["refresh_token"], access_token = tokenReq["access_token"], expires_in = tokenReq["expires_in"], name=name, surname=surname, adult=adult, school_id=school_id)
 
-    @staticmethod
-    def getById(userId):
+    @classmethod
+    def getById(cls, userId):
         sql = "SELECT userId, surname, name, adult, schoolId, access_token, refresh_token, expires_in  FROM users WHERE userId=%(userId)s"
         db = getConnection(autocommit=True)
         cursor = db.cursor(buffered=True)
@@ -95,7 +97,7 @@ class UserModel:
         row = cursor.fetchone()
         cursor.close()
         db.close()
-        return UserModel(userid=row[0], surname= row[1], name = row[2], adult = row[3], school_id = row[4], access_token=row[5], refresh_token=row[6], expires_in=row[7], dbsync=False)
+        return UserModel(userid=row[0], surname= row[1], name = row[2], adult = row[3], school_id = row[4], access_token=row[5], refresh_token=row[6], expires_in=row[7])
     
     def getDiscordUserObject(self):
         today = datetime.today()
@@ -115,8 +117,8 @@ class UserModel:
         userObjectReq = userObjectReq.json()
         return userObjectReq['user']
     
-    @staticmethod
-    def tokenEndpoint(data):
+    @classmethod
+    def tokenEndpoint(cls, data):
         
         headers = {
             'Content-Type': 'application/x-www-form-urlencoded'
@@ -156,7 +158,7 @@ class UserModel:
         }
         tokenReq = UserModel.tokenEndpoint(data)
 
-        UserModel(userid = self.userId, refresh_token = tokenReq["refresh_token"], access_token = tokenReq["access_token"], expires_in = tokenReq["expires_in"])
+        UserModel.updateOrCreateUser(userid = self.userId, refresh_token = tokenReq["refresh_token"], access_token = tokenReq["access_token"], expires_in = tokenReq["expires_in"])
 
         self.__refresh_token = tokenReq["refresh_token"]
         self.__access_token = tokenReq["access_token"]

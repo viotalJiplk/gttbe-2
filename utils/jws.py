@@ -30,6 +30,7 @@ def verifyJWS(jwsin):
 
 def jwsProtected(optional: bool = False):
     def wrapper(func):
+        @wraps(func)
         def getAuth(*args, **kwargs):
             if "Authorization" not in request.headers:
                 if optional:
