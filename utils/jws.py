@@ -28,23 +28,27 @@ def verifyJWS(jwsin):
     # jwstoken.verify(key)
     return jwstoken.payload
 
-def jwsProtected(func):
-    @wraps(func)
-    def getAuth(*args, **kwargs):
-        if(request.headers["Authorization"] == None):
-            return {"kind": "JWS", "msg": "Missing Authorization header!"}, 401
-        try:
-            result = verifyJWS(request.headers["Authorization"].split(" ")[1])
-        except InvalidJWSObject:
-            return {"kind": "JWS", "msg": "Invalid JWS token!"}, 401
-        except InvalidJWSSignature:
-            return {"kind": "JWS", "msg": "Invalid signature!"}, 401
-        result = json_decode(result)
-        if(result["exp"] <= int(time.time())):
-            return {"kind": "JWS", "msg": "Expired!"}, 401
-        if(result["iss"] != selfref["root_url"]):
-            return {"kind": "JWS", "msg": "Untrusted issuer!"}, 401
-        if(result[discord["userid_claim"]] == None):
-            return {"kind": "JWS", "msg": "Missing userid!"}, 401
-        return func(authResult = {"userId": result[discord["userid_claim"]], "payload": result}, *args, **kwargs)
-    return getAuth
+def jwsProtected(optional: bool = False):
+    def wrapper(func):
+        def getAuth(*args, **kwargs):
+            if "Authorization" not in request.headers:
+                if optional:
+                    return func(authResult = None, *args, **kwargs)
+                else:     
+                    return {"kind": "JWS", "msg": "Missing Authorization header!"}, 401
+            try:
+                result = verifyJWS(request.headers["Authorization"].split(" ")[1])
+            except InvalidJWSObject:
+                return {"kind": "JWS", "msg": "Invalid JWS token!"}, 401
+            except InvalidJWSSignature:
+                return {"kind": "JWS", "msg": "Invalid signature!"}, 401
+            result = json_decode(result)
+            if(result["exp"] <= int(time.time())):
+                return {"kind": "JWS", "msg": "Expired!"}, 401
+            if(result["iss"] != selfref["root_url"]):
+                return {"kind": "JWS", "msg": "Untrusted issuer!"}, 401
+            if(result[discord["userid_claim"]] == None):
+                return {"kind": "JWS", "msg": "Missing userid!"}, 401
+            return func(authResult = {"userId": result[discord["userid_claim"]], "payload": result}, *args, **kwargs)
+        return getAuth
+    return wrapper

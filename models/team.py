@@ -64,6 +64,20 @@ class TeamModel:
             raise Exception("Team does not exist.")
         return TeamModel(name=row[0], gameId=row[1], joinString=row[2], teamId=row[3], dbsync=False)
 
+    @classmethod
+    def listUsersTeams(self, userId):
+        db = getConnection()
+        cursor = db.cursor(buffered=True)
+        query = 'SELECT `teamId`, `nick`, `role` FROM `registrations` WHERE `userId`=%(userId)s'
+        cursor.execute(query, {"userId": userId})
+        result = fetchAllWithNames(cursor)
+        cursor.close()
+        db.close()
+        if(result):
+            return result[0]
+        else:
+            return {}
+
     def join(self, userId, nick, rank, maxRank, role):
         db = getConnection(autocommit=False)
         cursor = db.cursor(buffered=True)

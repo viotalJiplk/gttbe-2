@@ -1,5 +1,6 @@
 from flask_restful import Resource, request
 from routes.team.create import createTeam
+from routes.team.list import ListTeam
 from routes.team.id import Team, TeamJoinstring, Join, Kick
 
 class TeamDescr(Resource):
@@ -8,7 +9,7 @@ class TeamDescr(Resource):
             {
                 "name": "create",
                 "url": "create/",
-                "type": "public",
+                "type": "protected",
                 "method": "POST",
                 "descr": "Creates a team."
             },
@@ -40,6 +41,13 @@ class TeamDescr(Resource):
                 "method": "POST",
                 "descr": "Kicks someone or yourself (<userId>=`@me`) from team."
             },
+            {
+                "name": "list",
+                "url": "list/<userId>/",
+                "type": "public",
+                "method": "",
+                "descr": "Lists teams for user or yourself (<userId>=`@me`)."
+            },
         ], 200
 
-teamRoutes = [(TeamDescr, '/'), (createTeam, '/create'), (Team, '/id/<teamId>/'), (TeamJoinstring, '/id/<teamId>/joinString/'), (Join, '/id/<teamId>/join/<joinString>/'), (Kick, '/id/<teamId>/kick/<userId>')]
+teamRoutes = [(TeamDescr, '/'), (createTeam, '/create'), (Team, '/id/<teamId>/'), (TeamJoinstring, '/id/<teamId>/joinString/'), (Join, '/id/<teamId>/join/<joinString>/'), (Kick, '/id/<teamId>/kick/<userId>'), (ListTeam, '/list/<userId>/')]
