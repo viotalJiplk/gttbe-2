@@ -15,6 +15,17 @@ def getConnection(autocommit = True):
     )
     return db
 
+def fetchOneWithNames(cursor):
+    row = cursor.fetchone()
+    columns = cursor.description
+    result = {}
+    if row is None:
+        return None
+    for index, column in enumerate(row):
+        result[columns[index][0]] = column
+
+    return result
+
 def fetchAllWithNames(cursor):
     columns = cursor.description 
     return [{columns[index][0]:column for index, column in enumerate(value)} for value in cursor.fetchall()]

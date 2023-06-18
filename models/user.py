@@ -89,14 +89,11 @@ class UserModel:
         return UserModel.updateOrCreateUser(userid = userObject["id"], refresh_token = tokenReq["refresh_token"], access_token = tokenReq["access_token"], expires_in = tokenReq["expires_in"], name=name, surname=surname, adult=adult, school_id=school_id)
 
     @classmethod
-    def getById(cls, userId):
+    @dbConn(autocommit=True, buffered=True)
+    def getById(cls, userId, cursor, db):
         sql = "SELECT userId, surname, name, adult, schoolId, access_token, refresh_token, expires_in  FROM users WHERE userId=%(userId)s"
-        db = getConnection(autocommit=True)
-        cursor = db.cursor(buffered=True)
         cursor.execute(sql, {'userId': userId})
         row = cursor.fetchone()
-        cursor.close()
-        db.close()
         return UserModel(userid=row[0], surname= row[1], name = row[2], adult = row[3], school_id = row[4], access_token=row[5], refresh_token=row[6], expires_in=row[7])
     
     def getDiscordUserObject(self):
@@ -166,15 +163,12 @@ class UserModel:
 
         return self
     
-    def delete(self):
-        db = getConnection(autocommit=True)
-        cursor = db.cursor(buffered=True)
+    @dbConn(autocommit=True, buffered=True)
+    def delete(self, cursor, db):
 
         # try if user already exists
         query = "DELETE FROM users WHERE `userId` = %(userId)s"
         cursor.execute(query, {"userId": self.userId})
-        cursor.close()
-        db.close()
 
         self.userId = ""
         self.surname = ""

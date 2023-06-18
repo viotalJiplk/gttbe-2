@@ -9,7 +9,7 @@ class GameDescr(Resource):
                 "url": "<id>/",
                 "type": "public",
                 "method": "GET",
-                "descr": "Basic gameinfo."
+                "descr": "Basic gameinfo. You can use <id> = all to list all games."
             }
         ], 200
 

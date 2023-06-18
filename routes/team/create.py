@@ -12,5 +12,9 @@ class createTeam(Resource):
             return {"state": 1, "msg": "Missing game_id or name."}, 401
         if("nick" not in data or "rank" not in data or "max_rank" not in data):
             return {"state": 1, "msg": "Missing nick, rank, or max_rank of capitain."}, 401
-        team = TeamModel(name=data["name"], gameId=data["game_id"], userId=authResult["userId"], nick=data["nick"], rank=data["rank"], maxRank=data["max_rank"])
+        team = TeamModel.create(name=data["name"], gameId=data["game_id"], userId=authResult["userId"], nick=data["nick"], rank=data["rank"], maxRank=data["max_rank"])
+        
+        if team is None:
+            return {"kind": "JOIN", "msg": "Team full or you are in another team for this game."}, 401
+        
         return {"teamId": team.teamId}, 200
