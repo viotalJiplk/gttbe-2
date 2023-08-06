@@ -13,5 +13,6 @@ discord = {
     'client_secret': '',
     'api_endpoint': 'https://discord.com/api',
     'state_ttl': 300,
-    'token_ttl': 15*60
+    'token_ttl': 15*60,
+    'userid_claim': selfref["root_url"] + "/discord/userid"
 }

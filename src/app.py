@@ -27,5 +27,9 @@ register_routes(api, gameRoutes, '/game')
 if(os.getenv("PROD") is None):
     register_routes(api, testRoutes, '/test')
     print("Test build DO NOT USE IN PRODUCTION!")
+else:
+    if(os.getenv("PROD")=="no"):
+        register_routes(api, testRoutes, '/test')
+        print("Test build DO NOT USE IN PRODUCTION!")
 
 #app.run(port=5000)

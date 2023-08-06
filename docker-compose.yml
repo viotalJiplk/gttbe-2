@@ -1,0 +1,51 @@
+version: "2.2"
+
+services:
+  gtt-backend:
+    build: .
+    restart: $restart
+    container_name: gtt-backend
+    networks:
+      - gtt-internal
+    environment:
+      DBhost: "$DBhost"
+      DBuser: "$DBuser"
+      DBpass: "$DBpass"
+      DBdb: "$DBdb"
+      root_url: "$root_url"
+      client_id: "$client_id"
+      client_secret: "$client_secret"
+      api_endpoint: "$api_endpoint"
+      state_ttl: "$state_ttl"
+      token_ttl: "$token_ttl"
+      userid_claim: "$userid_claim"
+      PROD: "$production"
+    ports:
+      - "$Port:80"
+
+  gtt-mariadb:
+    image: mariadb
+    restart: $restart
+    environment:
+      MARIADB_ROOT_PASSWORD: "$DBpass"
+    networks:
+      - gtt-internal
+    volumes:
+      - db-data:/var/lib/mysql
+
+  gtt-adminer:
+    image: adminer
+    restart: $restart
+    networks:
+      - gtt-internal
+    ports:
+      - "$AdminerPort:8080"
+    
+  
+
+networks:
+  gtt-internal:
+    driver: bridge
+
+volumes:
+  db-data:

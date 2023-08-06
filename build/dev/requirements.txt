@@ -1,10 +1,9 @@
 Flask
 flask_restful
-pymysql
-gunicorn
+mysql
 pycryptodome
 requests
 datetime
 jwcrypto
-mysql-connector-python==8.0.29
+mysql-connector-python
 flask-cors
