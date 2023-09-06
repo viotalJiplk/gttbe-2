@@ -12,11 +12,13 @@ Second version of backend for gttournament.
  - copy `Client ID` and `Client Secret` and add them to `.env` file
  - add `http://127.0.0.1:5000/test/testpages/discord/login.html#getjws` to Redirects
 3. create database
+ - run `docker compose up -d`
  - go to `http://127.0.0.1:5001`
  - log in (credentials are in `.env` file)
  - click SQL command
  - copy content from `create.sql` and click execute
 4. done
+ - run `docker compose up -d`
  - you can find all premade "tests" over at: http://127.0.0.1:5000/test/testpages/index.html
 
 ## Developer Install
