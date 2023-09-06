@@ -4,8 +4,8 @@ Second version of backend for gttournament.
 (first version: https://github.com/Vitond/gttournament-backend)
 
 ## Docker install
-1. download `.env` and `docker-compose.yml`
-```wget https://raw.githubusercontent.com/viotalJiplk/gttbe-2/main/.env-template -O .env && wget https://raw.githubusercontent.com/viotalJiplk/gttbe-2/main/docker-compose.yml ```
+1. download `.env`, `docker-compose.yml` and `create.sql`
+```wget https://raw.githubusercontent.com/viotalJiplk/gttbe-2/main/.env-template -O .env && wget https://raw.githubusercontent.com/viotalJiplk/gttbe-2/main/docker-compose.yml && wget https://raw.githubusercontent.com/viotalJiplk/gttbe-2/main/create.sql```
 2. get `client_id`, `client_secret` and add `redirect_url`
  - create Discord "App" https://discord.com/developers/applications?new_application=true
  - go to *OAuth2* tab
