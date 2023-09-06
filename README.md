@@ -3,7 +3,23 @@ Second version of backend for gttournament.
 
 (first version: https://github.com/Vitond/gttournament-backend)
 
-## Install
+## Docker install
+1. download `.env` and `docker-compose.yml`
+```wget https://raw.githubusercontent.com/viotalJiplk/gttbe-2/main/.env-template -O .env && wget https://raw.githubusercontent.com/viotalJiplk/gttbe-2/main/docker-compose.yml ```
+2. get `client_id`, `client_secret` and add `redirect_url`
+ - create Discord "App" https://discord.com/developers/applications?new_application=true
+ - go to *OAuth2* tab
+ - copy `Client ID` and `Client Secret` and add them to `.env` file
+ - add `http://127.0.0.1:5000/test/testpages/discord/login.html#getjws` to Redirects
+3. create database
+ - go to `http://127.0.0.1:5001`
+ - log in (credentials are in `.env` file)
+ - click SQL command
+ - copy content from `create.sql` and click execute
+4. done
+ - you can find all premade "tests" over at: http://127.0.0.1:5000/test/testpages/index.html
+
+## Developer Install
 1. install python3
 2. `pip install -r requirements.txt`
 3. rename config-template.py to config.py
@@ -19,7 +35,7 @@ Second version of backend for gttournament.
 ## Running application
 1. set enviroment variable `FLASK_APP=app.py`
 2. run `flask run`
-3. you can find all premade tests over at: http://127.0.0.1:5000/test/testpages/index.html
+3. you can find all premade "tests" over at: http://127.0.0.1:5000/test/testpages/index.html
 
 ## Production
 **Not yet ready!**
