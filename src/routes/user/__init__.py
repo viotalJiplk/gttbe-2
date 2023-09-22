@@ -1,4 +1,4 @@
-from routes.user.user import UserEndpoint
+from routes.user.user import UserEndpoint, UserExistsEndpoint
 from flask_restful import Resource, request
 
 class UserDescr(Resource):
@@ -20,4 +20,4 @@ class UserDescr(Resource):
             }
         ], 200
 
-userRoutes = [(UserDescr, '/'), (UserEndpoint, '/<uid>/')]
+userRoutes = [(UserDescr, '/'), (UserEndpoint, '/<uid>/'), (UserExistsEndpoint, '/exists/<uid>/')]

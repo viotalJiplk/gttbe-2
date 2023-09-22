@@ -24,3 +24,7 @@ class UserEndpoint(Resource):
             return 200
         else:
             return {"msg":"admin section! to be implemented"}
+
+class UserExistsEndpoint(Resource):
+    def get(self, uid):
+        return {"exits": UserModel.getById(uid) is not None}

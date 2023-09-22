@@ -94,6 +94,8 @@ class UserModel:
         sql = "SELECT userId, surname, name, adult, schoolId, access_token, refresh_token, expires_in  FROM users WHERE userId=%(userId)s"
         cursor.execute(sql, {'userId': userId})
         row = cursor.fetchone()
+        if row is None:
+            return None
         return UserModel(userid=row[0], surname= row[1], name = row[2], adult = row[3], school_id = row[4], access_token=row[5], refresh_token=row[6], expires_in=row[7])
     
     def getDiscordUserObject(self):
