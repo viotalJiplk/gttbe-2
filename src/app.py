@@ -10,6 +10,7 @@ from routes.schools import schoolsRoutes
 from routes.user import userRoutes
 from routes.team import teamRoutes
 from routes.games import gameRoutes
+# from routes.role import roleRoutes
 from tests import testRoutes
 
 app = Flask(__name__)
@@ -23,13 +24,14 @@ register_routes(api, schoolsRoutes, '/schools')
 register_routes(api, userRoutes, '/user')
 register_routes(api, teamRoutes, '/team')
 register_routes(api, gameRoutes, '/game')
+# register_routes(api, roleRoutes, '/role')
 
 if(os.getenv("PROD") is None):
-    register_routes(api, testRoutes, '/test')
+    register_routes(api, testRoutes, '/test', False)
     print("Test build DO NOT USE IN PRODUCTION!")
 else:
     if(os.getenv("PROD")=="no"):
-        register_routes(api, testRoutes, '/test')
+        register_routes(api, testRoutes, '/test', False)
         print("Test build DO NOT USE IN PRODUCTION!")
 
 #app.run(port=5000)

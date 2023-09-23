@@ -15,7 +15,7 @@
     if(jws == ""){
         alert("Go to login page to get jws");
     }else{
-        document.getElementById("createteam").setAttribute("data-options", '{"method":"POST", "url":"/team/id/<teamId>/join/<joinString>", "headers":"{\\\"Authorization\\\": \\\"Bearer ' + jws + '\\\", \\\"Content-Type\\\": \\\"application/json\\\"}", "body":"{\\\"nick\\\":\\\"test\\\", \\\"rank\\\": 0,\\\"max_rank\\\": 0, \\\"role\\\": \\\"Reservist\\\"}"}');
+        document.getElementById("createteam").setAttribute("data-options", '{"method":"POST", "url":"/backend/team/id/<teamId>/join/<joinString>", "headers":"{\\\"Authorization\\\": \\\"Bearer ' + jws + '\\\", \\\"Content-Type\\\": \\\"application/json\\\"}", "body":"{\\\"nick\\\":\\\"test\\\", \\\"rank\\\": 0,\\\"max_rank\\\": 0, \\\"role\\\": \\\"Reservist\\\"}"}');
     }
 </script>
 </html>

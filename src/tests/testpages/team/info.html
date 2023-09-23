@@ -15,7 +15,7 @@
     if(jws == ""){
         alert("Go to login page to get jws");
     }else{
-        document.getElementById("teamInfo").setAttribute("data-options", '{"method":"GET", "url":"/team/id/<insert teamId>/", "headers":"{\\\"Authorization\\\": \\\"Bearer ' + jws + '\\\", \\\"Content-Type\\\": \\\"application/json\\\"}"}');
+        document.getElementById("teamInfo").setAttribute("data-options", '{"method":"GET", "url":"/backend/team/id/<insert teamId>/", "headers":"{\\\"Authorization\\\": \\\"Bearer ' + jws + '\\\", \\\"Content-Type\\\": \\\"application/json\\\"}"}');
     }
 </script>
 </html>

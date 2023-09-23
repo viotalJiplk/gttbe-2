@@ -15,7 +15,7 @@
     if(jws == ""){
         alert("Go to login page to get jws");
     }else{
-        document.getElementById("createteam").setAttribute("data-options", '{"method":"DELETE", "url":"/team/id/<teamId>/kick/<userId>", "headers":"{\\\"Authorization\\\": \\\"Bearer ' + jws + '\\\", \\\"Content-Type\\\": \\\"application/json\\\"}"}');
+        document.getElementById("createteam").setAttribute("data-options", '{"method":"DELETE", "url":"/backend/team/id/<teamId>/kick/<userId>", "headers":"{\\\"Authorization\\\": \\\"Bearer ' + jws + '\\\", \\\"Content-Type\\\": \\\"application/json\\\"}"}');
     }
 </script>
 </html>

@@ -8,14 +8,14 @@
     <script src="../js/main.js"></script>
 </head>
 <body>
-    <req-custom id="createteam"></req-custom>
+    <req-custom id="addRole" data-options="{}"></req-custom>    
 </body>
 <script>
     let jws = localStorage.getItem("jws");
     if(jws == ""){
         alert("Go to login page to get jws");
     }else{
-        document.getElementById("createteam").setAttribute("data-options", '{"method":"DELETE", "url":"/backend/team/id/<teamId>/kick/@me", "headers":"{\\\"Authorization\\\": \\\"Bearer ' + jws + '\\\", \\\"Content-Type\\\": \\\"application/json\\\"}"}');
+        document.getElementById("addRole").setAttribute("data-options", '{"method":"POST", "url":"/role/add", "headers":"{\\\"Authorization\\\": \\\"Bearer ' + jws + '\\\", \\\"Content-Type\\\": \\\"application/json\\\"}", "body":"{\\\"game_id\\\": 1,\\\"user_id\\\":0,\\\"role\\\":\\\"Admin\\\"}"}');
     }
 </script>
 </html>
