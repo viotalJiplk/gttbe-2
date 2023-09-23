@@ -4,6 +4,7 @@ import requests
 from config import discord
 from requests import post
 from datetime import date, datetime, timedelta
+import json
 
 class UserModel:
 
@@ -18,6 +19,16 @@ class UserModel:
         self.__access_token = access_token
         self.__refresh_token = refresh_token
         self.__expires_in = expires_in
+
+    def __str__(self):
+        return json.dumps({
+            "userId": self.userId,
+            "surname": self.surname,
+            "name": self.name,
+            "adult": self.adult,
+            "schoolId": self.schoolId,
+            "discord_user_object": self.getDiscordUserObject()
+        })
 
     @classmethod
     @dbConn(autocommit=True, buffered=True)

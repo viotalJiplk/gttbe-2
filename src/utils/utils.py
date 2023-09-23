@@ -7,6 +7,6 @@ def postJson(func):
         try:
             data = request.get_json()
         except:
-            return {"kind": "JSON", "msg": "The date you sent is not a valid json."}, 401
+            return {"kind": "JSON", "msg": "The data you sent is not a valid json."}, 401
         return func(data=data, *args, **kwargs)
     return wrapPostJson
