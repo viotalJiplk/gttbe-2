@@ -9,7 +9,7 @@ import json
 class UserModel:
 
     def __init__(self, userid = '', refresh_token = '', access_token = '', expires_in = '', name='', surname='', adult='', school_id=''):
-        if(not isinstance(expires_in, datetime)):
+        if(not isinstance(expires_in, datetime) and expires_in != ''):
             expires_in = datetime.utcfromtimestamp(expires_in)
         self.userId = userid
         self.surname = surname
@@ -33,51 +33,58 @@ class UserModel:
     @classmethod
     @dbConn(autocommit=True, buffered=True)
     def updateOrCreateUser(cls, cursor, db, userid = '', refresh_token = '', access_token = '', expires_in = '', name='', surname='', adult='', school_id=''):
-        if(refresh_token == '' or access_token == '' or userid == '' or userid == ''):
-                raise Exception("Missing something in request.")
+        if(userid == ''):
+                raise Exception("Missing userid.")
        
         values = {
             'userid': userid,
-            'refresh_token': refresh_token,
-            'access_token': access_token,
-            'expires_in': expires_in,
         }
 
         # try if user already exists
-        query = "UPDATE users SET `refresh_token` = %(refresh_token)s, `access_token` = %(access_token)s, `expires_in` = %(expires_in)s"
+        query = "UPDATE users SET"
 
+        if(refresh_token != ''):
+            values["refresh_token"] = refresh_token
+        if(access_token != ''):
+            values["access_token"] = access_token
+        if(expires_in != ''):
+            values["expires_in"] = expires_in
         if(name != ''):
             values["name"] = name
-            query += ", `name` = %(name)s"
         if(surname != ''):
             values["surname"] = surname
-            query += ", `surname` = %(surname)s"
         if(adult != ''):
             values["adult"] = adult
-            query += ", `adult` = %(adult)s"
         if(school_id != ''):
-            values["school_id"] = school_id
-            query += ", `schoolId` = %(school_id)s"
+            values["schoolId"] = school_id
+
+        first = True
+        for toSet in values:
+            if not first:
+                query += ","
+            else:
+                first = False
+            query += " `" + toSet +  "` = %(" + toSet + ")s"
 
         query += " WHERE `userid` = %(userid)s;"
 
         cursor.execute(query, values)
         if(cursor.rowcount != 1):
             # user does not exist yet
-            if(name == '' or surname == '' or adult == '' or school_id == ''):
+            if(refresh_token == '' or access_token == '' or expires_in == ''):
                 raise Exception("Missing something in request.")
-            values = {
-                'userid': userid,
-                'refresh_token': refresh_token,
-                'access_token': access_token,
-                'expires_in': expires_in,
-                'name': name,
-                'surname': surname,
-                'adult': adult,
-                'schoolId': school_id,
-            }
-            query = "INSERT INTO users (`userid`, `access_token`, `refresh_token`, `expires_in`, `surname`, `name`, `adult`, `schoolId`) VALUES (%(userid)s, %(access_token)s, %(refresh_token)s, %(expires_in)s, %(surname)s, %(name)s, %(adult)s, %(schoolId)s);"
-            cursor.execute(query, values)
+            query_start = "INSERT INTO users ("
+            query_end = ") VALUES ("
+            first = True
+            for toSet in values:
+                if not first:
+                    query_start += ","
+                    query_end += ","
+                else:
+                    first = False
+                query_start += " `" + toSet +  "`"
+                query_end += "%(" + toSet + ")s"
+            cursor.execute(query_start + query_end + ");", values)
             
         return UserModel(userid=userid, refresh_token=refresh_token, access_token=access_token, expires_in=expires_in, name=name, surname=surname, adult=adult, school_id=school_id)
 

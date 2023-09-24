@@ -7,6 +7,10 @@ methodes = {
         "name": "POST",
         "body": "used"
     },
+    "PUT":{
+        "name": "PUT",
+        "body": "used"
+    },
     "DELETE":{
         "name": "DELETE",
         "body": "unused"
