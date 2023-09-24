@@ -51,6 +51,11 @@ class Join(Resource):
             return {"kind": "PAYLOAD", "msg": "Missing nick, rank, max_rank or role."}, 400
         if(team.joinString != joinString):
             return {"kind": "JOIN", "msg": "Wrong joinString."}, 401
+        user = UserModel.getById(authResult["userId"])
+        if user is None:
+            return {"kind": "JOIN", "msg": "User is not in database."}, 404
+        if not user.canRegister():
+            return {"kind": "JOIN", "msg": "You havent filled info required for creating Team."}, 404
         if not team.join(userId=authResult["userId"], nick=data["nick"], rank=data["rank"], maxRank=data["max_rank"], role=data["role"]):
             return {"kind": "JOIN", "msg": "Team full or you are in another team for this game."}, 401
         return {"teamId":team.teamId}, 200

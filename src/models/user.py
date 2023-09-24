@@ -191,3 +191,6 @@ class UserModel:
         self.__access_token = ""
         self.__refresh_token = ""
         self.__expires_in = ""
+    
+    def canRegister(self):
+        return ((self.userId != "") and (self.surname != "") and (self.name != "") and (self.adult != "") and (self.schoolId != "" ))
