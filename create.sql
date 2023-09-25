@@ -1,23 +1,14 @@
+-- Adminer 4.8.1 MySQL 10.11.4-MariaDB-1 dump
+
 SET NAMES utf8;
 SET time_zone = '+00:00';
 SET foreign_key_checks = 0;
+SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
 
 SET NAMES utf8mb4;
 
 CREATE DATABASE `gtt` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci */;
 USE `gtt`;
-
-DROP TABLE IF EXISTS `admins`;
-CREATE TABLE `admins` (
-  `userId` bigint(20) unsigned NOT NULL,
-  `gameId` int(10) unsigned DEFAULT NULL,
-  `adminType` enum('admin','gameOrganizer') NOT NULL,
-  KEY `userId` (`userId`),
-  KEY `gameId` (`gameId`),
-  CONSTRAINT `admins_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `users` (`userId`),
-  CONSTRAINT `admins_ibfk_2` FOREIGN KEY (`gameId`) REFERENCES `games` (`gameId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
 
 DROP TABLE IF EXISTS `games`;
 CREATE TABLE `games` (
@@ -29,7 +20,7 @@ CREATE TABLE `games` (
   PRIMARY KEY (`gameId`),
   KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-INSERT INTO `games` (`name`, `maxCaptains`, `maxMembers`, `maxReservists`) VALUES ('testGame', '1', '1', '1');
+
 
 DROP TABLE IF EXISTS `registrations`;
 CREATE TABLE `registrations` (
@@ -55,6 +46,18 @@ END IF;;
 
 DELIMITER ;
 
+DROP TABLE IF EXISTS `roles`;
+CREATE TABLE `roles` (
+  `userId` bigint(20) unsigned NOT NULL,
+  `gameId` int(10) unsigned DEFAULT NULL,
+  `role` enum('admin','gameOrganizer','gameStreamer') NOT NULL,
+  KEY `userId` (`userId`),
+  KEY `gameId` (`gameId`),
+  CONSTRAINT `roles_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `users` (`userId`),
+  CONSTRAINT `roles_ibfk_2` FOREIGN KEY (`gameId`) REFERENCES `games` (`gameId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
 DROP TABLE IF EXISTS `schools`;
 CREATE TABLE `schools` (
   `schoolId` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -63,13 +66,13 @@ CREATE TABLE `schools` (
   KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_czech_ci;
 
-INSERT INTO `schools` (`name`) VALUES ('TestSchool');
 
 DROP TABLE IF EXISTS `states`;
 CREATE TABLE `states` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `state` varchar(200) NOT NULL,
   `date` datetime NOT NULL,
-  PRIMARY KEY (`state`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 
@@ -89,10 +92,10 @@ CREATE TABLE `teams` (
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
   `userId` bigint(20) unsigned NOT NULL,
-  `surname` varchar(200) NOT NULL,
-  `name` varchar(200) NOT NULL,
-  `adult` bit(1) NOT NULL,
-  `schoolId` int(10) unsigned NOT NULL,
+  `surname` varchar(200) NOT NULL DEFAULT '""',
+  `name` varchar(200) NOT NULL DEFAULT '""',
+  `adult` bit(1) NOT NULL DEFAULT b'0',
+  `schoolId` int(10) unsigned DEFAULT NULL,
   `access_token` varchar(100) NOT NULL,
   `refresh_token` varchar(100) NOT NULL,
   `expires_in` datetime NOT NULL,
@@ -100,3 +103,9 @@ CREATE TABLE `users` (
   KEY `schoolId` (`schoolId`),
   CONSTRAINT `users_ibfk_1` FOREIGN KEY (`schoolId`) REFERENCES `schools` (`schoolId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+INSERT INTO `users` (`userId`, `surname`, `name`, `adult`, `schoolId`, `access_token`, `refresh_token`, `expires_in`) VALUES
+(264449522329976832,	'Surname',	'Name12',	CONV('1', 2, 10) + 0,	1,	'ZqgOnszCA6xIx9rakTkVLX4bh8n4yT',	'dnb4HhHr62MkPKu6zZE4yDs9Z2ULS5',	'2023-10-02 11:03:43'),
+(810820857290948619,	'surName1',	'Name123',	CONV('1', 2, 10) + 0,	1,	'peef29AsDDHSr2LepBB763wNxu6nVY',	't1UXqMqgbF6YGPT65hoDd63mXbm6dy',	'2023-10-02 11:00:35');
+
+-- 2023-09-25 09:17:27
