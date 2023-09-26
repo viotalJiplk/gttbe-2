@@ -14,6 +14,8 @@ DROP TABLE IF EXISTS `games`;
 CREATE TABLE `games` (
   `gameId` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(40) NOT NULL,
+  `registrationStart` date NOT NULL,
+  `registrationEnd` date NOT NULL,
   `maxCaptains` int(10) unsigned NOT NULL,
   `maxMembers` int(11) unsigned NOT NULL,
   `maxReservists` int(11) unsigned NOT NULL,
@@ -21,6 +23,10 @@ CREATE TABLE `games` (
   KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+INSERT INTO `games` (`gameId`, `name`, `registrationStart`, `registrationEnd`, `maxCaptains`, `maxMembers`, `maxReservists`) VALUES
+(1,	'CS:GO',	'2023-09-26',	'2023-10-26',	1,	1,	1),
+(2,	'LOL',	'2023-08-26',	'2023-10-26',	1,	1,	1),
+(3,	'MC',	'2023-07-26',	'2023-11-17',	1,	1,	1);
 
 DROP TABLE IF EXISTS `registrations`;
 CREATE TABLE `registrations` (
