@@ -6,7 +6,7 @@ from models.game import GameModel
 class Games(Resource):
     def get(self, id):
         if(id == "all"):
-            return {"games": GameModel.getAll()}
+            return {"games": GameModel.getAllDict()}
         else:
             game = GameModel.getById(id)
             if game is None:
