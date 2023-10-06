@@ -54,8 +54,13 @@ class TeamModel:
 
     @classmethod
     @dbConn()
-    def listUsersTeams(self, userId, cursor, db):
-        query = 'SELECT `teamId`, `nick`, `role` FROM `registrations` WHERE `userId`=%(userId)s'
+    def listUsersTeams(self, userId, withJoinstring, cursor, db):
+        query = ""
+        if withJoinstring:
+            query = 'SELECT registrations.teamId, registrations.nick, registrations.role, teams.name, teams.gameid, teams.joinString FROM `registrations` INNER JOIN teams ON registrations.teamId = teams.teamId WHERE registrations.userId=%(userId)s'
+        else:
+            query = 'SELECT registrations.teamId, registrations.nick, registrations.role, teams.name, teams.gameid FROM `registrations` INNER JOIN teams ON registrations.teamId = teams.teamId WHERE registrations.userId=%(userId)s'
+        
         cursor.execute(query, {"userId": userId})
         result = fetchAllWithNames(cursor)
         return result

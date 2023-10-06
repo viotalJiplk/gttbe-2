@@ -9,6 +9,6 @@ class ListTeam(Resource):
         if userId == "@me":
             if authResult is None:
                 return {"kind": "Auth", "msg": "You have to provide valid jws for @me."}, 401
-            return TeamModel.listUsersTeams(authResult["userId"]), 200
+            return TeamModel.listUsersTeams(authResult["userId"], True), 200
         else:
-            return TeamModel.listUsersTeams(userId), 200
+            return TeamModel.listUsersTeams(userId, False), 200

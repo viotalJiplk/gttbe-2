@@ -5,6 +5,7 @@ from utils.jws import jwsProtected
 from functools import wraps
 from utils.utils import postJson
 from utils.errorlog import weberrorlog
+from models.user import UserModel
 
 def getTeam(func):
     
