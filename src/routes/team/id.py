@@ -13,7 +13,7 @@ def getTeam(func):
     def wrapGetTeam(*args, **kwargs):
         team = TeamModel.getById(kwargs['teamId'])
         if team is None:
-            return {"kind": "TEAM", "msg": "Wrong teamId."}, 401
+            return {"kind": "TEAM", "msg": "Wrong teamId."}, 404
         return func(team=team, *args, **kwargs)
     return wrapGetTeam
 
@@ -22,10 +22,11 @@ class Team(Resource):
 
     @getTeam
     def get(self, team, teamId):
+        players = team.getPlayers()
         return {
             "teamId": team.teamId,
             "gameId": team.gameId,
-            "Players": team.getPlayers()
+            "Players": players
         }, 200
 
 
@@ -35,10 +36,10 @@ class TeamJoinstring(Resource):
     @getTeam
     def get(self, authResult, team, teamId):
         if team.getUsersRole(authResult["userId"]) != "Captain":
-            return {"kind": "TEAMROLE", "msg": "You are not Captain of this team."}, 401
+            return {"kind": "TEAMROLE", "msg": "You are not Captain of this team."}, 403
         joinString = team.generateJoinString()
         if joinString is None:
-            return {"state": "TEAM", "msg": "Team does not exist"}, 401
+            return {"state": "TEAM", "msg": "Team does not exist"}, 404
         return {"joinString": team.generateJoinString()}, 200
 
 
@@ -51,14 +52,14 @@ class Join(Resource):
         if("nick" not in data or "rank" not in data or "max_rank" not in data or "role" not in data):
             return {"kind": "PAYLOAD", "msg": "Missing nick, rank, max_rank or role."}, 400
         if(team.joinString != joinString):
-            return {"kind": "JOIN", "msg": "Wrong joinString."}, 401
+            return {"kind": "JOIN", "msg": "Wrong joinString."}, 403
         user = UserModel.getById(authResult["userId"])
         if user is None:
             return {"kind": "JOIN", "msg": "User is not in database."}, 404
         if not user.canRegister():
-            return {"kind": "JOIN", "msg": "You havent filled info required for creating Team."}, 404
+            return {"kind": "JOIN", "msg": "You havent filled info required for creating Team."}, 403
         if not team.join(userId=authResult["userId"], nick=data["nick"], rank=data["rank"], maxRank=data["max_rank"], role=data["role"]):
-            return {"kind": "JOIN", "msg": "Team full or you are in another team for this game."}, 401
+            return {"kind": "JOIN", "msg": "Team full or you are in another team for this game."}, 403
         return {"teamId":team.teamId}, 200
 
 
@@ -77,7 +78,7 @@ class Kick(Resource):
                     if not team.leave(userId=userId):
                         return {"kind": "TEAM", "msg": "Cannot kick form team. User is not part of this team."}, 404
                 else:
-                    return {"kind": "TEAMROLE", "msg": "Cannot kick form team. You are not Captain of this team."}, 401
+                    return {"kind": "TEAMROLE", "msg": "Cannot kick form team. You are not Captain of this team."}, 403
         except:
-            return {"kind": "TEAMROLE", "msg": "Cannot kick or leave team. Are you member of this team?"}, 401
+            return {"kind": "TEAMROLE", "msg": "Cannot kick or leave team. Are you member of this team?"}, 403
         return {"teamId":team.teamId}, 200
