@@ -85,7 +85,14 @@ class TeamModel:
     def getPlayers(self, cursor, db):
         query = "SELECT `userid`, `nick`, `role`  FROM `registrations` WHERE teamId=%(teamId)s ORDER BY `role` ASC"
         cursor.execute(query, {"teamId": self.teamId})
-        result = fetchAllWithNames(cursor)
+        fetched = fetchAllWithNames(cursor)
+        result = []
+        for player in fetched:
+            result.append({
+                'userid': str(player['userid']),
+                'nick': str(player['nick']),
+                'role': str(player['role'])
+            })
         return result
     
     @dbConn()
