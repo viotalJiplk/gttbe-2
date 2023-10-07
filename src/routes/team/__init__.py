@@ -50,4 +50,4 @@ class TeamDescr(Resource):
             },
         ], 200
 
-teamRoutes = [(TeamDescr, '/'), (createTeam, '/create'), (Team, '/id/<teamId>/'), (TeamJoinstring, '/id/<teamId>/joinString/'), (Join, '/id/<teamId>/join/<joinString>/'), (Kick, '/id/<teamId>/kick/<userId>'), (ListTeam, '/list/<userId>/')]
+teamRoutes = [(TeamDescr, '/'), (createTeam, '/create/'), (Team, '/id/<teamId>/'), (TeamJoinstring, '/id/<teamId>/joinString/'), (Join, '/id/<teamId>/join/<joinString>/'), (Kick, '/id/<teamId>/kick/<userId>/'), (ListTeam, '/list/<userId>/')]
