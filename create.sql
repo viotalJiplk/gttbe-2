@@ -20,14 +20,17 @@ CREATE TABLE `games` (
   `maxMembers` int(11) unsigned NOT NULL,
   `maxReservists` int(11) unsigned NOT NULL,
   `gamePage` mediumtext DEFAULT NULL,
+  `minCaptains` int(11) NOT NULL,
+  `minMembers` int(11) NOT NULL,
+  `minReservists` int(11) NOT NULL,
   PRIMARY KEY (`gameId`),
   KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-INSERT INTO `games` (`gameId`, `name`, `registrationStart`, `registrationEnd`, `maxCaptains`, `maxMembers`, `maxReservists`, `gamePage`) VALUES
-(1,	'COUNTER_STRIKE',	'2023-10-08',	'2023-10-26',	1,	1,	1,	'# Pravidla\r\n- sem se vloží pravidla hry\r\n1. pro formátování použijte ***markdown***'),
-(2,	'LOL',	'2023-08-26',	'2023-10-09',	1,	1,	1,	''),
-(3,	'MINECRAFT',	'2023-07-26',	'2023-10-10',	1,	1,	1,	'');
+INSERT INTO `games` (`gameId`, `name`, `registrationStart`, `registrationEnd`, `maxCaptains`, `maxMembers`, `maxReservists`, `gamePage`, `minCaptains`, `minMembers`, `minReservists`) VALUES
+(1,	'COUNTER_STRIKE',	'2023-10-08',	'2023-10-26',	1,	2,	1,	'# Pravidla\r\n- sem se vloží pravidla hry\r\n1. pro formátování použijte ***markdown***',	0,	0,	0),
+(2,	'LOL',	'2023-08-26',	'2023-10-09',	1,	1,	1,	'',	0,	0,	0),
+(3,	'MINECRAFT',	'2023-07-26',	'2023-10-10',	1,	2,	3,	'',	4,	5,	6);
 
 DROP TABLE IF EXISTS `registrations`;
 CREATE TABLE `registrations` (
