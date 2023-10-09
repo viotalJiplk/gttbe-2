@@ -3,7 +3,7 @@ from json import dumps
 from datetime import date
 
 class GameModel:
-    def __init__(self, name=None, registrationStart=date.fromisocalendar(1,1,1), registrationEnd=date.fromisocalendar(9999,1,1), maxCaptains=None, maxMembers=None, maxReservists=None, gameId=None):        
+    def __init__(self, name=None, registrationStart=date.fromisocalendar(1,1,1), registrationEnd=date.fromisocalendar(9999,1,1), maxCaptains=None, maxMembers=None, maxReservists=None, gameId=None, gamePage=None):        
         self.gameId = gameId
         self.name = name
         self.registrationStart = registrationStart
@@ -11,10 +11,14 @@ class GameModel:
         self.maxCaptains = maxCaptains
         self.maxMembers = maxMembers
         self.maxReservists = maxReservists
+        self.gamePage = gamePage
 
     def canBeRegistered(self):
         # <registrationStart, registrationEnd)
         return (date.today() >= self.registrationStart) & (date.today() < self.registrationEnd)
+
+    def getGamePage(self):
+        return self.gamePage
 
     def __str__(self):
         return dumps({
@@ -37,7 +41,7 @@ class GameModel:
     @classmethod
     @dbConn()
     def getById(cls, gameId, cursor, db):
-        query = "SELECT gameId, name, registrationStart, registrationEnd, maxCaptains, maxMembers, maxReservists, gameId FROM games WHERE gameId=%s"
+        query = "SELECT gameId, name, registrationStart, registrationEnd, maxCaptains, maxMembers, maxReservists, gameId, gamePage FROM games WHERE gameId=%s"
         cursor.execute(query, (gameId,))
         row = fetchOneWithNames(cursor)
         if row:
@@ -48,7 +52,7 @@ class GameModel:
     @classmethod
     @dbConn()
     def getAll(cls, cursor, db):
-        query = "SELECT name, registrationStart, registrationEnd, maxCaptains, maxMembers, maxReservists, gameId FROM games"
+        query = "SELECT name, registrationStart, registrationEnd, maxCaptains, maxMembers, maxReservists, gameId, gamePage FROM games"
         cursor.execute(query)
         rows = fetchAllWithNames(cursor)
         result = []

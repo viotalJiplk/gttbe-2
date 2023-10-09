@@ -10,7 +10,7 @@ class Games(Resource):
         else:
             game = GameModel.getById(id)
             if game is None:
-                return {"kind": "GAME", "msg": "GameId out of scope."}, 404
+                return {"kind": "GAME", "msg": "GameId out of scope."}, 403
             return {"game": {
                     "gameId":game.gameId,
                     "name": game.name,
@@ -19,3 +19,11 @@ class Games(Resource):
                     "maxReservist": game.maxReservists
                 }
             }, 200
+
+
+class GamePage(Resource):
+    def get(self, id):
+        game = GameModel.getById(id)
+        if game is None:
+            return {"kind": "GAME", "msg": "GameId out of scope."}, 403
+        return {"game_id": id, "page": game.getGamePage()}
