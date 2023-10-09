@@ -51,6 +51,14 @@ class Join(Resource):
     def post(self, authResult, team, data, teamId, joinString):
         if("nick" not in data or "rank" not in data or "max_rank" not in data or "role" not in data):
             return {"kind": "PAYLOAD", "msg": "Missing nick, rank, max_rank or role."}, 400
+
+        game = GameModel.getById(team.gameId)
+        if game == None:
+            return {"kind": "JOIN", "msg": "Game not found."}, 403
+        if not game.canBeRegistered():
+            return {"kind": "JOIN", "msg": "Registration is not opened for this game"}, 410
+
+
         if(team.joinString != joinString):
             return {"kind": "JOIN", "msg": "Wrong joinString."}, 403
         user = UserModel.getById(authResult["userId"])

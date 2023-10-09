@@ -1,9 +1,9 @@
 from utils.db import fetchAllWithNames, fetchOneWithNames, dbConn
 from json import dumps
-import datetime
+from datetime import date
 
 class GameModel:
-    def __init__(self, name=None, registrationStart=datetime.date.fromisocalendar(1,1,1), registrationEnd=datetime.date.fromisocalendar(9999,1,1), maxCaptains=None, maxMembers=None, maxReservists=None, gameId=None):        
+    def __init__(self, name=None, registrationStart=date.fromisocalendar(1,1,1), registrationEnd=date.fromisocalendar(9999,1,1), maxCaptains=None, maxMembers=None, maxReservists=None, gameId=None):        
         self.gameId = gameId
         self.name = name
         self.registrationStart = registrationStart
@@ -11,6 +11,10 @@ class GameModel:
         self.maxCaptains = maxCaptains
         self.maxMembers = maxMembers
         self.maxReservists = maxReservists
+
+    def canBeRegistered(self):
+        # <registrationStart, registrationEnd)
+        return (date.today() >= self.registrationStart) & (date.today() < self.registrationEnd)
 
     def __str__(self):
         return dumps({

@@ -1,5 +1,6 @@
 from flask_restful import Resource, request
 from models.team import TeamModel
+from models.game import GameModel
 from utils.jws import jwsProtected
 from utils.utils import postJson
 from models.user import UserModel
@@ -10,9 +11,15 @@ class createTeam(Resource):
     @postJson
     def post(self, data, authResult):
         if("game_id" not in data or "name" not in data):
-            return {"state": 1, "msg": "Missing game_id or name."}, 403
+            return {"kind": "JOIN", "msg": "Missing game_id or name."}, 403
+        game = GameModel.getById(data["game_id"])
+        if game == None:
+            return {"kind": "JOIN", "msg": "Game not found."}, 403
+        if not game.canBeRegistered():
+            return {"kind": "JOIN", "msg": "Registration is not opened for this game"}, 410
+
         if("nick" not in data or "rank" not in data or "max_rank" not in data):
-            return {"state": 1, "msg": "Missing nick, rank, or max_rank of capitain."}, 403
+            return {"kind": "JOIN", "msg": "Missing nick, rank, or max_rank of capitain."}, 403
         user = UserModel.getById(authResult["userId"])
         if user is None:
             return {"kind": "JOIN", "msg": "User is not in database."}, 404
