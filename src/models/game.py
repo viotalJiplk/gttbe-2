@@ -3,7 +3,7 @@ from json import dumps
 from datetime import date
 
 class GameModel:
-    def __init__(self, name=None, registrationStart=date.fromisocalendar(1,1,1), registrationEnd=date.fromisocalendar(9999,1,1), maxCaptains=None, maxMembers=None, maxReservists=None, gameId=None, gamePage=None):        
+    def __init__(self, name=None, registrationStart=date.fromisocalendar(1,1,1), registrationEnd=date.fromisocalendar(9999,1,1), maxCaptains=None, maxMembers=None, maxReservists=None, minCaptains=None, minMembers=None, minReservists=None, gameId=None, gamePage=None):        
         self.gameId = gameId
         self.name = name
         self.registrationStart = registrationStart
@@ -11,6 +11,9 @@ class GameModel:
         self.maxCaptains = maxCaptains
         self.maxMembers = maxMembers
         self.maxReservists = maxReservists
+        self.minCaptains = minCaptains
+        self.minMembers = minMembers
+        self.minReservists = minReservists
         self.gamePage = gamePage
 
     def canBeRegistered(self):
@@ -28,7 +31,10 @@ class GameModel:
             "registrationEnd": self.registrationEnd.isoformat(),
             "maxCaptains": self.maxCaptains,
             "maxMembers": self.maxMembers,
-            "maxReservists": self.maxReservists
+            "maxReservists": self.maxReservists,
+            "minCaptains": self.minCaptains,
+            "minMembers": self.minMembers,
+            "minReservists": self.minReservists
         })
 
     @classmethod
@@ -41,7 +47,7 @@ class GameModel:
     @classmethod
     @dbConn()
     def getById(cls, gameId, cursor, db):
-        query = "SELECT gameId, name, registrationStart, registrationEnd, maxCaptains, maxMembers, maxReservists, gameId, gamePage FROM games WHERE gameId=%s"
+        query = "SELECT gameId, name, registrationStart, registrationEnd, maxCaptains, maxMembers, maxReservists, minCaptains, minMembers, minReservists, gameId, gamePage FROM games WHERE gameId=%s"
         cursor.execute(query, (gameId,))
         row = fetchOneWithNames(cursor)
         if row:
@@ -52,7 +58,7 @@ class GameModel:
     @classmethod
     @dbConn()
     def getAll(cls, cursor, db):
-        query = "SELECT name, registrationStart, registrationEnd, maxCaptains, maxMembers, maxReservists, gameId, gamePage FROM games"
+        query = "SELECT name, registrationStart, registrationEnd, maxCaptains, maxMembers, maxReservists, minCaptains, minMembers, minReservists, gameId, gamePage FROM games"
         cursor.execute(query)
         rows = fetchAllWithNames(cursor)
         result = []
@@ -63,7 +69,7 @@ class GameModel:
     @classmethod
     @dbConn()
     def getAllDict(cls, cursor, db):
-        query = "SELECT name, registrationStart, registrationEnd, maxCaptains, maxMembers, maxReservists, gameId FROM games"
+        query = "SELECT name, registrationStart, registrationEnd, maxCaptains, maxMembers, maxReservists, minCaptains, minMembers, minReservists, gameId FROM games"
         cursor.execute(query)
         rows = fetchAllWithNames(cursor)
         result = []
