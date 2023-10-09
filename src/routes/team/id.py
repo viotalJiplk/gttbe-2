@@ -56,8 +56,8 @@ class Join(Resource):
         game = GameModel.getById(team.gameId)
         if game == None:
             return {"kind": "JOIN", "msg": "Game not found."}, 403
-        if not game.canBeRegistered():
-            return {"kind": "JOIN", "msg": "Registration is not opened for this game"}, 410
+        # if not game.canBeRegistered():
+        #     return {"kind": "JOIN", "msg": "Registration is not opened for this game"}, 410
 
 
         if(team.joinString != joinString):
