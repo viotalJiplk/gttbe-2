@@ -840,9 +840,9 @@ CREATE TABLE `teams` (
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
   `userId` bigint(20) unsigned NOT NULL,
-  `surname` varchar(200) NOT NULL DEFAULT '""',
-  `name` varchar(200) NOT NULL DEFAULT '""',
-  `adult` bit(1) NOT NULL DEFAULT b'0',
+  `surname` varchar(200) NOT NULL DEFAULT '',
+  `name` varchar(200) NOT NULL DEFAULT '',
+  `adult` bit(1) DEFAULT NULL,
   `schoolId` int(10) unsigned DEFAULT NULL,
   `access_token` varchar(100) NOT NULL,
   `refresh_token` varchar(100) NOT NULL,

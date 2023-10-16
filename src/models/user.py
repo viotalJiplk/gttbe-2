@@ -200,4 +200,4 @@ class UserModel:
         self.__expires_in = ""
     
     def canRegister(self):
-        return ((self.userId != "") and (self.surname != "") and (self.name != "") and (self.adult != "") and (self.schoolId != "" ))
+        return ((self.userId != "") and (self.surname != "") and (self.name != "") and (self.adult != None) and (self.schoolId != None ))
