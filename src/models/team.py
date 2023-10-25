@@ -95,6 +95,41 @@ class TeamModel:
             })
         return result
     
+    @classmethod
+    @dbConn()
+    def listParticipatingTeams(self, gameId, cursor, db):
+        game = GameModel.getById(gameId)
+        if game is None:
+            return None
+        else:
+            query = """SELECT captains.teamId, name FROM (
+                        SELECT registrations.teamId, registrations.role, teams.name,  teams.gameId, COUNT(teams.gameid) FROM `registrations`
+                        INNER JOIN teams ON registrations.teamId = teams.teamId
+                        WHERE teams.gameId=%(gameId)s AND registrations.role="Captain"
+                        GROUP BY teamId, registrations.role
+                        HAVING COUNT(teams.gameid) >= (SELECT minCaptains FROM games WHERE gameId = %(gameId)s)
+                    """
+            if game.minMembers > 0:
+                query += """) AS captains INNER JOIN (
+                    SELECT registrations.teamId, registrations.role, teams.gameId, COUNT(teams.gameid) FROM `registrations`
+                    INNER JOIN teams ON registrations.teamId = teams.teamId
+                    WHERE teams.gameId=%(gameId)s AND registrations.role="Member"
+                    GROUP BY teamId, registrations.role
+                    HAVING COUNT(teams.gameid) >= (SELECT minMembers FROM games WHERE gameId = %(gameId)s)
+                ) AS members ON captains.teamId = members.teamId"""
+            if game.minReservists > 0:
+                query +=""""INNER JOIN (
+                    SELECT registrations.teamId, registrations.role, teams.gameId, COUNT(teams.gameid) FROM `registrations`
+                    INNER JOIN teams ON registrations.teamId = teams.teamId
+                    WHERE teams.gameId=%(gameId)s AND registrations.role="Reservist"
+                    GROUP BY teamId, registrations.role
+                    HAVING COUNT(teams.gameid) >= (SELECT minReservists FROM games WHERE gameId = %(gameId)s)
+                ) AS Reservists ON captains.teamId = Reservists.teamId"""
+            query += ";"
+            cursor.execute(query, {"gameId": game.gameId})
+            return fetchAllWithNames(cursor)
+
+
     @dbConn()
     def generateJoinString(self, cursor, db):
         joinString = genState(200)

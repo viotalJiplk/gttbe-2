@@ -1,6 +1,6 @@
 from flask_restful import Resource, request
 from routes.team.create import createTeam
-from routes.team.list import ListTeam
+from routes.team.list import ListTeam, ListParticipatingTeam
 from routes.team.id import Team, TeamJoinstring, Join, Kick
 
 class TeamDescr(Resource):
@@ -50,4 +50,4 @@ class TeamDescr(Resource):
             },
         ], 200
 
-teamRoutes = [(TeamDescr, '/'), (createTeam, '/create/'), (Team, '/id/<teamId>/'), (TeamJoinstring, '/id/<teamId>/joinString/'), (Join, '/id/<teamId>/join/<joinString>/'), (Kick, '/id/<teamId>/kick/<userId>/'), (ListTeam, '/list/<userId>/')]
+teamRoutes = [(TeamDescr, '/'), (createTeam, '/create/'), (Team, '/id/<teamId>/'), (TeamJoinstring, '/id/<teamId>/joinString/'), (Join, '/id/<teamId>/join/<joinString>/'), (Kick, '/id/<teamId>/kick/<userId>/'), (ListParticipatingTeam, '/list/participating/<gameId>/'), (ListTeam, '/list/<userId>/')]
