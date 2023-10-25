@@ -1,6 +1,7 @@
 from flask_restful import Resource, request
 from models.team import TeamModel
 from utils.jws import jwsProtected
+from utils.role import getRole
 
 class ListTeam(Resource):
 
@@ -10,11 +11,11 @@ class ListTeam(Resource):
             if authResult is None:
                 return {"kind": "Auth", "msg": "You have to provide valid jws for @me."}, 401
             return TeamModel.listUsersTeams(authResult["userId"], True), 200
-        elif userId == "participating":
-            return TeamModel.listParticipatingTeams()
         else:
             return TeamModel.listUsersTeams(userId, False), 200
 
 class ListParticipatingTeam(Resource):
-    def get(self, gameId):
-        return TeamModel.listParticipatingTeams(gameId)
+    @jwsProtected(optional=True)
+    @getRole(['admin','gameOrganizer'])
+    def get(self, gameId, authResult, hasRole):
+        return TeamModel.listParticipatingTeams(gameId, hasRole)

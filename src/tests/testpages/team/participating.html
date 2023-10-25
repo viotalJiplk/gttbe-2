@@ -13,9 +13,9 @@
 <script>
     let jws = localStorage.getItem("jws");
     if(jws == "undefined"){
-        alert("Go to login page to get jws");
-    }else{
         document.getElementById("teamList").setAttribute("data-options", '{"method":"GET", "url":"/backend/team/list/participating/<gameId>/", "headers":"{\\\"Content-Type\\\": \\\"application/json\\\"}"}');
+    }else{
+        document.getElementById("teamList").setAttribute("data-options", '{"method":"GET", "url":"/backend/team/list/participating/<gameId>/", "headers":"{\\\"Authorization\\\": \\\"Bearer ' + jws + '\\\", \\\"Content-Type\\\": \\\"application/json\\\"}"}');
     }
 </script>
 </html>
