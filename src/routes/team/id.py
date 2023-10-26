@@ -51,7 +51,7 @@ class Join(Resource):
     @postJson
     def post(self, authResult, team, data, teamId, joinString):
         if("nick" not in data or "rank" not in data or "max_rank" not in data or "role" not in data):
-            return {"kind": "PAYLOAD", "msg": "Missing nick, rank, max_rank or role."}, 400
+            return {"kind": "PAYLOAD", "msg": "Missing nick, rank, max_rank or role."}, 403
 
         game = GameModel.getById(team.gameId)
         if game == None:
@@ -66,7 +66,7 @@ class Join(Resource):
         if user is None:
             return {"kind": "JOIN", "msg": "User is not in database."}, 404
         if not user.canRegister():
-            return {"kind": "JOIN", "msg": "You havent filled info required for creating Team."}, 403
+            return {"kind": "JOIN", "msg": "You havent filled info required for creating Team."}, 404
         if not team.join(userId=authResult["userId"], nick=data["nick"], rank=data["rank"], maxRank=data["max_rank"], role=data["role"]):
             return {"kind": "JOIN", "msg": "Team full or you are in another team for this game."}, 403
         return {"teamId":team.teamId}, 200
