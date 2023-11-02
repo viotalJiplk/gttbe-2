@@ -43,11 +43,11 @@ class TeamDescr(Resource):
             },
             {
                 "name": "list",
-                "url": "list/<userId>/",
+                "url": "list/<userId>/<withDiscord>/",
                 "type": "public",
                 "method": "",
                 "descr": "Lists teams for user or yourself (<userId>=`@me`)."
             },
         ], 200
 
-teamRoutes = [(TeamDescr, '/'), (createTeam, '/create/'), (Team, '/id/<teamId>/'), (TeamJoinstring, '/id/<teamId>/joinString/'), (Join, '/id/<teamId>/join/<joinString>/'), (Kick, '/id/<teamId>/kick/<userId>/'), (ListParticipatingTeam, '/list/participating/<gameId>/'), (ListTeam, '/list/<userId>/')]
+teamRoutes = [(TeamDescr, '/'), (createTeam, '/create/'), (Team, '/id/<teamId>/'), (TeamJoinstring, '/id/<teamId>/joinString/'), (Join, '/id/<teamId>/join/<joinString>/'), (Kick, '/id/<teamId>/kick/<userId>/'), (ListParticipatingTeam, '/list/participating/<gameId>/<withDiscord>/'), (ListTeam, '/list/<userId>/')]

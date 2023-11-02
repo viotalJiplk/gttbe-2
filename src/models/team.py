@@ -1,5 +1,6 @@
 from utils.db import getConnection, fetchAllWithNames, fetchOneWithNames, dbConn
 from models.game import GameModel
+from models.user import UserModel
 from utils.generator import genState
 from mysql.connector import IntegrityError
 
@@ -97,7 +98,7 @@ class TeamModel:
     
     @classmethod
     @dbConn()
-    def listParticipatingTeams(self, gameId, withDetails, cursor, db):
+    def listParticipatingTeams(self, gameId, withDetails, withDiscord, cursor, db):
         game = GameModel.getById(gameId)
         if game is None:
             return None
@@ -136,7 +137,15 @@ class TeamModel:
                 SELECT * from registrations
             ) AS registrations ON registrations.teamId = captains.teamId;"""
             cursor.execute(query, {"gameId": game.gameId})
-            return fetchAllWithNames(cursor)
+            result = fetchAllWithNames(cursor)
+            if withDetails is True and withDiscord is True:
+                for user in result:
+                    userObject = UserModel.getById(user["userId"])
+                    try:
+                        user["discordUserObject"] = userObject.getDiscordUserObject()
+                    except:
+                        user["discordUserObject"] = ""
+            return result
 
 
     @dbConn()

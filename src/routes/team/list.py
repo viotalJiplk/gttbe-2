@@ -17,5 +17,5 @@ class ListTeam(Resource):
 class ListParticipatingTeam(Resource):
     @jwsProtected(optional=True)
     @getRole(['admin','gameOrganizer'])
-    def get(self, gameId, authResult, hasRole):
-        return TeamModel.listParticipatingTeams(gameId, hasRole)
+    def get(self, gameId, withDiscord, authResult, hasRole):
+        return TeamModel.listParticipatingTeams(gameId, hasRole, withDiscord == 'true')

@@ -169,7 +169,6 @@ class UserModel:
         data = {
             'client_id': discord["client_id"],
             'client_secret': discord["client_secret"],
-            'grant_type': 'authorization_code',
             'grant_type': 'refresh_token',
             'refresh_token': self.__refresh_token
         }
