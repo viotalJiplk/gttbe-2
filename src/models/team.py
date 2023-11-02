@@ -138,15 +138,16 @@ class TeamModel:
             ) AS registrations ON registrations.teamId = captains.teamId;"""
             cursor.execute(query, {"gameId": game.gameId})
             result = fetchAllWithNames(cursor)
-            for user in result:
-                user["userId"] =  str(user["userId"])
-                if withDetails is True and withDiscord is True:                
-                    userObject = UserModel.getById(user["userId"])
-                    try:
-                        user["discordUserObject"] = userObject.getDiscordUserObject()
-                    except:
-                        user["discordUserObject"] = ""
-            
+            if withDetails is True:
+                for user in result:
+                    user["userId"] =  str(user["userId"])
+                    if withDiscord is True:                
+                        userObject = UserModel.getById(user["userId"])
+                        try:
+                            user["discordUserObject"] = userObject.getDiscordUserObject()
+                        except:
+                            user["discordUserObject"] = ""
+                
             return result
 
 
