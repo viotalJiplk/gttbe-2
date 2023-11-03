@@ -1,4 +1,4 @@
--- Adminer 4.8.1 MySQL 10.11.4-MariaDB-1 dump
+-- Adminer 4.8.1 MySQL 10.11.5-MariaDB-3 dump
 
 SET NAMES utf8;
 SET time_zone = '+00:00';
@@ -7,6 +7,7 @@ SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
 
 SET NAMES utf8mb4;
 
+DROP DATABASE IF EXISTS `gtt`;
 CREATE DATABASE `gtt` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci */;
 USE `gtt`;
 
@@ -19,18 +20,32 @@ CREATE TABLE `games` (
   `maxCaptains` int(10) unsigned NOT NULL,
   `maxMembers` int(11) unsigned NOT NULL,
   `maxReservists` int(11) unsigned NOT NULL,
-  `gamePage` mediumtext DEFAULT NULL,
-  `minCaptains` int(11) NOT NULL,
-  `minMembers` int(11) NOT NULL,
-  `minReservists` int(11) NOT NULL,
+  `minCaptains` int(11) unsigned NOT NULL,
+  `minMembers` int(11) unsigned NOT NULL,
+  `minReservists` int(11) unsigned NOT NULL,
+  `gamePage` mediumtext NOT NULL,
   PRIMARY KEY (`gameId`),
   KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-INSERT INTO `games` (`gameId`, `name`, `registrationStart`, `registrationEnd`, `maxCaptains`, `maxMembers`, `maxReservists`, `gamePage`, `minCaptains`, `minMembers`, `minReservists`) VALUES
-(1,	'COUNTER_STRIKE',	'2023-10-08',	'2023-10-26',	1,	2,	1,	'# Pravidla\r\n- sem se vloží pravidla hry\r\n1. pro formátování použijte ***markdown***',	0,	0,	0),
-(2,	'LOL',	'2023-08-26',	'2023-10-09',	1,	1,	1,	'',	0,	0,	0),
-(3,	'MINECRAFT',	'2023-07-26',	'2023-10-10',	1,	2,	3,	'',	4,	5,	6);
+INSERT INTO `games` (`gameId`, `name`, `registrationStart`, `registrationEnd`, `maxCaptains`, `maxMembers`, `maxReservists`, `minCaptains`, `minMembers`, `minReservists`, `gamePage`) VALUES
+(1,	'COUNTER_STRIKE',	'2023-10-17',	'2023-11-13',	1,	4,	2,	1,	4,	0,	'# Pravidla\r\n\r\n## Formát turnaje\r\n\r\n- Podle počtů týmů organizátoři vyhlásí formát zápasů, a to: o Bo5 nebo Bo3 nebo pouze jeden zápas (možnost knock out stagů nebo swiss systém)\r\n\r\n## Formát zápasů\r\n\r\n- Zápas se hraje formou 5 na 5 hráčů. \r\n- Minimální počet hráčů v každém z týmů, který je nutný k zahájení zápasu, je 5. \r\n- Minimální počet hráčů, ve kterém lze zápas dohrát, je 4.\r\n- Pokud se soupeř nedostaví na zápas do 15 minut po jeho oficiálním začátku, bude zápas kontumován ve prospěch týmu, který se dostavil.\r\n## Povinnosti hráčů a omezení\r\n\r\n- Každý tým musí poskytnout skutečná jména, in game nicky všech hráčů i náhradníků, jména a nicky budou zveřejněny na startovní listině. \r\n- Na zápas smí nastoupit pouze hráči, kteří nejsou blokováni (zabanováni atp.). \r\n- Oficiální soupisky týmů vycházejí ze soupisky uvedené při registraci. \r\n- Každý hráč je povinen mít při oficiálním zápase shodný nick s hodnotou, kterou uvedl při přihlášení do turnaje. \r\n- Každý hráč musí mít nastaveného default agenta na obou stranách (CT, T) během celého průběhu turnaje.\r\n\r\n## Screenshoty:\r\n\r\n- Každý z týmů je povinen po hře pořídit screenshot tabulek se statistikami (KAD a další statistiky)\r\n- Tedy dva screenshoty, od každého z teamů.\r\n- Úmyslné zadávání špatného výsledku může vyústit v diskvalifikaci.\r\n## Servery\r\n- Zápas se musí odehrát na serveru který poskytne admin.\r\n- Pokud dojde k výpadku serveru do 8. odehraného kola od začátku strany, bude se daná strana opakovat celá. Pokud dojde k pádu po této době záleží na domluvě týmů, na výsledku zápasu, zdali chtějí hráči hru opakovat nebo uskutečnit kontumaci.\r\n- Při výpadku hráče se hra pauzuje na konci kola, případně v době freezetime (nakupovací doba). Každý tým má právo na pauzy v celkové úhrnné době 5 minut na mapu.\r\n\r\n# Mapy \r\n\r\n-- Určování map: \r\n1. Týmy A a B se střídají v postupném banování map, dokud nezbydou jen dvě mapy. \r\n2. Tým, který je na řadě si vybere mapu, kterou chce hrát. \r\n3. Druhý tým si vybere stranu na vybrané mapě.\r\n\r\n--Mapy jsou následující:\r\n- de_mirage \r\n- de_vertigo \r\n- de_inferno \r\n- de_anubis\r\n- de_overpass \r\n- de_ancient \r\n- de_nuke\r\n\r\n## Zákazy\r\n\r\n- Je zakázáno jakékoliv používání externích programů, které mění vlastnosti hry, anebo zvýhodňují hráče oproti ostatním. To zahrnuje i úpravu v ovladačích grafiky či makra.\r\n- Jakékoliv grafické úpravy hry jsou taktéž zakázané.\r\n- Je zakázáno využívání bugů hry. (zde může nastat i kontumace)\r\n- Je zakázáno wall-bugování.\r\n- Je zakázáno využívat bugů a chyb map, pokud se však hráč na pozici nedostane legální cestou (vysazením od spoluhráče).\r\n- Smurfing a hosting je zakázán.\r\n- Jakékoliv podvody s GOTV (například delay 0s) jsou zakázány.\r\n- Skinchanger je ZAKÁZANÝ, porušení tohoto pravidla se bude trestat vyloučením z turnaje.\r\n- Není povoleno restartovat mapu / zápas po jeho zahájení.\r\n- Je zakázáno připojování hráčů z týmu A do týmu B během hry (LIVE).\r\n\r\n## Admini\r\n\r\n- Admin má právo sledovat průběh zápasu ze spectator modu přímo na serveru. \r\n\r\n- Jeho totožnost si ověřte pomocí Steam ID v profilu admina\r\n'),
+(2,	'LOL',	'2023-10-17',	'2023-11-13',	1,	4,	2,	1,	4,	0,	'# Pravidla\r\n\r\n## Týmy\r\n- Podle počtů týmů organizátoři vyhlásí formát zápasů, a to: \r\n	- **Bo5** nebo **Bo3** nebo pouze **jeden zápas** (možnost knock out stagů)\r\n- Tým se sestává z **5 hráčů**, je možnost nahlášení náhradníků\r\n	- Lidé, kteří nejsou přihlášeni jako součást týmu (náhradníci včetně) se nesmí zúčastnit 		turnaje\r\n- Každý tým musí vyhlásit svého **zástupce, kapitána**\r\n- Každý tým musí poskytnout svá **skutečná jména a in-game nicky** všech hráčů i náhradníků, které budou zveřejněna na startovní listině\r\n- Složení týmu se **nesmí změnit po datu** stanoveném organizátory z řad SPGT\r\n- Jméno týmu **nesmí být ofenzivní a urážlivé a nevhodné**. Právo o tomto rozhodovat si vyhrazují organizátoři\r\n\r\n## Hráč\r\n- Nahlášené jméno se od doby nahlášení až do vyhlášení výsledků nesmí změnit\r\n- Jméno nesmí být ofenzivní a urážlivé a nevhodné. Právo o tomto rozhodovat si vyhrazují organizátoři z řad SPGT\r\n\r\n## Hra\r\n- Champ select začíná, jakmile kapitáni obou týmů hlasovou nebo textovou formou potvrdí připravenost týmu\r\n- Hra se uskutečňuje na mapě **summoners rift**\r\n- Turnajový draft pick s 5ti bany (3+2)\r\n- Draft bude probíhat na stránkách: https://draftlol.dawe.gg (z důvodu že né všichni mají všechny champy) \r\n- Hráči jsou povinni se seřadit v normálním **LCS pořadí** (top, jungle, mid, bot, support) \r\n- Blue a Red strana je před bitvou náhodně vybrána a potom se střídá \r\n- Hra je ukončena vítězstvím jedné strany pokud\r\n	- Je zničen nexus některého z týmů\r\n	- Kapitulace jednoho z týmů (od 15. minuty)\r\n	- Kapitán týmu vyhlásí kapitulaci týmu organizátorům (V jakýkoliv čas)\r\n- Pokud bude hra stagnovat (bude dlouho rovná) bude přerušena a vítěz bude vyhlášen organizátory na základě statistik\r\n- Po hře se výhra mezi organizátory diskutuje a proběhne rozhodnutí o uznání vítězství. Tým, který hru \"vyhraje\", nemusí být na základě porušení pravidel uznán za vítěze\r\n	- Změnit rozhodnutí si organizátoři vyhrazují i jakýkoliv čas po zápasu\r\n- Hra se odehrává na **EUNE serveru**\r\n- **Exploitování** neboli využívání skrytých herních mechanik nebo bugů, které nejsou společností Riot Games ve hře úmyslně je **zakázané**\r\n- **Externí programy**, které nejsou v rozporu s Riot Games, např.: porofessor, blitz, mobalytics ad. jsou **povoleny**\r\n\r\n## Problémy\r\n- Pokud se vyskytne problém při loading screen a bude zapotřebí odehrát nový zápas je povinností obout týmů zvolit si naprosto **stejné championy** se stejnými schopnostmi a runami. Toto bude kontrolováno a jinak **trestáno** jako porušení pravidel\r\n- Pokud se vyskytne chyba v jakékoliv fázi před-hry (lobby až loading screen) může kapitán nahlásit organizátorům tuto chybu a organizátoři jsou povinni ji řešit například restartem hry\r\n- Je možnost se odvolat kvůli chybě hráče na změnu run. Pak je hra restartována. Tato výsada je **pouze jedna** na celý tým po dobu celého turnaje\r\n- Pokud se některý hráč ihned po startu hry nepřipojí hra bude pozastavena do doby, než se do hry připojí všech 10 hráčů. \r\n- Pokud se hráč nedostaví do lobby nebo do samotné hry ani po 10 minutách čekání bude **tým diskvalifikován** \r\n	- Pokud je příčinnou faktor neovlivnitelný bude zváženo odsunutí zápasu \r\n- Hráč může pozastavit hru jen pokud: \r\n	- Se nějaký hráč **neúmyslně odpojí** \r\n	- Malfunkce hardwaru nebo samotné aplikace LoL\r\n	- **Chyba vybavení** a prostředí (rozbitá židle, událost v domě, která nelze odložit)\r\n	- **Zranění** nebo jiná kondice (například nutnost si dojít pro léky) \r\n- Pauza může být pouze **15 minut na tým** kvůli chybě daného hráče a 20 minut, pokud je to chyba hry nebo další. \r\n- Ostatní hráči nesmí zrušit pauzu \r\n- Pokud hra například crashne, můžou organizátoři vyhlásit vítěze na základě: \r\n	- Rozdíl goldů mezi týmy **větší jak 33%** \r\n	- Rozdíl mezi zničenými nebo stojícími turretami je **7 nebo více**\r\n	- Rozdíl ve zničených nebo stojících inhibitorů je **2 a více**\r\n	- Rozdíl mezi živými nebo mrtvými championy je **4 a více**\r\n\r\n## Komunikace\r\n- Hráči mají povinnost se dostavit na discord **10 minut před** turnajem do místnosti obecné, kde jim budou zděleny podrobnosti k zápasu \r\n- Komunikace probíhá mezi členy týmů **výhradně přes discord** , a to na serveru GT tournament v příslušných roomkách, kam budete přeřazeni \r\n- V in-game chatu, lobby chatu a champ select chatu je psát zprávy povoleno \r\n- Je zakázáno psát urážlivé, nevhodné i zprávy s úmyslem soupeře naštvat nebo vyhrožování \r\n	- To se vztahuje i na zprávy „EZ“, „?“, „cy@“, atd.\r\n\r\n## Organizátoři\r\n- Vyhrazují si právo zasahovat do zápasu jako například nařídit pauzu. \r\n- Rozhodnout spor mezi hráči\r\n- Přerušit nebo ukončit hru \r\n- Diskvalifikovat tým na základě porušení pravidel nebo obecných pravidel chování\r\n- Rozhodovat o výsledku zápasu'),
+(3,	'MINECRAFT',	'2023-10-17',	'2023-11-13',	1,	3,	2,	1,	3,	0,	'# Pravidla\r\n\r\n1. **Zakazuje se:**\r\n	\r\n	1. Používat jakékoli hacky, cheaty, mody (krom specificky povolených), resourcepacky co by dávaly výhody ve hře (např. Xray) – (máme anticheat! 😊)\r\n		1. Specificky povolené módy jsou: Sodium, Lithium, Iris, and Starlight.\r\n			1. Pokud používáte OptiFine je nutno **vypnout fast math**.\r\n		1. Jiné optimalizační módy je možné použít po domluvě s admin teamem.\r\n	1. Používat jakákoli makra nebo modifikace myši které dávají nefér výhodu ve hře. (např. autoclicker)\r\n		Dále je zakázáno:\r\n			- Přemapovávat si více tlačítel na útok.\r\n			- Dvojklikání\r\n			- Klikat rychleji než 20 cps.\r\n	1. Sledovat stream a tím neférově získávat informace o ostatních týmech\r\n	1. Zneužívat exploity ve hře, pokud nějaké znáte (duplikace itemů a podobně) **Hrajte fair-play a bavte se!**\r\n\r\n2. Pro chat na serveru platí stejná pravidla jako na discordu. \r\n\r\n2. **Průběh hry:**\r\n\r\n	1. Turnaj bude probíhat na **verzi Minecraftu 1.20.2 s PVP 1.8**\r\n	1. Pro připojení musíte používat **originální Launcher** hry (warez hráči s i se nemohou zúčastnit)\r\n	1. Turnaj vyhrává tým, který zvítězí ve finální hře\r\n	1. Konkrétní bracket bude uveřejněn na Discordu, bude se odvíjet od počtu nahlášených týmů apod. Organizátoři si vyhrazují právo jej kdykoliv změnit!\r\n	1. Každý tým sestává ze **čtyř hráčů** +- náhradníci, jeden z hráčů má status kapitána týmu\r\n	1. Před zápasem se bude vybírat mapa, kapitán týmu vždy napíše do příslušného kanálu na Discordu hlas za svůj tým, na výběr bude ze 3-5 map, jejichž podoba bude v předstihu uveřejněna na Discordu\r\n	1. Organizátoři si vyhrazují právo na změnu pravidel kdykoliv během turnaje\r\n	1. Dále si organizátoři vyhrazují právo na vyloučení jakéhokoliv týmu bez udání důvodu (buďte v pohodě a my budeme taky)'),
+(4,	'ROCKET_LEAGUE',	'2023-10-17',	'2023-11-13',	1,	1,	0,	1,	1,	0,	'## **Pravidla turnaje**\r\n \r\n **1 Technické problémy**\r\n - Tým je zodpovědný za technický stav svého zařízení. Zápas nemůže být přeložen z důvodu technických problémů, zápas se musí odehrát.\r\n - Každý tým má nárok na 10 min pauzu k vyřešení svých technických problémů. Pokud se během tohoto časového úseku problémy nevyřeší je tým nucen odehrát zápas s hráči, kteří jsou schopni hrát, nebo zápas ukončit ve prospěch soupeře.\r\n\r\n **2 Obecná pravidla**\r\n - Týmy budou hrát všichni proti všem.\r\n - Zápasy se odehrávají hned po skončení předchozího zápasu.\r\n - Nezapomeňte, že právě vy můžete být streamováni, proto byste měli poslouchat pokyny na twitchi.\r\n - Jakýkoliv admin má právo sledovat zápas. ▪ Spectatovat mohou pouze admini.\r\n - Je zakázáno mít nevhodné názvy týmu, nicky hráčů a nadávat si v zápase.\r\n -  Admin může trestat vyřazením týmu z turnaje, v nejhorším případě může být hráč zabanován.\r\n - Tým, který se kvalifikuje do finále, musí finále odehrát ve stejném složení hráčů, se kterýma se kvalifikoval.\r\n - Ve skupinách rozhoduje nejprve vzájemný zápas, poté rozdíl skóre.\r\n - Po každém zápase kapitáni pošlou screen statistik zápasu.\r\n - Organizátor si vyhrazuje právo na změnu pravidel.\r\n\r\n**3 Nastavení hry**\r\n - Server: Evropa ▪ Mapy: DHF Stadium\r\n - Herní režim: Private Match\r\n - Sestava: 2v2\r\n - Formát: BO1-skupiny (BO3 – pavouk, BO5 - Finále)\r\n - Čas zápasu: 5 minut Match zakládají komentátoři a admini, typ Name+password.\r\n\r\n**4 Nedostavení se k zápasu**\r\n - Pokud se tým účastnící se turnaje nedostaví 15 minut po oficiálním času zahájení turnaje je diskvalifikován.\r\n\r\n**5 Protest**\r\n - Pokud zápas proběhl nekorektně, má tým 10 minut po skončení zápasu na podání protestu. Protest musí obsahovat média, která jasně prokáží porušení pravidel, která vedla k ovlivnění výsledků nebo zápasové série. Tým je zodpovědný za důkaz, který poskytne (např. screenshot).\r\n\r\n**6 Komunikace a podpora**\r\n - Veškerá komunikace s administrátorem probíhá na discordu v místnosti Rocket League a \"chat-k-turnaji,\" kde musíte být přítomni po celou dobu odehrávání turnaje.\r\n - Na tomto discordu se postují i informace ohledně turnaje.\r\n'),
+(5,	'VALORANT',	'2023-10-17',	'2023-11-13',	1,	4,	2,	1,	4,	0,	'# Pravidla\r\n\r\n## Formát zápasů\r\n- hraje se 5 vs 5 hráčů, minimální počet hráčů, ve kterém lze zápas dohrát jsou 4 (v jednom týmu)\r\n-  Pokud se soupeř nedostaví na zápas do 15 minut po jeho oficiálním začátku, bude zápas kontumován ve prospěch týmu, který se dostavil\r\n- hra končí ve chvíli, kdy jeden z týmů dovrší 13 vyhraných kol (nehraje se overtime)\r\n- každý tým má právo na 5 minut pauzy\r\n\r\n##  Výběr map\r\n- dostupné mapy k volbě (kompetetivní)\r\n- Ascent,Bind,Breeze,Haven,Lotus,Split,Sunset\r\n1.  Týmy se střídají v postupném banování map na stránce https://www.mapban.gg/cs/ban/valorant/competitive ,\r\n v sekci s 1 hvězdou (Do or die).  \r\n2. Tým, který je na řadě si vybere mapu, kterou chce hrát.  \r\n3. Druhý tým si vybere stranu na vybrané mapě.  \r\n\r\n## Zákazy\r\n- zákaz všech externích programů, které nějak mění vlastnosti hry nebo poskytují výhodu nad soupeřem (cheaty), platí také pro tzv. \"low graphic mody\"\r\n- je zakázáno využívat bugů map, pokud se však hráč na pozici nedostane legální cestou (vysazení od spoluhráče)'),
+(6,	'R6',	'2023-10-17',	'2023-11-13',	1,	4,	2,	1,	4,	0,	'## Pravidla hry:\r\n\r\n  \r\n\r\n***Formát hry:***\r\n\r\n-   Zápas se hraje formou 5 na 5 hráčů. Minimální počet hráčů v každém z týmů, který je nutný k zahájení zápasu, je 5.\r\n     \r\n\r\n- Zápas se hraje jako ve formě Ranked módu :\r\n\r\n    \r\n\r\n  \r\n\r\n	1. Kdo má první 4 body vyhrál, pokud je remíza, hraje se první overtime, pokud bude remíza znova, tak bude náhlá smrt.\r\n\r\n	2. Preparation phase bude 45 sekund\r\n\r\n	3. Action phase bude 3 minuty\r\n\r\n	4. Defuse phase bude 45 vteřin\r\n\r\n	5. Plant time a defuse time bude 7 vteřin\r\n\r\n	6. Každý tým může zabanovat jednoho útočníka a jednoho obránce\r\n\r\n  \r\n\r\n***Povinnosti hráčů:***\r\n\r\n-   Každý tým musí poskytnout skutečná jména, in game nicky a Ubisoft jména všech hráčů i náhradníků, jména a nicky budou zveřejněny na startovní listině.\r\n    \r\n-   Hráči musí mít minimálně lvl 50\r\n    \r\n-   Oficiální soupisky týmů vycházejí ze soupisky uvedené při registraci.\r\n    \r\n-   Každý hráč je povinen mít při oficiálním zápase shodné Ubisoft jméno s hodnotou, kterou uvedl při přihlášení do turnaje.\r\n    \r\n\r\n  \r\n\r\n***Mapy:***\r\n\r\n-   Pickování a banování map bude probíhat na stránce [https://www.mapban.gg/en/ban/r6s/ranked](https://www.mapban.gg/en/ban/r6s/ranked)\r\n    \r\n-   Týmy se budou střídat v banování map\r\n    \r\n  ***Hratelné mapy:***\r\n    \r\n\r\nOregon, Club house, Consulate, Bank, Kanal, Chalet, Kafe Dostoyevsky, Border, Skyscraper, Coastline, Theme park, Villa, Outback, Emerald plains, Stadium bravo, Nighthaven labs\r\n\r\n  \r\n\r\n***Vyhodnocení zápasů:***\r\n\r\n-   Kapitáni týmů jsou povinni zaslat na konci hry screenshot výsledkové tabulky\r\n    \r\n\r\n  \r\n\r\n***Server hosting:***\r\n\r\n-   Hru vytváří kapitán útočícího týmu, po provedení banování map\r\n    \r\n-   Kapitán vytvoří hru, podle zaslaného návodu\r\n    \r\n-   Kapitán následně pozve členy svého týmu a kapitána protějšího týmu do hry\r\n    \r\n-   Kapitán protějšího týmu následně pozve členy svého týmu\r\n    \r\n-   Jakýkoliv úmyslný problém se začátkem hry může vést k diskvalifikaci\r\n    \r\n-   Pokud nastane pádný technický problém před ukončením druhého kola po souhlasů adminů, musí oba týmy začínat hru novou.\r\n    \r\n-   Jakýkoliv výpadek po tomto čase bude podle rozhodnutí admina\r\n    \r\n\r\n  \r\n\r\n***Zákazy:***\r\n\r\n-   Je zakázáno jakékoliv používání externích programů, které mění vlastnosti hry, anebo zvýhodňují hráče oproti ostatním.\r\n    \r\n-   Smurfing a hosting je zakázán\r\n    \r\n\r\n  \r\n\r\n***Admini:***\r\n\r\n-   Admin má právo sledovat průběh zápasu ze spectator modu přímo na serveru, jak na discordu, tak ve hře.\r\n    \r\n-   Admin může kontumačně vyřadit jakýkoliv tým, po konzultaci s admin týmem, pokud mu akce určitého týmu připadají nevhodné');
+
+DROP TABLE IF EXISTS `page`;
+CREATE TABLE `page` (
+  `name` varchar(10) NOT NULL,
+  `value` mediumtext NOT NULL,
+  PRIMARY KEY (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+INSERT INTO `page` (`name`, `value`) VALUES
+('rules',	'# Obecná pravidla turnaje\r\n\r\n## Registrace\r\n\r\n- Registrace probíhá přes webové stránky turnaje.\r\n\r\n- Začátek a konec registrace je uveden na stránkách každé hry\r\n\r\n- Každý účastník musí uvést školu, za kterou hraje.\r\n\r\n- Každý účastník se může zaregistrovat pro danou hru právě jednou.\r\n\r\n- Žádní dva účastníci nemohou mít stejný discord.\r\n\r\n- Každý účastník musí být studentem nebo učitelem na střední škole, osmiletém gymnáziu nebo druhém stupni základní školy.\r\n\r\n- Pokud je účastník žákem základní školy a odpovídajících ročníků osmiletého gymnázia, nejsou mu zpřístupněny všechny hry.\r\n\r\n- Každý účastník, který nebude v době turnaje plnoletý, musí před začátkem turnaje poslat vyplněný souhlas rodičů s účastí v turnaji na adresu turnajvpocitacovychhrach@gym-tisnov.cz.\r\n\r\n- Je zakázáno používat vulgární nebo rasistická jména hráčů, vulgární názvy týmů.\r\n\r\n- Každý účastník je povinen se do dvou dnů od registrace připojit na discord GT Tournamentu.\r\n\r\n- Organizátor si vyhrazuje právo vyloučit účastníka z turnaje z důvodu porušení pravidel.\r\n\r\n- Pokud účastník nesouhlasí s rozhodnutím organizátora, může se odvolat k hlavnímu organizátorovi.\r\n\r\n- Každý účastník je na požádání organizátora povinen prokázat, že je studentem na škole zadané při registraci škole.\r\n\r\n- Tým musí udržovat svou registraci aktuální.\r\n\r\n- Organizátor si vyhrazuje právo rozhodovat o případných trestech individuálně.\r\n\r\n- Organizátor si vyhrazuje právo měnit pravidla a rozhodovat o případných nesrovnalostech.\r\n\r\n## Průběh turnaje\r\n\r\n- Účastník musí dodržovat pravidla hry, ve které soutěží.\r\n\r\n- Účastník, který se účastní právě probíhajícího zápasu, se nesmí při hře dívat na stream daného zápasu.\r\n\r\n- Je zakázáno podvádět.\r\n\r\n- Organizátor si vyhrazuje právo vyloučit hráče či tým z turnaje za nesportovní chování po domluvě s hlavním organizátorem.\r\n\r\n- Je zakázáno používat vulgární výrazy. (v herním chatu, v chatu na Twitchi, v rozhovoru s organizátory a komentátory)\r\n\r\n- Účastník je povinen připravit se ke hře v dostatečném předstihu, aby nezdržoval průběh turnaje.\r\n\r\n- Turnaje se nemůže účastnit nezaregistrovaný člověk.\r\n\r\n- Účastník musí během hry používat přezdívku, kterou zadal do registračního formuláře.\r\n\r\n- Účastník musí být po dobu hry přítomen na discordu GT Tournamentu.\r\n'),
+('sponsors',	'\r\n## [Jihomoravský kraj](https://www.jmk.cz/)\r\n[\r\n![Logo jmk](https://cdn.discordapp.com/attachments/1167383357919875092/1167754064067567616/Logotyp_jihomoravsky_kraj_RGB.svg?ex=654f46b8&is=653cd1b8&hm=1a435ccc8e214dc6aa6ee1cc6e290a415817f1646e8d4ea74d7683a3e1a66a76&)](https://www.jmk.cz/)\r\n\r\n## [Jihomoravská rada dětí a mládeže](https://jrdm.cz/)\r\n[![Logo jmk](https://cdn.discordapp.com/attachments/1167383357919875092/1167747298076397699/JRDM_logo.svg?ex=654f406b&is=653ccb6b&hm=0e2473916e2b95249696aa106f276c9a48ffed9e1be88e76377ceb6463b1fe60&)](https://jrdm.cz/)\r\n## [Helkor.eu](https://link.helkor.eu/from-gtt)\r\n[![Logo Helkoru.eu](https://cdn.discordapp.com/attachments/1167383357919875092/1167391365609553943/logo_white.png?ex=654df4ee&is=653b7fee&hm=f997528b371f37678dd08347a7da2b8efe191883de7d6e5ad7e58b3d5ae8e110&)](https://link.helkor.eu/from-gtt)\r\n## [FakaHeda](https://www.fakaheda.eu/)\r\n[![Logo FakaHeda.eu](https://cdn.discordapp.com/attachments/1167383357919875092/1167759428045516903/wide_green_white_transparent.png)](https://www.fakaheda.eu/)\r\n\r\n## [MŠMT](https://www.msmt.cz/)\r\n[![Logo MŠMT](https://cdn.discordapp.com/attachments/1167383357919875092/1167749150109093968/MSMT_logotyp_text_inverz_cz.svg?ex=654f4225&is=653ccd25&hm=8abd10e3f3e69656717e6800fb2231214488b266f18ab9eb4c65f0cca03052f8&)](https://www.msmt.cz/)\r\n');
 
 DROP TABLE IF EXISTS `registrations`;
 CREATE TABLE `registrations` (
@@ -87,6 +102,7 @@ INSERT INTO `schools` (`schoolId`, `name`) VALUES
 (445,	'Akademie řemesel Praha - Střední škola technická'),
 (722,	'Akademie SOUVIN, střední škola'),
 (434,	'Akademie VŠEM - střední škola, s.r.o.'),
+(762,	'Albrechtova střední škola Český Těšín, příspěvková organizace'),
 (571,	'Anglo - německá obchodní akademie a.s.'),
 (414,	'Arcibiskupské gymnázium'),
 (480,	'ART ECON - Střední škola a vyšší odborná škola Praha, s.r.o.'),
@@ -101,9 +117,11 @@ INSERT INTO `schools` (`schoolId`, `name`) VALUES
 (225,	'Česko-anglické gymnázium s.r.o.'),
 (411,	'Českoslovanská akademie obchodní Dr. Edvarda Beneše, střední odborná škola, Praha 2, Resslova 8'),
 (417,	'Českoslovanská akademie obchodní, střední odborná škola, Praha 2, Resslova 5'),
+(765,	'Církevní gymnázium v Kutné Hoře'),
 (482,	'Církevní střední škola Jana Boska'),
 (524,	'Církevní střední zdravotnická škola Jana Pavla II.'),
 (30,	'Církevní střední zdravotnická škola s. r. o.'),
+(783,	'Creative Hill College, Zlín'),
 (50,	'Cyrilometodějské gymnázium a střední odborná škola pedagogická Brno'),
 (285,	'Dětský domov, Mateřská škola, Základní škola a Praktická škola, Písek, Šobrova 111'),
 (695,	'Dětský domov, Praktická škola, Základní škola a Mateřská škola Nymburk, příspěvková organizace'),
@@ -181,10 +199,14 @@ INSERT INTO `schools` (`schoolId`, `name`) VALUES
 (619,	'Gymnázium Jiřího Ortena, Kutná Hora, Jaselská 932'),
 (644,	'Gymnázium Jiřího z Poděbrad, Poděbrady, Studentská 166'),
 (597,	'Gymnázium Joachima Barranda, Beroun, Talichova 824'),
+(782,	'Gymnázium Josefa Kainara, Hlučín'),
+(757,	'Gymnázium Kadaň'),
 (661,	'Gymnázium Karla Čapka, Dobříš, Školní 1530'),
 (422,	'Gymnázium Karla Sladkovského, Praha 3, Sladkovského náměstí 8'),
+(776,	'Gymnázium Karviná, příspěvková organizace Karviná-Nové Město, Mírová 1442'),
 (57,	'Gymnázium Matyáše Lercha, Brno, Žižkova 55, příspěvková organizace'),
 (568,	'Gymnázium mezinárodních a veřejných vztahů Praha s.r.o.'),
+(779,	'Gymnázium Mikuláše Koperníka, Bílovec'),
 (569,	'Gymnázium Milady Horákové'),
 (633,	'Gymnázium Mnichovo Hradiště, příspěvková organizace'),
 (58,	'Gymnázium Mojmírovo náměstí s. r. o.'),
@@ -210,8 +232,10 @@ INSERT INTO `schools` (`schoolId`, `name`) VALUES
 (21,	'Gymnázium Tišnov, příspěvková organizace'),
 (603,	'Gymnázium Václava Beneše Třebízského, Slaný, Smetanovo nám. 1310'),
 (598,	'Gymnázium Václava Hraběte, Hořovice, Jiráskova 617'),
+(752,	'Gymnázium Velké Meziříčí'),
 (238,	'Gymnázium Vítězslava Nováka, Jindřichův Hradec, Husova 333'),
 (213,	'Gymnázium Vojtecha Mihálika Sereď'),
+(747,	'Gymnázium Žamberk'),
 (671,	'Gymnázium Zikmunda Wintra Rakovník, příspěvková organizace'),
 (587,	'Gymnázium, Benešov, Husova 470'),
 (196,	'Gymnázium, Broumov, Hradební 218'),
@@ -255,6 +279,7 @@ INSERT INTO `schools` (`schoolId`, `name`) VALUES
 (180,	'Gymnázium, Střední odborná škola a Vyšší odborná škola, Nový Bydžov'),
 (534,	'Gymnázium, Střední odborná škola, Základní škola a Mateřská škola pro sluchově postižené, Praha 2, Ječná 27'),
 (123,	'Gymnázium, Střední pedagogická škola, Obchodní akademie a Jazyková škola s právem státní jazykové zk'),
+(738,	'Gymnázium, Sušice, Fr. Procházky 324'),
 (350,	'Gymnázium, Tanvald, příspěvková organizace'),
 (18,	'Gymnázium, Terezy Novákové 2, Brno - Řečkovice'),
 (239,	'Gymnázium, Třeboň, Na Sadech 308'),
@@ -273,6 +298,7 @@ INSERT INTO `schools` (`schoolId`, `name`) VALUES
 (737,	'Hotelová škola Mariánské Lázně, příspěvková organizace'),
 (645,	'Hotelová škola Poděbrady, příspěvková organizace'),
 (32,	'Hotelová škola s. r. o.'),
+(787,	'Hotelová škola, Obchodní akademie a Střední průmyslová škola, Teplice, Benešovo náměstí 1, příspěvková organizace'),
 (410,	'Hotelová škola, Praha 10, Vršovická 43'),
 (309,	'Hudební gymnázium České Budějovice s.r.o.'),
 (20,	'I. Německé zemské gymnasium, ZŠ a MŠ, o.p.s., Mendlovo nám. 1/ 3,4, Brno'),
@@ -291,6 +317,7 @@ INSERT INTO `schools` (`schoolId`, `name`) VALUES
 (385,	'Integrovaná střední škola, Vysoké nad Jizerou, Dr. Farského 300, příspěvková organizace'),
 (10,	'ISŠ - COP, Olomoucká 61, Brno'),
 (14,	'ISŠ automobilní, Křižíkova 15, Brno'),
+(751,	'Jazykové gymnázium Pavla Tigrida'),
 (544,	'Jedličkův ústav a Mateřská škola a Základní škola a Střední škola'),
 (339,	'JEZDECKÁ AKADEMIE - střední odborná škola Mariánské Lázně s.r.o.'),
 (135,	'JEZDECKÁ AKADEMIE – střední odborná škola Mariánské Lázně s. r. o.'),
@@ -306,6 +333,7 @@ INSERT INTO `schools` (`schoolId`, `name`) VALUES
 (219,	'Konzervatoř, České Budějovice, Kanovnická 22'),
 (564,	'Křesťanská střední škola, základní škola a mateřská škola Elijáš, Praha 4 - Michle'),
 (505,	'Křesťanské gymnázium'),
+(773,	'Labská střední odborná škola a Střední odborné učiliště Pardubice, s. r. o'),
 (557,	'Lauderova mateřská škola, základní škola a gymnázium při Židovské obci v Praze'),
 (596,	'Lékařské a přírodovědné GYMNÁZIUM PRIGO PRAHA, s.r.o.'),
 (187,	'Lepařovo gymnázium, Jičín, Jiráskova 30'),
@@ -330,8 +358,10 @@ INSERT INTO `schools` (`schoolId`, `name`) VALUES
 (281,	'Mateřská škola, základní škola a střední škola pro sluchově postižené, České Budějovice, Riegrova 1'),
 (115,	'Mateřská škola, základní škola a střední škola Vyškov, příspěvková organizace'),
 (286,	'Mateřská škola, základní škola speciální a praktická škola Diakonie ČCE Rolnička Soběslav'),
+(750,	'Mendelova Střední Škola It a Veřejnosprávní, Nový Jičín'),
 (456,	'Mensa gymnázium, o.p.s.'),
 (92,	'Městská střední odborná škola, Klobouky u Brna, nám. Míru 6, příspěvková organizace'),
+(744,	'Městské víceleté gymnázium Klobouky u Brna, příspěvková organizace'),
 (581,	'Metropolitní gymnázium'),
 (441,	'Metropolitní odborná umělecká střední škola Praha 4 s.r.o.'),
 (563,	'Mezinárodní Konzervatoř Praha - International conservatory Prague, s.r.o.'),
@@ -341,9 +371,11 @@ INSERT INTO `schools` (`schoolId`, `name`) VALUES
 (641,	'Obchodní akademie a Jazyková škola s právem státní jazykové zkoušky Mladá Boleslav, příspěvková organizace'),
 (361,	'Obchodní akademie a Jazyková škola s právem státní jazykové zkoušky, Liberec, Šamánkova 500/8, příspěvková organizace'),
 (249,	'Obchodní akademie a Jazyková škola s právem státní jazykové zkoušky, Písek, Čelakovského 200'),
+(788,	'Obchodní akademie a Střední odborná škola logistická, Opava'),
 (108,	'Obchodní akademie a Střední odborné učiliště Veselí nad Moravou, příspěvková organizace'),
 (76,	'Obchodní akademie a Střední zdravotnická škola Blansko, příspěvková organizace'),
 (24,	'Obchodní akademie a vyšší odborná škola Brno, Kotlářská, příspěvková organizace'),
+(755,	'Obchodní akademie a Vyšší odborná škola sociální, Ostrava-Mariánské Hory, příspěvková organizace'),
 (663,	'Obchodní akademie a Vyšší odborná škola, Příbram I, Na Příkopech 104'),
 (465,	'Obchodní akademie Bubeneč'),
 (604,	'Obchodní akademie Dr. Edvarda Beneše, Slaný, Smetanovo nám. 1200'),
@@ -351,6 +383,7 @@ INSERT INTO `schools` (`schoolId`, `name`) VALUES
 (34,	'Obchodní akademie ELDO, o. p. s.'),
 (547,	'Obchodní akademie Holešovice'),
 (473,	'Obchodní akademie Hovorčovická'),
+(771,	'Obchodní Akademie Kroměříž'),
 (595,	'Obchodní akademie Neveklov'),
 (469,	'Obchodní akademie Praha, s.r.o.'),
 (240,	'Obchodní akademie T. G. Masaryka a Jazyková škola s právem státní jazykové zkoušky, Jindřichův Hradec, Husova 156'),
@@ -369,6 +402,7 @@ INSERT INTO `schools` (`schoolId`, `name`) VALUES
 (169,	'Obchodní akademie, Střední pedagogická škola, Vyšší odborná škola cestovního ruchu a Jazyková škola'),
 (278,	'Obchodní akademie, Tábor, Jiráskova 1615'),
 (590,	'Obchodní akademie, Vlašim, V Sadě 1565'),
+(785,	'Obchodní akademie, Vyšší odborná škola a Jazyková škola s právem státní jazykové zkoušky Uherské Hradiště'),
 (141,	'Obchodní akademie, vyšší odborná škola cestovního ruchu a jazyková škola s právem státní jazykové zk'),
 (318,	'Obchodní akademie, vyšší odborná škola cestovního ruchu a jazyková škola s právem státní jazykové zkoušky Karlovy Vary, příspěvková organizace'),
 (614,	'Odborná střední škola podnikání a mediální tvorby Kolín s.r.o.'),
@@ -401,10 +435,12 @@ INSERT INTO `schools` (`schoolId`, `name`) VALUES
 (16,	'SOŠ a SOU strojírenské a elektrotech., Trnkova 113, Brno - Líšeň'),
 (4,	'SOŠ zahradnická a SOU, Masarykova 198, Rajhrad'),
 (685,	'Soukromá mateřská škola, základní škola a střední škola Slunce, o.p.s.'),
+(746,	'Soukromá obchodní akademie Opava s. r. o.'),
 (140,	'Soukromá obchodní akademie Podnikatel, spol. s r. o.'),
 (320,	'Soukromá obchodní akademie Podnikatel, spol. s r.o.'),
 (156,	'Soukromá obchodní akademie Sokolov, s. r. o.'),
 (328,	'Soukromá obchodní akademie Sokolov, s.r.o.'),
+(768,	'Soukromá podřipská střední odborná škola a střední odborné učiliště'),
 (496,	'Soukromá střední odborná škola a Soukromé střední odborné učiliště BEAN, s.r.o.'),
 (87,	'Soukromá střední odborná škola manažerská a zdravotnická s. r. o.'),
 (494,	'Soukromá střední odborná škola START, s.r.o.'),
@@ -439,6 +475,7 @@ INSERT INTO `schools` (`schoolId`, `name`) VALUES
 (150,	'Střední lesnická škola Žlutice, příspěvková organizace'),
 (323,	'Střední lesnická škola Žlutice, příspěvková organizace'),
 (551,	'Střední odborná škola - Centrum odborné přípravy a Gymnázium'),
+(743,	'Střední odborná škola a Gymnázium Staré Město'),
 (622,	'Střední odborná škola a Střední odborné učiliště dopravní Čáslav, příspěvková organizace'),
 (262,	'Střední odborná škola a střední odborné učiliště HEUREKA s.r.o.'),
 (89,	'Střední odborná škola a střední odborné učiliště Hustopeče, příspěvková organizace'),
@@ -480,7 +517,9 @@ INSERT INTO `schools` (`schoolId`, `name`) VALUES
 (716,	'Střední odborná škola managementu a práva, s.r.o.'),
 (65,	'Střední odborná škola MORAVA o. p. s.'),
 (560,	'Střední odborná škola multimediální a propagační tvorby, s.r.o.'),
+(749,	'Střední odborná škola Nové Město na Moravě'),
 (356,	'Střední odborná škola obchodní s.r.o.'),
+(772,	'Střední odborná škola podnikání a obchodu, spol. s r.o., Prostějov'),
 (501,	'Střední odborná škola podnikatelská PROFIT, spol. s r.o.'),
 (550,	'Střední odborná škola pro administrativu Evropské unie, Praha 9, Lipí 1911'),
 (199,	'Střední odborná škola sociální a zdravotnická – Evangelická akademie'),
@@ -496,6 +535,7 @@ INSERT INTO `schools` (`schoolId`, `name`) VALUES
 (268,	'Střední odborná škola zdravotnická a Střední odborné učiliště, Český Krumlov, Tavírna 342'),
 (125,	'Střední odborná škola Znojmo, Dvořákova, příspěvková organizace'),
 (254,	'Střední odborná škola, Blatná, V Jezárkách 745'),
+(766,	'Střední odborná škola, Frýdek-Místek, příspěvková organizace'),
 (379,	'Střední odborná škola, Liberec, Jablonecká 999, příspěvková organizace'),
 (462,	'Střední odborná škola, Praha 5, Drtinova 3/498'),
 (562,	'Střední odborné učiliště'),
@@ -526,17 +566,20 @@ INSERT INTO `schools` (`schoolId`, `name`) VALUES
 (138,	'Střední pedagogická škola, gymnázium a vyšší odborná škola Karlovy Vary, příspěvková organizace'),
 (317,	'Střední pedagogická škola, gymnázium a vyšší odborná škola Karlovy Vary, příspěvková organizace'),
 (509,	'Střední průmyslová škola a Gymnázium Na Třebešíně'),
+(774,	'Střední průmyslová škola a Střední odborné učiliště Pelhřimov'),
+(739,	'Střední průmyslová škola a Vyšší odborná škola Chomutov'),
 (602,	'Střední průmyslová škola a Vyšší odborná škola, Kladno, Jana Palacha 1840'),
 (273,	'Střední průmyslová škola a Vyšší odborná škola, Písek, Karla Čapka 402'),
 (662,	'Střední průmyslová škola a Vyšší odborná škola, Příbram II, Hrabákova 271'),
 (37,	'Střední průmyslová škola chemická Brno, Vranovská, příspěvková organizace'),
 (460,	'Střední průmyslová škola dopravní, a.s.'),
 (86,	'Střední průmyslová škola Edvarda Beneše a obchodní akademie Břeclav, příspěvková organizace'),
+(775,	'Střední průmyslová škola elektrotechnická Havířov'),
 (216,	'Střední průmyslová škola elektrotechnická, Praha 10, V Úžlabině 320'),
-(506,	'Střední průmyslová škola elektrotechnická, Praha 10, V Úžlabině 320'),
 (413,	'Střední průmyslová škola elektrotechnická, Praha 2, Ječná 30'),
 (208,	'Střední průmyslová škola elektrotechniky a informačních technologií, Dobruška, Čs. odboje 670'),
 (709,	'Střední průmyslová škola Emila Kolbena Rakovník, příspěvková organizace'),
+(781,	'Střední průmyslová škola Hranice'),
 (82,	'Střední průmyslová škola Jedovnice, příspěvková organizace'),
 (549,	'Střední průmyslová škola na Proseku'),
 (148,	'Střední průmyslová škola Ostrov, příspěvková organizace'),
@@ -551,6 +594,7 @@ INSERT INTO `schools` (`schoolId`, `name`) VALUES
 (174,	'Střední průmyslová škola stavební, Hradec Králové, Pospíšilova tř. 787'),
 (360,	'Střední průmyslová škola stavební, Liberec 1, Sokolovské náměstí 14, příspěvková organizace'),
 (629,	'Střední průmyslová škola stavební, Mělník, Českobratrská 386'),
+(756,	'Střední průmyslová škola stavební, Plzeň, Chodské nám. 2'),
 (616,	'Střední průmyslová škola strojírenská a Jazyková škola s právem státní jazykové zkoušky, Kolín IV, Heverova 191'),
 (378,	'Střední průmyslová škola strojní a elektrotechnická a Vyšší odborná škola, Liberec 1, Masarykova 3, příspěvková organizace'),
 (232,	'Střední průmyslová škola strojní a elektrotechnická, České Budějovice, Dukelská 13'),
@@ -559,9 +603,12 @@ INSERT INTO `schools` (`schoolId`, `name`) VALUES
 (354,	'Střední průmyslová škola technická, Jablonec nad Nisou, Belgická 4852, příspěvková organizace'),
 (365,	'Střední průmyslová škola textilní, Liberec, Tyršova 1, příspěvková organizace'),
 (485,	'Střední průmyslová škola zeměměřická a Geografické gymnázium Praha'),
+(770,	'Střední průmyslová škola Zlín'),
 (346,	'Střední průmyslová škola, Česká Lípa, Havlíčkova 426, příspěvková organizace'),
 (634,	'Střední průmyslová škola, Mladá Boleslav, Havlíčkova 456'),
+(760,	'Střední průmyslová škola, Obchodní akademie a Jazyková škola s právem státní jazykové zkoušky, Frýdek Místek'),
 (206,	'Střední průmyslová škola, Odborná škola a Základní škola, Nové Město nad Metují'),
+(761,	'Střední průmyslová škola, Ostrava - Vítkovice, příspěvková organizace'),
 (175,	'Střední průmyslová škola, Střední odborná škola a Střední odborné učiliště, Hradec Králové'),
 (589,	'Střední průmyslová škola, Vlašim, Komenského 41'),
 (276,	'Střední rybářská škola a Vyšší odborná škola vodního hospodářství a ekologie, Vodňany, Zátiší 480'),
@@ -588,7 +635,10 @@ INSERT INTO `schools` (`schoolId`, `name`) VALUES
 (651,	'Střední škola designu Lysá nad Labem, příspěvková organizace'),
 (117,	'Střední škola dopravy, obchodu a služeb Moravský Krumlov, příspěvková organizace'),
 (454,	'Střední škola dostihového sportu a jezdectví'),
+(784,	'Střední škola Educhem, a.s., Meziboří'),
 (418,	'Střední škola ekonomická se sportovním zaměřením, s.r.o.'),
+(745,	'Střední škola elektrotechnická, Lipník nad Bečvou'),
+(741,	'Střední škola elektrotechnická, Lipník nad Bečvou, Tyršova 781'),
 (513,	'Střední škola elektrotechniky a strojírenství'),
 (729,	'Střední škola Euroinstitut'),
 (341,	'Střední škola Euroinstitut v Karlovarském kraji'),
@@ -605,7 +655,9 @@ INSERT INTO `schools` (`schoolId`, `name`) VALUES
 (493,	'Střední škola hotelnictví a gastronomie SČMSD Praha, s.r.o.'),
 (11,	'Střední škola inf. tech. a soc. péče, Purkyňova 97, Brno'),
 (227,	'Střední škola informatiky a právních studií, z.ú.'),
+(778,	'Střední škola informatiky elektrotechniky a řemesel Rožnov pod Radhoštěm'),
 (40,	'Střední škola informatiky, poštovnictví a finančnictví Brno, příspěvková organizace'),
+(780,	'Střední škola Jana Blahoslava'),
 (233,	'Střední škola Jeronýmova České Budějovice, s.r.o.'),
 (363,	'Střední škola Kateřinky - Liberec, s.r.o.'),
 (347,	'Střední škola Klíč s.r.o.'),
@@ -615,6 +667,7 @@ INSERT INTO `schools` (`schoolId`, `name`) VALUES
 (655,	'Střední škola letecké a výpočetní techniky, Odolena Voda, U Letiště 370'),
 (136,	'Střední škola logistická Dalovice, příspěvková organizace'),
 (325,	'Střední škola logistická Dalovice, příspěvková organizace'),
+(767,	'Střední škola logistiky a chemie, Olomouc, U Hradiska 29'),
 (733,	'Střední škola managementu a grafiky'),
 (439,	'Střední škola managementu a služeb s.r.o.'),
 (515,	'Střední škola mediální grafiky a tisku, s.r.o.'),
@@ -649,10 +702,12 @@ INSERT INTO `schools` (`schoolId`, `name`) VALUES
 (195,	'Střední škola strojírenská a elektrotechnická'),
 (383,	'Střední škola strojní, stavební a dopravní, Liberec II, Truhlářská 360/3, příspěvková organizace'),
 (46,	'Střední škola technická a dopravní Gustava Habrmana Česká Třebová'),
+(748,	'Střední škola technická a dopravní Ostrava-Vítkovice'),
 (74,	'Střední škola technická a gastronomická Blansko, příspěvková organizace'),
 (295,	'Střední škola technická a obchodní, Dačice, Strojírenská 304'),
 (181,	'Střední škola technická a řemeslná, Nový Bydžov, Dr. M. Tyrše 112'),
 (121,	'Střední škola technická Znojmo, příspěvková organizace'),
+(769,	'Střední škola technických oborů. Lidická 600/1a 736 01 Havířov'),
 (637,	'Střední škola tradičních řemesel HERMÉS MB s.r.o.'),
 (66,	'Střední škola uměleckomanažerská, s. r. o.'),
 (67,	'Střední škola umění a designu a Vyšší odborná škola Brno, příspěvková organizace'),
@@ -708,6 +763,7 @@ INSERT INTO `schools` (`schoolId`, `name`) VALUES
 (42,	'Střední zdravotnická škola Brno, Jaselská, příspěvková organizace'),
 (69,	'Střední zdravotnická škola Evangelické akademie'),
 (676,	'Střední zdravotnická škola, Beroun, Mládeže 1102'),
+(764,	'Střední zdravotnická škola, Hranice, Nová 1820'),
 (269,	'Střední zdravotnická škola, Jindřichův Hradec, Klášterská 77/II'),
 (270,	'Střední zdravotnická škola, Písek, Národní svobody 420'),
 (271,	'Střední zdravotnická škola, Tábor, Mostecká 1912'),
@@ -732,8 +788,10 @@ INSERT INTO `schools` (`schoolId`, `name`) VALUES
 (44,	'TRIVIS – Střední škola veterinární Emila Holuba Brno, s. r. o.'),
 (472,	'Trojské gymnázium s.r.o.'),
 (732,	'U2B ¦ multimediální střední škola'),
+(759,	'VAKANTIS střední škola a vyšší odborná škola s.r.o.'),
 (106,	'Veřejnosprávní akademie a střední škola, s. r. o.'),
 (152,	'Vojenská střední škola a Vyšší odborná škola Ministerstva obrany v Moravské Třebové (pracoviště Soko'),
+(742,	'VOŠ a SPŠE Plzeň'),
 (253,	'Všeobecné a sportovní gymnázium, Vimperk, Pivovarská 69'),
 (84,	'Výchovný ústav a střední škola, Olešnice na Moravě, Trpínská 317'),
 (118,	'Výchovný ústav, dětský domov se školou, středisko výchovné péče, střední škola a základní škola, Mor'),
@@ -758,6 +816,7 @@ INSERT INTO `schools` (`schoolId`, `name`) VALUES
 (377,	'Vyšší odborná škola mezinárodního obchodu a Obchodní akademie, Jablonec nad Nisou, Horní náměstí 15, příspěvková organizace'),
 (471,	'Vyšší odborná škola oděvního návrhářství a Střední průmyslová škola oděvní, Praha 7, Jablonského 3'),
 (470,	'Vyšší odborná škola pedagogická a sociální, Střední odborná škola pedagogická a Gymnázium, Praha 6, Evropská 33'),
+(763,	'Vyšší odborná škola sklářská a Střední škola v Novém Boru'),
 (375,	'Vyšší odborná škola sklářská a Střední škola, Nový Bor, Wolkerova 316, příspěvková organizace'),
 (275,	'Vyšší odborná škola sociální a Střední pedagogická škola, Prachatice, Zahradní 249'),
 (400,	'Vyšší odborná škola stavební a Střední průmyslová škola stavební, Praha 1, Dušní 17'),
@@ -783,7 +842,7 @@ INSERT INTO `schools` (`schoolId`, `name`) VALUES
 (586,	'Základní škola a Gymnázium Leonardo da Vinci Academy'),
 (725,	'Základní škola a gymnázium Navis'),
 (288,	'Základní škola a Gymnázium Vodňany'),
-(215,	'Základní škola a Mateřská škola Dolní Loučky'),
+(753,	'Základní škola a mateřská škola Těšany, okres Brno-venkov, příspěvková organizace'),
 (697,	'Základní škola a Praktická škola Benešov, Hodějovského 1654'),
 (72,	'Základní škola a praktická škola Brno, Vídeňská, příspěvková organizace'),
 (101,	'Základní škola a praktická škola Hodonín, náměstí B. Martinů, příspěvková organizace'),
@@ -807,13 +866,15 @@ INSERT INTO `schools` (`schoolId`, `name`) VALUES
 (543,	'Základní škola a Střední škola, Praha 10, Vachkova 941'),
 (533,	'Základní škola a Střední škola, Praha 2, Vinohradská 54'),
 (537,	'Základní škola a Střední škola, Praha 4, Kupeckého 576'),
+(777,	'Základní Škola Dubí 2, Tovární 110, Okres Teplice'),
+(786,	'Základní škola Mukařov, příspěvková organizace'),
 (540,	'Základní škola speciální a Praktická škola, Praha 6, Rooseveltova 8'),
-(48,	'Základní škola Tišnov, nám. 28. října 1708, Tišnov'),
+(758,	'Základní škola T. G. Masaryka v Praze 12'),
 (689,	'Základní škola, Mateřská škola a Praktická škola Kolín, příspěvková organizace'),
 (380,	'Základní škola, Praktická škola a Mateřská škola, Česká Lípa, Moskevská 679, příspěvková organizace'),
-(210,	'Základní škola,Kuřim, Jungmannova 813, okres Brno – venkov, příspěvková organizace'),
 (183,	'Zemědělská akademie a Gymnázium Hořice – střední škola a vyšší odborná škola, příspěvková organizace'),
-(522,	'Zlatnické středisko praktického vyučování Solunka, spol. s r.o.');
+(522,	'Zlatnické středisko praktického vyučování Solunka, spol. s r.o.'),
+(754,	'ZŠ Elanor Sušice');
 
 DROP TABLE IF EXISTS `states`;
 CREATE TABLE `states` (
@@ -842,7 +903,7 @@ CREATE TABLE `users` (
   `userId` bigint(20) unsigned NOT NULL,
   `surname` varchar(200) NOT NULL DEFAULT '',
   `name` varchar(200) NOT NULL DEFAULT '',
-  `adult` bit(1) NOT NULL DEFAULT 0 ,
+  `adult` bit(1) DEFAULT b'0',
   `schoolId` int(10) unsigned DEFAULT NULL,
   `access_token` varchar(100) NOT NULL,
   `refresh_token` varchar(100) NOT NULL,
@@ -852,8 +913,5 @@ CREATE TABLE `users` (
   CONSTRAINT `users_ibfk_1` FOREIGN KEY (`schoolId`) REFERENCES `schools` (`schoolId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-INSERT INTO `users` (`userId`, `surname`, `name`, `adult`, `schoolId`, `access_token`, `refresh_token`, `expires_in`) VALUES
-(264449522329976832,	'Surname',	'Name12',	CONV('1', 2, 10) + 0,	1,	'ZqgOnszCA6xIx9rakTkVLX4bh8n4yT',	'dnb4HhHr62MkPKu6zZE4yDs9Z2ULS5',	'2023-10-02 11:03:43'),
-(810820857290948619,	'surName1',	'Name123',	CONV('1', 2, 10) + 0,	1,	'peef29AsDDHSr2LepBB763wNxu6nVY',	't1UXqMqgbF6YGPT65hoDd63mXbm6dy',	'2023-10-02 11:00:35');
 
--- 2023-09-25 09:17:27
+-- 2023-11-03 19:27:41
