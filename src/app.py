@@ -11,6 +11,7 @@ from routes.user import userRoutes
 from routes.team import teamRoutes
 from routes.games import gameRoutes
 from routes.page import pageRoutes
+from routes.events import eventRoutes
 # from routes.role import roleRoutes
 from tests import testRoutes
 
@@ -26,6 +27,7 @@ register_routes(api, userRoutes, '/user')
 register_routes(api, teamRoutes, '/team')
 register_routes(api, gameRoutes, '/game')
 register_routes(api, pageRoutes, '/page')
+register_routes(api, eventRoutes, '/event')
 # register_routes(api, roleRoutes, '/role')
 
 if(os.getenv("PROD") is None):

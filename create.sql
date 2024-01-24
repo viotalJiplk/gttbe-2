@@ -914,5 +914,30 @@ CREATE TABLE `users` (
   CONSTRAINT `users_ibfk_1` FOREIGN KEY (`schoolId`) REFERENCES `schools` (`schoolId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+DROP TABLE IF EXISTS `events`;
+CREATE TABLE `events` (
+  `eventId` int(11) NOT NULL AUTO_INCREMENT,
+  `date` date NOT NULL,
+  `beginTime` time NOT NULL,
+  `endTime` time NOT NULL,
+  `gameId` int(10) unsigned NOT NULL,
+  `description` tinytext NOT NULL,
+  PRIMARY KEY (`eventId`),
+  KEY `gameId` (`gameId`),
+  CONSTRAINT `events_ibfk_1` FOREIGN KEY (`gameId`) REFERENCES `games` (`gameId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+INSERT INTO `events` (`eventId`, `date`, `beginTime`, `endTime`, `gameId`, `description`) VALUES
+(3,	'2023-11-17',	'10:00:00',	'16:00:00',	5,	''),
+(4,	'2023-11-17',	'18:00:00',	'22:00:00',	5,	''),
+(5,	'2023-11-17',	'14:00:00',	'18:00:00',	4,	''),
+(6,	'2023-11-18',	'14:00:00',	'18:00:00',	2,	''),
+(7,	'2023-11-19',	'10:00:00',	'18:00:00',	1,	''),
+(8,	'2023-11-19',	'13:00:00',	'18:00:00',	3,	''),
+(9,	'2023-11-25',	'10:00:00',	'15:00:00',	6,	''),
+(10,	'2023-11-25',	'15:00:00',	'18:00:00',	5,	''),
+(11,	'2023-11-26',	'10:00:00',	'11:30:00',	4,	'Finále'),
+(12,	'2023-11-26',	'12:00:00',	'14:30:00',	2,	'Finále'),
+(13,	'2023-11-26',	'15:00:00',	'18:00:00',	1,	'Finále');
 
 -- 2023-11-03 19:27:41
