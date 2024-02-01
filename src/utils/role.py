@@ -1,35 +1,35 @@
 from functools import wraps
 from models.role import RoleModel
 
-def getRole(roleArray):
+def getRole(roleArray, optional=True):
     def wrapper(func, optional=True):
         @wraps(func)
         def wrapGetRole(*args, **kwargs):
             hasRole = False
-            passPrcessing = False
-            if kwargs['authResult'] is None:
+            passProcessing = False
+            if 'authResult' in kwargs:
                 if optional:
-                    passPrcessing = True
+                    passProcessing = True
                 else:
                     return {"kind": "ROLE", "msg": "Missing GameId."}, 401
             gameId = ""
-            if kwargs['gameId'] is not None:
+            if 'gameId' in kwargs:
                 gameId = kwargs['gameId']
             else:
-                if kwargs['data'] is not None:
-                    if kwargs['data']['game_id'] is not None:
+                if 'data' in kwargs:
+                    if 'game_id' in kwargs['data']:
                         gameId = kwargs['data']['game_id']
                     else:
                         if optional:
-                            passPrcessing = True
+                            passProcessing = True
                         else:
                             return {"kind": "ROLE", "msg": "Missing GameId."}, 401
                 else:
                     if optional:
-                        passPrcessing = True
+                        passProcessing = True
                     else:
                         return {"kind": "ROLE", "msg": "Missing payload."}, 401
-            if not passPrcessing:
+            if not passProcessing:
                 hasRole = RoleModel.hasRole(kwargs['authResult']['userId'], roleArray, gameId)
             return func(hasRole=hasRole, *args, **kwargs)
         return wrapGetRole

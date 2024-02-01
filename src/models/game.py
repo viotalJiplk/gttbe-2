@@ -39,15 +39,21 @@ class GameModel:
 
     @classmethod
     @dbConn()
-    def create(cls, name: str, maxCaptains: int, maxMembers: int, maxReservists: int):
+    def create(cls, name: str, registrationStart: date, registrationEnd: date, maxCaptains: int, maxMembers: int, maxReservists: int, cursor, db):
         query = "INSERT INTO games (name, maxCaptains, maxMembers, maxReservists) VALUES (%s, %s, %s, %s)"
         cursor.execute(query, (name, maxCaptains, maxMembers, maxReservists))
         return cls(name=name, maxCaptains=maxCaptains, maxMembers=maxMembers, maxReservists=maxReservists)
+
+    @dbConn()
+    def update(self, cursor, db):
+        query = "UPDATE `games` SET registrationStart = %s, registrationEnd = %s, maxCaptains = %s, maxMembers = %s, maxReservists = %s, minCaptains = %s, minMembers = %s, minReservists = %s, gamePage = %s WHERE gameId = %s"
+        cursor.execute(query, (self.registrationStart, self.registrationEnd, self.maxCaptains, self.maxMembers, self.maxReservists, self.minCaptains, self.minMembers, self.minReservists, self.gamePage, self.gameId))
+        return True
     
     @classmethod
     @dbConn()
     def getById(cls, gameId, cursor, db):
-        query = "SELECT gameId, name, registrationStart, registrationEnd, maxCaptains, maxMembers, maxReservists, minCaptains, minMembers, minReservists, gameId, gamePage FROM games WHERE gameId=%s"
+        query = "SELECT gameId, name, registrationStart, registrationEnd, maxCaptains, maxMembers, maxReservists, minCaptains, minMembers, minReservists, gamePage FROM games WHERE gameId=%s"
         cursor.execute(query, (gameId,))
         row = fetchOneWithNames(cursor)
         if row:

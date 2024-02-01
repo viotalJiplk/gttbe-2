@@ -11,11 +11,11 @@ class UserEndpoint(Resource):
     @jwsProtected()
     def get(self, authResult, uid):
         if uid == '@me':
-            return str(UserModel.getById(authResult["userId"]))
+            return UserModel.getById(authResult["userId"]).toDict()
         else:
             result = hasRoleWithErrMsg(authResult['userId'], ["admin"])
             if result is True:
-                return str(UserModel.getById(uid))
+                return UserModel.getById(uid).toDict()
             else:
                 return result
     

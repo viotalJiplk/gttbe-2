@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flow testing page</title>
+    <script src="../js/main.js"></script>
+</head>
+
+<body>
+    <p>list all games</p>
+    <req-custom id="updateGame"></req-custom>
+</body>
+<script>
+    let jws = localStorage.getItem("jws");
+    if (jws == "") {
+        alert("Go to login page to get jws");
+    } else {
+        document.getElementById("updateGame").setAttribute("data-options", JSON.stringify({
+            "method": "PUT",
+            "url": "/backend/game/1/page",
+            "headers": JSON.stringify({
+                "Authorization": "Bearer " + jws,
+                "Content-Type": "application/json"
+            }),
+            "body": JSON.stringify({
+                "game_id": 1,
+                "gamePage": "test"
+            })
+        }));
+    }
+</script>
+
+</html>

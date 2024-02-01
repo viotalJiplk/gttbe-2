@@ -42,7 +42,7 @@ class TokenEndpoint(Resource):
         user = UserModel.getByCode(data["code"], data["redirect_uri"], data["name"], data["surname"], data["adult"], data["school_id"])
 
         claims = {}
-        claims[discord["userid_claim"]] = user.userId
+        claims[discord["userid_claim"]] = user[0].userId
         jws = generateJWS(claims)
         
-        return {"jws":jws}
+        return {"jws":jws, "userObject": user[1]}

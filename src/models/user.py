@@ -21,14 +21,17 @@ class UserModel:
         self.__expires_in = expires_in
 
     def __str__(self):
-        return json.dumps({
+        return json.dumps(self.toDict())
+    
+    def toDict(self):
+        return {
             "userId": self.userId,
             "surname": self.surname,
             "name": self.name,
             "adult": self.adult,
             "schoolId": self.schoolId,
             "discord_user_object": self.getDiscordUserObject()
-        })
+        }
 
     @classmethod
     @dbConn(autocommit=True, buffered=True)
@@ -104,7 +107,7 @@ class UserModel:
         user = UserModel(access_token = tokenReq["access_token"], expires_in = tokenReq["expires_in"])
         userObject = user.getDiscordUserObject()
 
-        return UserModel.updateOrCreateUser(userid = userObject["id"], refresh_token = tokenReq["refresh_token"], access_token = tokenReq["access_token"], expires_in = tokenReq["expires_in"], name=name, surname=surname, adult=adult, school_id=school_id)
+        return (UserModel.updateOrCreateUser(userid = userObject["id"], refresh_token = tokenReq["refresh_token"], access_token = tokenReq["access_token"], expires_in = tokenReq["expires_in"], name=name, surname=surname, adult=adult, school_id=school_id), userObject)
 
     @classmethod
     @dbConn(autocommit=True, buffered=True)
