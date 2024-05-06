@@ -26,8 +26,7 @@ class Games(Resource):
     @jwsProtected()
     @postJson
     @getRole(["gameOrganizer"], optional=False)
-    def put(self, data, authResult, hasRole, id):
-        gameId = id
+    def put(self, data, authResult, hasRole, gameId):
         if gameId == 'all':
             if 'game_id' in data:
                 gameId = data['game_id']
@@ -65,8 +64,7 @@ class GamePage(Resource):
     @jwsProtected()
     @postJson
     @getRole(["gameOrganizer"], optional=False)
-    def put(self, data, authResult, hasRole, id):
-        gameId = id
+    def put(self, data, authResult, hasRole, gameId):
         if gameId == 'all':
             if 'game_id' in data:
                 gameId = data['game_id']

@@ -2,12 +2,12 @@ from functools import wraps
 from models.role import RoleModel
 
 def getRole(roleArray, optional=True):
-    def wrapper(func, optional=True):
+    def wrapper(func):
         @wraps(func)
         def wrapGetRole(*args, **kwargs):
             hasRole = False
             passProcessing = False
-            if 'authResult' in kwargs:
+            if 'authResult' not in kwargs:
                 if optional:
                     passProcessing = True
                 else:
@@ -31,6 +31,8 @@ def getRole(roleArray, optional=True):
                         return {"kind": "ROLE", "msg": "Missing payload."}, 401
             if not passProcessing:
                 hasRole = RoleModel.hasRole(kwargs['authResult']['userId'], roleArray, gameId)
+            if not hasRole:
+                return {"kind": "ROLE", "msg": "Inadequate role."}, 401
             return func(hasRole=hasRole, *args, **kwargs)
         return wrapGetRole
     return wrapper

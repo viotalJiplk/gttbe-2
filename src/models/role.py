@@ -29,3 +29,10 @@ class RoleModel:
             if userRole["role"] in roles:
                 return True
         return False
+    
+    @classmethod
+    @dbConn()
+    def listRole(cls, userId):
+        query = "SELECT `role` FROM `roles` WHERE `userId`=%s"
+        cursor.execute(query, (userId, ))
+        return False

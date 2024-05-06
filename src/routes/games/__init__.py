@@ -20,4 +20,4 @@ class GameDescr(Resource):
             }
         ], 200
 
-gameRoutes = [(GameDescr, '/'), (Games, '/<id>/'), (GamePage, '/<id>/page/')]
+gameRoutes = [(GameDescr, '/'), (Games, '/<gameId>/'), (GamePage, '/<gameId>/page/')]
