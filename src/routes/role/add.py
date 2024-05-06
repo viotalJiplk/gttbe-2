@@ -12,3 +12,7 @@ class AddRole(Resource):
     def post(self, data, authResult, hasRole):
         if("game_id" not in data or "user_id" not in data or "role" not in data):
             return {"kind":"ROLE", "msg": "Missing game_id or user_id or role in data."}, 401
+        try:
+            RoleModel.create(data["user_id"], data["game_id"], data["role"])
+        except ValueError as e:
+            return {"kind":"ROLE", "msg": str(e)}, 401

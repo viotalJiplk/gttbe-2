@@ -15,7 +15,7 @@
     if(jws == ""){
         alert("Go to login page to get jws");
     }else{
-        document.getElementById("addRole").setAttribute("data-options", '{"method":"POST", "url":"/role/add", "headers":"{\\\"Authorization\\\": \\\"Bearer ' + jws + '\\\", \\\"Content-Type\\\": \\\"application/json\\\"}", "body":"{\\\"game_id\\\": 1,\\\"user_id\\\":0,\\\"role\\\":\\\"Admin\\\"}"}');
+        document.getElementById("addRole").setAttribute("data-options", '{"method":"POST", "url":"/backend/role/add", "headers":"{\\\"Authorization\\\": \\\"Bearer ' + jws + '\\\", \\\"Content-Type\\\": \\\"application/json\\\"}", "body":"{\\\"game_id\\\": 1,\\\"user_id\\\":0,\\\"role\\\":\\\"Admin\\\"}"}');
     }
 </script>
 </html>

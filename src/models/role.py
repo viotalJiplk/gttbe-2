@@ -1,4 +1,5 @@
 from utils.db import fetchAllWithNames, dbConn
+from mysql.connector.errors import IntegrityError
 
 class RoleModel:
     def __init__(self, userId, gameId, role):        
@@ -8,9 +9,12 @@ class RoleModel:
 
     @classmethod
     @dbConn()
-    def create(cls,userId, gameId, role, cursor, db):
+    def create(cls, userId, gameId, role, cursor, db):
         query = "INSERT INTO `roles` (`userId`, `gameId`, `role`) VALUES (%s, %s, %s)"
-        cursor.execute(query, (userId, gameId, role))
+        try:
+            cursor.execute(query, (userId, gameId, role))
+        except IntegrityError as e:
+            raise ValueError("User does not exist")
         return cls(userId=userId, gameId=gameId, role=role)
 
     @classmethod
