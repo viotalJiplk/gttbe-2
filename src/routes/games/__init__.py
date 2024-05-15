@@ -6,14 +6,14 @@ class GameDescr(Resource):
         return [
             {
                 "name": "gameinfo",
-                "url": "<id>/",
+                "url": "<gameId>/",
                 "type": "public",
                 "method": "GET",
-                "descr": "Basic gameinfo. You can use <id> = all to list all games."
+                "descr": "Basic gameinfo. You can use <gameId> = all to list all games."
             },
             {
                 "name": "gamepage",
-                "url": "<id>/page/",
+                "url": "<gameId>/page/",
                 "type": "public",
                 "method": "GET",
                 "descr": "Game page in markdown."

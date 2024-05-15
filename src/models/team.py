@@ -58,9 +58,9 @@ class TeamModel:
     def listUsersTeams(self, userId, withJoinstring, cursor, db):
         query = ""
         if withJoinstring:
-            query = 'SELECT registrations.teamId, registrations.nick, registrations.role, teams.name, teams.gameid, teams.joinString FROM `registrations` INNER JOIN teams ON registrations.teamId = teams.teamId WHERE registrations.userId=%(userId)s'
+            query = 'SELECT teamId, nick, role, name, gameId, joinString FROM `teamInfo` WHERE userId=%(userId)s'
         else:
-            query = 'SELECT registrations.teamId, registrations.nick, registrations.role, teams.name, teams.gameid FROM `registrations` INNER JOIN teams ON registrations.teamId = teams.teamId WHERE registrations.userId=%(userId)s'
+            query = 'SELECT teamId, nick, role, name, gameId FROM `teamInfo` WHERE userId=%(userId)s'
         
         cursor.execute(query, {"userId": userId})
         result = fetchAllWithNames(cursor)
@@ -105,37 +105,9 @@ class TeamModel:
         else:
             query = ""
             if withDetails is True:
-                query += "SELECT captains.teamId, name, registrations.userId, registrations.nick, registrations.role, registrations.rank, registrations.maxRank FROM"
+                query += "SELECT teamId, name, userId, nick, role, canPlaySince, rank, maxRank FROM eligibleTeams WHERE gameId = %(gameId)s"
             else:
-                query += "SELECT captains.teamId, name, registrations.nick, registrations.role FROM "
-            query += """(
-                        SELECT registrations.teamId, registrations.role, teams.name,  teams.gameId, COUNT(teams.gameid) FROM `registrations`
-                        INNER JOIN teams ON registrations.teamId = teams.teamId
-                        WHERE teams.gameId=%(gameId)s AND registrations.role="Captain"
-                        GROUP BY teamId, registrations.role
-                        HAVING COUNT(teams.gameid) >= (SELECT minCaptains FROM games WHERE gameId = %(gameId)s)
-                    ) AS captains """
-            if game.minMembers > 0:
-                query += """INNER JOIN (
-                    SELECT registrations.teamId, registrations.role, teams.gameId, COUNT(teams.gameid) FROM `registrations`
-                    INNER JOIN teams ON registrations.teamId = teams.teamId
-                    WHERE teams.gameId=%(gameId)s AND registrations.role="Member"
-                    GROUP BY teamId, registrations.role
-                    HAVING COUNT(teams.gameid) >= (SELECT minMembers FROM games WHERE gameId = %(gameId)s)
-                ) AS members ON captains.teamId = members.teamId
-                """
-            if game.minReservists > 0:
-                query +=""""INNER JOIN (
-                    SELECT registrations.teamId, registrations.role, teams.gameId, COUNT(teams.gameid) FROM `registrations`
-                    INNER JOIN teams ON registrations.teamId = teams.teamId
-                    WHERE teams.gameId=%(gameId)s AND registrations.role="Reservist"
-                    GROUP BY teamId, registrations.role
-                    HAVING COUNT(teams.gameid) >= (SELECT minReservists FROM games WHERE gameId = %(gameId)s)
-                ) AS Reservists ON captains.teamId = Reservists.teamId
-                """
-            query += """LEFT JOIN (
-                SELECT * from registrations
-            ) AS registrations ON registrations.teamId = captains.teamId;"""
+                query += "SELECT teamId, name, nick, role, canPlaySince FROM eligibleTeams WHERE gameId = %(gameId)s"
             cursor.execute(query, {"gameId": game.gameId})
             result = fetchAllWithNames(cursor)
             if withDetails is True:
@@ -147,7 +119,9 @@ class TeamModel:
                             user["discordUserObject"] = userObject.getDiscordUserObject()
                         except:
                             user["discordUserObject"] = ""
-                
+            for user in result:
+                if user["canPlaySince"] is not None:
+                    user["canPlaySince"] = user["canPlaySince"].isoformat()
             return result
 
 

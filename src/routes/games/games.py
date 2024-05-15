@@ -7,11 +7,11 @@ from datetime import date
 from utils.jws import jwsProtected
 
 class Games(Resource):
-    def get(self, id):
-        if(id == "all"):
+    def get(self, gameId):
+        if(gameId == "all"):
             return {"games": GameModel.getAllDict()}
         else:
-            game = GameModel.getById(id)
+            game = GameModel.getById(gameId)
             if game is None:
                 return {"kind": "GAME", "msg": "GameId out of scope."}, 403
             return {"game": {

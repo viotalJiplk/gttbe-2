@@ -9,13 +9,14 @@
 </head>
 <body>
     <req-custom id="teamList"></req-custom>
+    <p>withDiscordNames is bool and if true and user is Admin or game organizer the endpoint returns discord user object <b>can take significant amount of time</b></p>
 </body>
 <script>
     let jws = localStorage.getItem("jws");
     if(jws == "undefined"){
-        document.getElementById("teamList").setAttribute("data-options", '{"method":"GET", "url":"/backend/team/list/participating/<gameId>/", "headers":"{\\\"Content-Type\\\": \\\"application/json\\\"}"}');
+        document.getElementById("teamList").setAttribute("data-options", '{"method":"GET", "url":"/backend/team/list/participating/<gameId>/<withDiscordNames>", "headers":"{\\\"Content-Type\\\": \\\"application/json\\\"}"}');
     }else{
-        document.getElementById("teamList").setAttribute("data-options", '{"method":"GET", "url":"/backend/team/list/participating/<gameId>/", "headers":"{\\\"Authorization\\\": \\\"Bearer ' + jws + '\\\", \\\"Content-Type\\\": \\\"application/json\\\"}"}');
+        document.getElementById("teamList").setAttribute("data-options", '{"method":"GET", "url":"/backend/team/list/participating/<gameId>/<withDiscordNames>", "headers":"{\\\"Authorization\\\": \\\"Bearer ' + jws + '\\\", \\\"Content-Type\\\": \\\"application/json\\\"}"}');
     }
 </script>
 </html>
