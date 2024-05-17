@@ -44,10 +44,11 @@ CREATE TABLE `events` (
   `endTime` time NOT NULL,
   `gameId` int(10) unsigned NOT NULL,
   `description` tinytext NOT NULL,
+  `eventType` varchar(10) DEFAULT NULL,
   PRIMARY KEY (`eventId`),
   KEY `gameId` (`gameId`),
   CONSTRAINT `events_ibfk_1` FOREIGN KEY (`gameId`) REFERENCES `games` (`gameId`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 
 DROP TABLE IF EXISTS `games`;
@@ -169,8 +170,43 @@ CREATE TABLE `users` (
   CONSTRAINT `users_ibfk_1` FOREIGN KEY (`schoolId`) REFERENCES `schools` (`schoolId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+
+DROP TABLE IF EXISTS `matches`;
+CREATE TABLE `matches` (
+  `matchId` int(11) NOT NULL AUTO_INCREMENT,
+  `stageId` int(11) NOT NULL,
+  `firstTeamId` int(10) unsigned NOT NULL,
+  `secondTeamId` int(10) unsigned NOT NULL,
+  `firstTeamResult` int(11) NOT NULL,
+  `secondTeamResult` int(11) NOT NULL,
+  PRIMARY KEY (`matchId`),
+  KEY `firstTeamId` (`firstTeamId`),
+  KEY `secondTeamId` (`secondTeamId`),
+  KEY `stageId` (`stageId`),
+  CONSTRAINT `matches_ibfk_2` FOREIGN KEY (`firstTeamId`) REFERENCES `teams` (`teamId`),
+  CONSTRAINT `matches_ibfk_3` FOREIGN KEY (`secondTeamId`) REFERENCES `teams` (`teamId`),
+  CONSTRAINT `matches_ibfk_4` FOREIGN KEY (`stageId`) REFERENCES `stages` (`stageId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+DROP TABLE IF EXISTS `stages`;
+CREATE TABLE `stages` (
+  `stageId` int(11) NOT NULL AUTO_INCREMENT,
+  `eventId` int(11) NOT NULL,
+  `stageName` text NOT NULL,
+  `stageIndex` int(11) NOT NULL,
+  PRIMARY KEY (`stageId`),
+  KEY `eventId` (`eventId`),
+  CONSTRAINT `stages_ibfk_1` FOREIGN KEY (`eventId`) REFERENCES `events` (`eventId`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 DROP TABLE IF EXISTS `teamInfo`;
 CREATE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `teamInfo` AS select `teams`.`teamId` AS `teamId`,`teams`.`name` AS `name`,`teams`.`gameId` AS `gameId`,`teams`.`canPlaySince` AS `canPlaySince`,`teams`.`joinString` AS `joinString`,`registrations`.`userId` AS `userId`,`registrations`.`nick` AS `nick`,`registrations`.`role` AS `role`,`registrations`.`rank` AS `rank`,`registrations`.`maxRank` AS `maxRank` from (`teams` join `registrations` on(`teams`.`teamId` = `registrations`.`teamId`)) order by `teams`.`teamId`,`registrations`.`role`;
 
 DROP TABLE IF EXISTS `eligibleTeams`;
 CREATE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `eligibleTeams` AS select `teamInfo`.`teamId` AS `teamId`,`teamInfo`.`name` AS `name`,`teamInfo`.`gameId` AS `gameId`,`teamInfo`.`canPlaySince` AS `canPlaySince`,`teamInfo`.`joinString` AS `joinString`,`teamInfo`.`userId` AS `userId`,`teamInfo`.`nick` AS `nick`,`teamInfo`.`role` AS `role`,`teamInfo`.`rank` AS `rank`,`teamInfo`.`maxRank` AS `maxRank` from `teamInfo` where `teamInfo`.`canPlaySince` is not null order by `teamInfo`.`canPlaySince`, `teamInfo`.`teamId`, `teamInfo`.`role`;
+
+SET GLOBAL event_scheduler=ON;
+
+DROP EVENT IF EXISTS `Delete orphaned state`;
+CREATE EVENT `Delete orphaned state` ON SCHEDULE EVERY 1 HOUR STARTS '2023-10-10 00:00:00' ON COMPLETION NOT PRESERVE ENABLE DO delete from states where date < (NOW() - INTERVAL 45 MINUTE);

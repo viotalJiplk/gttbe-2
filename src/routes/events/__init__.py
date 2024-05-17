@@ -1,6 +1,6 @@
 from routes.discord.auth import Auth, TokenEndpoint
 from flask_restful import Resource, request
-from routes.events.events import EventList
+from routes.events.events import EventList, EventCreate, Events
 
 class EventDescr(Resource):
     def get(self):
@@ -14,4 +14,4 @@ class EventDescr(Resource):
             }
         ], 200
 
-eventRoutes = [(EventDescr, '/'), (EventList, '/list') ]
+eventRoutes = [(EventDescr, '/'), (EventList, '/list'), (EventCreate, '/create'), (Events, '/<eventId>/')]

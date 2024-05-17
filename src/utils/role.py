@@ -19,6 +19,8 @@ def getRole(roleArray, optional=True):
                 if 'data' in kwargs:
                     if 'game_id' in kwargs['data']:
                         gameId = kwargs['data']['game_id']
+                    elif 'gameId' in kwargs['data']:
+                        gameId = kwargs['data']['gameId']
                     else:
                         if optional:
                             passProcessing = True
