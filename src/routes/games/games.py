@@ -50,8 +50,8 @@ class Games(Resource):
         return game.toDict()
 
 class GamePage(Resource):
-    def get(self, id):
-        game = GameModel.getById(id)
+    def get(self, gameId):
+        game = GameModel.getById(gameId)
         if game is None:
             return {"kind": "GAME", "msg": "GameId out of scope."}, 403
         return {"game_id": id, "page": game.getGamePage()}

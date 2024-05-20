@@ -91,3 +91,14 @@ class EventModel:
             rows[index]["beginTime"] = fromTimeDelta(rows[index]["beginTime"]).strftime("%H:%M")
             rows[index]["endTime"] = fromTimeDelta(rows[index]["endTime"]).strftime("%H:%M")
         return rows
+
+    @dbConn()
+    def allMatchesDict(self, cursor, db):
+        query = "SELECT * FROM matchesAll WHERE eventId=%s"
+        cursor.execute(query, (self.eventId,))
+        rows = fetchAllWithNames(cursor)
+        for index in range(0, len(rows)):
+            rows[index]["date"] = rows[index]["date"].isoformat()
+            rows[index]["beginTime"] = fromTimeDelta(rows[index]["beginTime"]).strftime("%H:%M")
+            rows[index]["endTime"] = fromTimeDelta(rows[index]["endTime"]).strftime("%H:%M")
+        return rows

@@ -2,13 +2,13 @@ from utils.db import fetchAllWithNames, fetchOneWithNames, dbConn
 from json import dumps
 
 class StageModel:
-    def __init__(self, stageId:int=None, stageIndex:int=None, stageName:str="", stageIndex:int=None):        
+    def __init__(self, stageId:int=None, eventId:int=None, stageName:str="", stageIndex:int=None):        
         self.stageId = stageId
         self.eventId = eventId
         self.stageName = stageName
         self.stageIndex = stageIndex
 
-    def toDict():
+    def toDict(self):
         return {
             "stageId": self.stageId,
             "eventId": self.eventId,
@@ -26,8 +26,8 @@ class StageModel:
     
     @classmethod
     @dbConn()
-    def create(cls, stageIndex:int, stageName:str, stageIndex:int, cursor, db):
-        query = "INSERT INTO stages (eventId, stageName, stageIndex) VALUES (%s, %s, %s, %s)"
+    def create(cls, eventId:int, stageName:str, stageIndex:int, cursor, db):
+        query = "INSERT INTO stages (eventId, stageName, stageIndex) VALUES (%s, %s, %s)"
         cursor.execute(query, (eventId, stageName, stageIndex))
         return cls(stageId=cursor.lastrowid, eventId=eventId, stageName=stageName, stageIndex=stageIndex)
 
@@ -35,7 +35,7 @@ class StageModel:
     @dbConn()
     def getById(cls, stageId, cursor, db):
         query = "SELECT stageId, eventId, stageName, stageIndex FROM stages WHERE stageId=%s"
-        cursor.execute(query, (eventId,))
+        cursor.execute(query, (stageId,))
         row = fetchOneWithNames(cursor)
         if row:
             return cls(**row)

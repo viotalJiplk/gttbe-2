@@ -14,6 +14,8 @@ from routes.games import gameRoutes
 from routes.page import pageRoutes
 from routes.events import eventRoutes
 from routes.role import roleRoutes
+from routes.stage import stageRoutes
+from routes.matches import matchRoutes
 from tests import testRoutes
 
 mainLogger = getLogger("app")
@@ -32,6 +34,8 @@ register_routes(api, gameRoutes, '/game')
 register_routes(api, pageRoutes, '/page')
 register_routes(api, eventRoutes, '/event')
 register_routes(api, roleRoutes, '/role')
+register_routes(api, stageRoutes, '/stage')
+register_routes(api, matchRoutes, '/match')
 
 if(os.getenv("PROD") is None):
     register_routes(api, testRoutes, '/test', False)

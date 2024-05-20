@@ -3,7 +3,7 @@ from json import dumps
 
 class MatchModel:
     table = "matches"
-    def __init__(self, matchId:int=None, stageId:int=None, firstTeamId:int=None, secondTeamId:int=None, firstTeamResult:int=None, secondTeamId:int=None):        
+    def __init__(self, matchId:int=None, stageId:int=None, firstTeamId:int=None, secondTeamId:int=None, firstTeamResult:int=None, secondTeamResult:int=None):        
         self.matchId = matchId
         self.stageId = stageId
         self.firstTeamId = firstTeamId
@@ -13,7 +13,7 @@ class MatchModel:
 
     def toDict(self):
         return {
-            "eventId": self.eventId,
+            "matchId": self.matchId,
             "stageId": self.stageId,
             "firstTeamId": self.firstTeamId,
             "secondTeamId": self.secondTeamId,
@@ -31,15 +31,15 @@ class MatchModel:
     
     @classmethod
     @dbConn()
-    def create(cls, stageId:int, firstTeamId:int, secondTeamId:int, firstTeamResult:int, secondTeamId:int, cursor, db):
-        query = "INSERT INTO matches (stageId, eventId, firstTeamId, secondTeamId, firstTeamResult, secondTeamId) VALUES (%s, %s, %s, %s, %s, %s)"
-        cursor.execute(query, (stageId, firstTeamId, secondTeamId, firstTeamResult, secondTeamId))
-        return cls(matchId=cursor.lastrowid , stageId=stageId, eventId=eventId, stageName=stageName, stageIndex=stageIndex)
+    def create(cls, stageId:int, firstTeamId:int, secondTeamId:int, firstTeamResult:int, secondTeamResult:int, cursor, db):
+        query = "INSERT INTO matches (stageId, firstTeamId, secondTeamId, firstTeamResult, secondTeamResult) VALUES (%s, %s, %s, %s, %s)"
+        cursor.execute(query, (stageId, firstTeamId, secondTeamId, firstTeamResult, secondTeamResult))
+        return cls(matchId=cursor.lastrowid , stageId=stageId, firstTeamId = firstTeamId, secondTeamId = secondTeamId, firstTeamResult = firstTeamResult, secondTeamResult = secondTeamResult)
 
     @classmethod
     @dbConn()
     def getById(cls, matchId, cursor, db):
-        query = "SELECT matchId, stageId, eventId, firstTeamId, secondTeamId, firstTeamResult, secondTeamId FROM matches WHERE matchId=%s"
+        query = "SELECT matchId, stageId, firstTeamId, secondTeamId, firstTeamResult, secondTeamResult FROM matches WHERE matchId=%s"
         cursor.execute(query, (matchId,))
         row = fetchOneWithNames(cursor)
         if row:

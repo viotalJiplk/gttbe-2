@@ -9,7 +9,6 @@ from models.role import RoleModel
 class Events(Resource):
     def get(self, eventId):
         event = EventModel.getById(eventId=eventId)
-        event.description = "xd"
         if event is None:
             return {"kind": "DATA", "msg": "Requested resource does not exist."}, 404
         return event.toDict()
@@ -20,8 +19,11 @@ class Events(Resource):
             return {"kind": "DATA", "msg": "Requested resource does not exist."}, 404
         if not RoleModel.hasRole(authResult["userId"], ["admin"], event.gameId):
             return {"kind": "ROLE", "msg": "Inadequate role."}, 401
-        event.delete()
-        return 
+        try:
+            event.delete()
+        except e:
+            return {"kind": "DATA", "msg": "There are still data, that is dependent on this."}, 401
+        return
 
 class EventCreate(Resource):
     @jwsProtected()

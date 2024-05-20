@@ -22,7 +22,7 @@ class RoleModel:
     def hasRole(cls, userId, roles, gameId = None, cursor = None, db = None):
         query = "SELECT `role` FROM `roles` WHERE `userId`=%s"
         if gameId is not None:
-            query += "AND `gameId`=%s"
+            query += "AND `gameId`=%s OR `gameId`= NULL"
             cursor.execute(query, (userId, gameId))
         else:
             cursor.execute(query, (userId,))
