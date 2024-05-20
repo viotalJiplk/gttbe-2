@@ -18,7 +18,7 @@ class Games(Resource):
 
     @jwsProtected()
     @postJson
-    @getRole(["gameOrganizer"], optional=False)
+    @getRole(["gameOrganizer", "admin"], optional=False)
     def put(self, data, authResult, hasRole, gameId):
         if gameId == 'all':
             if 'game_id' in data:
@@ -44,8 +44,10 @@ class Games(Resource):
             game.minMembers = data["minMembers"]
         if "minReservists" in data and isinstance(data["minReservists"], int):
             game.minReservists = data["minReservists"]
+        if "maxTeams" in data and isinstance(data["maxTeams"], int):
+            game.maxTeams = data["maxTeams"]
         game.update()
-        return
+        return game.toDict()
 
 class GamePage(Resource):
     def get(self, id):

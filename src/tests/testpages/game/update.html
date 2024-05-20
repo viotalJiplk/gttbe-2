@@ -20,7 +20,7 @@
     } else {
         document.getElementById("updateGame").setAttribute("data-options", JSON.stringify({
             "method": "PUT",
-            "url": "/backend/game/all/",
+            "url": "/backend/game/1/",
             "headers": JSON.stringify({
                 "Authorization": "Bearer " + jws,
                 "Content-Type": "application/json"
@@ -34,7 +34,8 @@
                 "maxReservists": 3,
                 "minCaptains": 1,
                 "minMembers": 1,
-                "minReservists": 0
+                "minReservists": 0,
+                "maxTeams": 0
             })
         }));
     }
