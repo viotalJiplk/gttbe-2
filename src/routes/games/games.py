@@ -14,14 +14,7 @@ class Games(Resource):
             game = GameModel.getById(gameId)
             if game is None:
                 return {"kind": "GAME", "msg": "GameId out of scope."}, 403
-            return {"game": {
-                    "gameId":game.gameId,
-                    "name": game.name,
-                    "maxCaptains": game.maxCaptains,
-                    "maxMembers": game.maxMembers,
-                    "maxReservist": game.maxReservists
-                }
-            }, 200
+            return game.toDict(), 200
 
     @jwsProtected()
     @postJson

@@ -23,8 +23,8 @@ class GameModel:
     def getGamePage(self):
         return self.gamePage
 
-    def __str__(self):
-        return dumps({
+    def toDict(self):
+        return {
             "gameId": self.gameId,
             "name": self.name,
             "registrationStart": self.registrationStart.isoformat(),
@@ -35,7 +35,10 @@ class GameModel:
             "minCaptains": self.minCaptains,
             "minMembers": self.minMembers,
             "minReservists": self.minReservists
-        })
+        }
+
+    def __str__(self):
+        return dumps(self.toDict())
 
     @classmethod
     @dbConn()
