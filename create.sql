@@ -1,6 +1,7 @@
 SET NAMES utf8;
 SET time_zone = '+00:00';
 SET foreign_key_checks = 0;
+SET NAMES utf8mb4;
 
 DELIMITER ;;
 
@@ -34,8 +35,6 @@ END;;
 
 DELIMITER ;
 
-SET NAMES utf8mb4;
-
 DROP TABLE IF EXISTS `events`;
 CREATE TABLE `events` (
   `eventId` int(11) NOT NULL AUTO_INCREMENT,
@@ -64,6 +63,7 @@ CREATE TABLE `games` (
   `minMembers` int(11) unsigned NOT NULL,
   `minReservists` int(11) unsigned NOT NULL,
   `gamePage` mediumtext NOT NULL,
+  `maxTeams` int(10) unsigned NOT NULL,
   PRIMARY KEY (`gameId`),
   KEY `name` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -138,8 +138,7 @@ CREATE TABLE `states` (
   `state` varchar(200) NOT NULL,
   `date` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6705 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 DROP TABLE IF EXISTS `teams`;
 CREATE TABLE `teams` (
@@ -152,7 +151,7 @@ CREATE TABLE `teams` (
   UNIQUE KEY `joinLink` (`joinString`),
   KEY `gameId` (`gameId`),
   CONSTRAINT `teams_ibfk_3` FOREIGN KEY (`gameId`) REFERENCES `games` (`gameId`)
-) ENGINE=InnoDB AUTO_INCREMENT=247 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 
 DROP TABLE IF EXISTS `users`;
@@ -198,7 +197,14 @@ CREATE TABLE `stages` (
   PRIMARY KEY (`stageId`),
   KEY `eventId` (`eventId`),
   CONSTRAINT `stages_ibfk_1` FOREIGN KEY (`eventId`) REFERENCES `events` (`eventId`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+DROP VIEW IF EXISTS `matchesAll`;
+CREATE TABLE `matchesAll` (`matchId` int(11), `stageId` int(11), `firstTeamId` int(10) unsigned, `secondTeamId` int(10) unsigned, `firstTeamResult` int(11), `secondTeamResult` int(11), `eventId` int(11), `stageName` text, `stageIndex` int(11), `date` date, `beginTime` time, `endTime` time, `gameId` int(10) unsigned, `description` tinytext, `eventType` varchar(10));
+
+DROP TABLE IF EXISTS `matchesAll`;
+CREATE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `matchesAll` AS select `matches`.`matchId` AS `matchId`,`matches`.`stageId` AS `stageId`,`matches`.`firstTeamId` AS `firstTeamId`,`matches`.`secondTeamId` AS `secondTeamId`,`matches`.`firstTeamResult` AS `firstTeamResult`,`matches`.`secondTeamResult` AS `secondTeamResult`,`stages`.`eventId` AS `eventId`,`stages`.`stageName` AS `stageName`,`stages`.`stageIndex` AS `stageIndex`,`events`.`date` AS `date`,`events`.`beginTime` AS `beginTime`,`events`.`endTime` AS `endTime`,`events`.`gameId` AS `gameId`,`events`.`description` AS `description`,`events`.`eventType` AS `eventType` from ((`matches` left join `stages` on(`stages`.`stageId` = `matches`.`stageId`)) left join `events` on(`stages`.`eventId` = `events`.`eventId`));
 
 DROP TABLE IF EXISTS `teamInfo`;
 CREATE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `teamInfo` AS select `teams`.`teamId` AS `teamId`,`teams`.`name` AS `name`,`teams`.`gameId` AS `gameId`,`teams`.`canPlaySince` AS `canPlaySince`,`teams`.`joinString` AS `joinString`,`registrations`.`userId` AS `userId`,`registrations`.`nick` AS `nick`,`registrations`.`role` AS `role`,`registrations`.`rank` AS `rank`,`registrations`.`maxRank` AS `maxRank` from (`teams` join `registrations` on(`teams`.`teamId` = `registrations`.`teamId`)) order by `teams`.`teamId`,`registrations`.`role`;
