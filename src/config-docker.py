@@ -1,4 +1,4 @@
-from os import environ
+from os import environ, getenv
 
 config = {
     'host': environ["DBhost"],
@@ -18,4 +18,4 @@ discord = {
     'userid_claim': environ["userid_claim"],
 }
 
-production = not (os.getenv("PROD") is None or os.getenv("PROD")=="no")
+production = not (getenv("PROD") is None or os.getenv("PROD")=="no")
