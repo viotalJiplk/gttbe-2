@@ -18,4 +18,4 @@ discord = {
     'userid_claim': environ["userid_claim"],
 }
 
-production = not (getenv("PROD") is None or os.getenv("PROD")=="no")
+production = not (getenv("PROD") is None or getenv("PROD")=="no")
