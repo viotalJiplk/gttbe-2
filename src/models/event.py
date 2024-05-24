@@ -1,6 +1,7 @@
 from utils.db import fetchAllWithNames, fetchOneWithNames, dbConn
 from json import dumps
 from datetime import date, time, timedelta
+from utils.objectDbSync import ObjectDbSync
 
 def fromTimeDelta(td: timedelta):
     totalSeconds = td.total_seconds()
@@ -10,8 +11,8 @@ def fromTimeDelta(td: timedelta):
     return time(hour=hours, minute=minutes, second=seconds)
 
 
-class EventModel:
-    table="events"
+class EventModel(ObjectDbSync):
+    tableName="events"
     tableId="eventId"
     def __init__(self, eventId:int=None, date:date=date.fromisocalendar(1,1,1), beginTime:time=time(0,0,0,0), endTime:time=time(0,0,0,0), gameId:int=None, description:str="", eventType:str=None):        
         self.eventId = eventId
@@ -21,6 +22,7 @@ class EventModel:
         self.gameId = gameId
         self.description = description
         self.eventType = eventType
+        super().__init__()
 
     def __str__(self):
         return dumps(self.toDict())
@@ -35,11 +37,6 @@ class EventModel:
             "description": self.description,
             "eventType": self.eventType
         }
-
-    @dbConn()
-    def __update(self, attribute, value):
-        query = f"UPDATE `events` SET {attribute}=%s WHERE eventId =%s"
-        cursor.execute(query, (self.value ,self.eventId))
 
     @dbConn()
     def delete(self, cursor, db):

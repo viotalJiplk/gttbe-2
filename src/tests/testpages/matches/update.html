@@ -8,7 +8,7 @@
     <script src="../js/main.js"></script>
 </head>
 <body>
-    <p>create Stage</p>
+    <p>create Event</p>
     <req-custom id="create" data-options=''></req-custom>
     <script>
         let jws = localStorage.getItem("jws");
@@ -16,16 +16,18 @@
             alert("Go to login page to get jws");
         }else{
             document.getElementById("create").setAttribute("data-options", JSON.stringify({
-                "method":"POST",
-                "url":"/backend/stage/create",
+                "method":"PUT",
+                "url":"/backend/match/<matchId>/",
                 "headers":JSON.stringify({
                     "Authorization": "Bearer " + jws,
                     "Content-Type": "application/json"
                 }),
                 "body": JSON.stringify({
-                    "eventId": 1,
-                    "stageName": "XD",
-                    "stageIndex": 0,
+                    "stageId": 1,
+                    "firstTeamId": 1,
+                    "secondTeamId": 2,
+                    "firstTeamResult": 16,
+                    "secondTeamResult": 0,
                 })
             }));
         }

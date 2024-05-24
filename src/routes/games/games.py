@@ -58,7 +58,7 @@ class GamePage(Resource):
 
     @jwsProtected()
     @postJson
-    @getRole(["gameOrganizer"], optional=False)
+    @getRole(["gameOrganizer", "admin"], optional=False)
     def put(self, data, authResult, hasRole, gameId):
         if gameId == 'all':
             if 'game_id' in data:

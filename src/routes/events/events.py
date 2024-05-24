@@ -2,9 +2,18 @@ from flask_restful import Resource
 from models.event import EventModel
 from utils.role import getRole
 from utils.jws import jwsProtected
-from utils.utils import postJsonParse
+from utils.utils import postJsonParse, postJson
 from datetime import datetime
 from models.role import RoleModel
+
+accessibleAttributes = {
+    "date": [str],
+    "beginTime": [str],
+    "endTime": [str],
+    "gameId": [int],
+    "description": [str],
+    "eventType": [str, type(None)]
+}
 
 class Events(Resource):
     def get(self, eventId):
@@ -24,17 +33,32 @@ class Events(Resource):
         except e:
             return {"kind": "DATA", "msg": "There are still data, that is dependent on this."}, 401
         return
+    
+    @jwsProtected()
+    @postJson
+    def put(self, data, authResult, eventId):
+        event = EventModel.getById(eventId=eventId)
+        if event is None:
+            return {"kind": "DATA", "msg": "Requested resource does not exist."}, 404
+        if not RoleModel.hasRole(authResult["userId"], ["admin", "gameOrganizer"], event.gameId):
+            return {"kind": "ROLE", "msg": "Inadequate role."}, 401
+        for x in data:
+            if x in accessibleAttributes:
+                if type(data[x]) in accessibleAttributes[x]:
+                    if x == "beginTime" or x== "endTime":
+                        final = datetime.strptime(data[x], "%H:%M:%S").time()
+                        setattr(event, x, final)
+                    elif x == "date":
+                        final = datetime.strptime(data[x], "%Y-%m-%d").date()
+                        setattr(event, x, final)
+                    else:
+                        setattr(event, x, data[x])
+
+        return event.toDict()
 
 class EventCreate(Resource):
     @jwsProtected()
-    @postJsonParse(expectedJson={
-        "date": [str],
-        "beginTime": [str],
-        "endTime": [str],
-        "gameId": [int],
-        "description": [str],
-        "eventType": [str, type(None)]
-    })
+    @postJsonParse(expectedJson=accessibleAttributes)
     @getRole(roleArray=["admin"], optional=False)
     def post(self, data, authResult, hasRole):
         date = datetime.strptime(data["date"], "%Y-%m-%d").date()

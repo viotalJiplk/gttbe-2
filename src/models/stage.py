@@ -1,12 +1,17 @@
 from utils.db import fetchAllWithNames, fetchOneWithNames, dbConn
 from json import dumps
+from models.event import EventModel
+from utils.objectDbSync import ObjectDbSync
 
-class StageModel:
+class StageModel(ObjectDbSync):
+    tableName = "stages"
+    tableId = "stageId"
     def __init__(self, stageId:int=None, eventId:int=None, stageName:str="", stageIndex:int=None):        
         self.stageId = stageId
         self.eventId = eventId
         self.stageName = stageName
         self.stageIndex = stageIndex
+        super().__init__()
 
     def toDict(self):
         return {
@@ -19,6 +24,9 @@ class StageModel:
     def __str__(self):
         return dumps(self.toDict())
     
+    def getEvent(self):
+        return EventModel.getById(self.eventId)
+
     @dbConn()
     def delete(self, cursor, db):
         query = "DELETE FROM `stages` WHERE `stageId` = %s"

@@ -1,8 +1,12 @@
 from utils.db import fetchAllWithNames, fetchOneWithNames, dbConn
 from json import dumps
+from utils.objectDbSync import ObjectDbSync
+from utils.logging import defaultLogger
+from models.stage import StageModel
 
-class MatchModel:
-    table = "matches"
+class MatchModel (ObjectDbSync):
+    tableName = "matches"
+    tableId = "matchId"
     def __init__(self, matchId:int=None, stageId:int=None, firstTeamId:int=None, secondTeamId:int=None, firstTeamResult:int=None, secondTeamResult:int=None):        
         self.matchId = matchId
         self.stageId = stageId
@@ -10,6 +14,7 @@ class MatchModel:
         self.secondTeamId = secondTeamId
         self.firstTeamResult = firstTeamResult
         self.secondTeamResult = secondTeamResult
+        super().__init__()
 
     def toDict(self):
         return {
@@ -23,7 +28,17 @@ class MatchModel:
 
     def __str__(self):
         return dumps(self.toDict())
-    
+
+    def getStage(self):
+        return StageModel.getById(self.stageId)
+
+    def getEvent(self):
+        stage = self.getStage()
+        if stage is None:
+            defaultLogger.error("Inconsistent db")
+            return None
+        return stage.getEvent()
+            
     @dbConn()
     def delete(self, cursor, db):
         query = "DELETE FROM `matches` WHERE `matchId` = %s"
