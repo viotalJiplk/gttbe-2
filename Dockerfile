@@ -1,7 +1,7 @@
 FROM python:alpine
 
 RUN apk add --update --no-cache bash
-COPY build/prod/requirements.txt requirements.txt
+COPY buildConfig/prod/requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 
 RUN mkdir /build

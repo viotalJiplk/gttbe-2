@@ -6,7 +6,7 @@ def getLogger(name:str):
     logger.setLevel(logging.DEBUG)
     handler = logging.StreamHandler()
     formatter = colorlog.ColoredFormatter(
-        '%(log_color)s%(levelname)s:%(name)s:%(message)s',
+        '%(log_color)s%(asctime)s:%(levelname)s:%(module)s:%(name)s:%(message)s',
         log_colors={
             'DEBUG': 'cyan',
             'INFO': 'green',
@@ -19,3 +19,5 @@ def getLogger(name:str):
     handler.setFormatter(formatter)
     logger.addHandler(handler)
     return logger
+
+defaultLogger = getLogger("default")

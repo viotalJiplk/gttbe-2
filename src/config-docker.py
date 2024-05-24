@@ -17,3 +17,5 @@ discord = {
     'token_ttl': int(environ["token_ttl"]),
     'userid_claim': environ["userid_claim"],
 }
+
+production = not (os.getenv("PROD") is None or os.getenv("PROD")=="no")

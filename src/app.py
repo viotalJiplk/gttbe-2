@@ -2,8 +2,8 @@ from flask import Flask, jsonify, request, abort
 #from flask_cors import CORS
 from flask_restful import Resource, Api
 from utils.register_routes import register_routes
-import os
-from utils.logging import getLogger
+from config import production
+from utils.logging import defaultLogger
 
 # ROUTES
 from routes.discord import discordRoutes
@@ -17,8 +17,6 @@ from routes.role import roleRoutes
 from routes.stage import stageRoutes
 from routes.matches import matchRoutes
 from tests import testRoutes
-
-mainLogger = getLogger("app")
 
 app = Flask(__name__)
 #CORS(app)7
@@ -37,12 +35,10 @@ register_routes(api, roleRoutes, '/role')
 register_routes(api, stageRoutes, '/stage')
 register_routes(api, matchRoutes, '/match')
 
-if(os.getenv("PROD") is None):
+if not production:
     register_routes(api, testRoutes, '/test', False)
-    mainLogger.warning("Test build DO NOT USE IN PRODUCTION!")
-else:
-    if(os.getenv("PROD")=="no"):
-        register_routes(api, testRoutes, '/test', False)
-        mainLogger.warning("Test build DO NOT USE IN PRODUCTION!")
+    defaultLogger.warning("Test build DO NOT USE IN PRODUCTION!")
+
+defaultLogger.info("Server started")
 
 #app.run(port=5000)

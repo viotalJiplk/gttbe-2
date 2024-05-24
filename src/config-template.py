@@ -16,3 +16,4 @@ discord = {
     'token_ttl': 15*60,
     'userid_claim': selfref["root_url"] + "/discord/userid"
 }
+production = False
