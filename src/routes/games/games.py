@@ -54,7 +54,8 @@ class GamePage(Resource):
         game = GameModel.getById(gameId)
         if game is None:
             return {"kind": "GAME", "msg": "GameId out of scope."}, 403
-        return {"game_id": id, "page": game.getGamePage()}
+        gamePage = game.getGamePage()
+        return {"game_id": gameId, "page": gamePage}
 
     @jwsProtected()
     @postJson
