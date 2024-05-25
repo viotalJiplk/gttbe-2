@@ -5,9 +5,9 @@
 	1. Kapitán založení týmu
 	2. Kapitán generuje odkaz na přidání se do týmu
 	3. každý člen vlastní discord propojený účet
-	4. kapitán může odstranit členy týmu 
+	4. kapitán může odstranit členy týmu
 2. Admin může zadávat časy turnajů -> zadané v databázi (2.)
-	1. (Hráč vidí které časy hraje) 
+	1. (Hráč vidí které časy hraje)
 3. Automatický export účastníků hry (5.)
 	1. organizátor hry = účet
 4. Role adminů a streamerů z discordu (6.)

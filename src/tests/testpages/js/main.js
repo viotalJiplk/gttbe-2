@@ -1,7 +1,7 @@
 methodes = {
     "GET":{
         "name": "GET",
-        "body": "unused" 
+        "body": "unused"
     },
     "POST":{
         "name": "POST",
@@ -28,7 +28,7 @@ class ReqElem extends HTMLElement{
 
         this.shadowRootReference = this.attachShadow({mode: 'closed'});
         this.root_element = this;
-        
+
         {
             //adding stylesheet
             let link = document.createElement("link");
@@ -40,7 +40,7 @@ class ReqElem extends HTMLElement{
         {
             //headers textarea
             let reqheaders = div.cloneNode();
-            
+
             let reqp = p.cloneNode();
             reqp.innerText = "request headers:";
             reqheaders.appendChild(reqp);
@@ -49,14 +49,14 @@ class ReqElem extends HTMLElement{
             let textarea = document.createElement("textarea");
             textarea.setAttribute("id", "headersarea");
             reqheaders.appendChild(textarea);
-            
+
             this.shadowRootReference.appendChild(reqheaders);
         }
 
         {
             //body textarea
             let reqbody = div.cloneNode();
-            
+
             let reqp = p.cloneNode();
             reqp.innerText = "request body:";
             reqbody.appendChild(reqp);
@@ -65,7 +65,7 @@ class ReqElem extends HTMLElement{
             let textarea = document.createElement("textarea");
             textarea.setAttribute("id", "textarea");
             reqbody.appendChild(textarea);
-            
+
             this.shadowRootReference.appendChild(reqbody);
         }
 
@@ -77,7 +77,7 @@ class ReqElem extends HTMLElement{
         //     let mimep = p.cloneNode();
         //     mimep.innerText = "select mime:";
         //     mimediv.appendChild(mimep);
-            
+
         //     let mime = document.createElement("select");
         //     mime.setAttribute("id", "selectMime");
         //     mimes.forEach(function(element){
@@ -90,7 +90,7 @@ class ReqElem extends HTMLElement{
 
         //     this.shadowRootReference.appendChild(mimediv);
         // }
-        
+
         {
             //method selection
             let selectdiv = div.cloneNode()
@@ -132,10 +132,10 @@ class ReqElem extends HTMLElement{
             let urlp = p.cloneNode();
             urlp.innerText = "select url:";
             urldiv.appendChild(urlp);
-            
+
             let url =  document.createElement("input");
             url.setAttribute("id", "url");
-            
+
             urldiv.appendChild(url);
             this.shadowRootReference.appendChild(urldiv);
         }
@@ -161,7 +161,7 @@ class ReqElem extends HTMLElement{
             httprescode.appendChild(span);
             this.shadowRootReference.appendChild(httprescode);
         }
-        
+
         {
             //output textarea
             let outtextarea = document.createElement("textarea");
@@ -169,7 +169,7 @@ class ReqElem extends HTMLElement{
             this.shadowRootReference.appendChild(outtextarea);
         }
     }
-    
+
     static get observedAttributes(){return ["data-options", "class"];}
 
     getInputs(){
@@ -181,7 +181,7 @@ class ReqElem extends HTMLElement{
             headers = undefined;
         }
 
-        return { 
+        return {
             "body": this.shadowRootReference.getElementById("textarea").value,
             "method": this.shadowRootReference.getElementById("selectMethod").value,
             "url": this.shadowRootReference.getElementById("url").value,
@@ -214,7 +214,7 @@ class ReqElem extends HTMLElement{
             inputs.out.value = result;
             this.callbacks.forEach(function(element){
                 element(result);
-            })          
+            })
         } catch (error) {
             inputs.outcode.innerText = "";
             inputs.out.value = error.toString();
@@ -243,8 +243,8 @@ class ReqElem extends HTMLElement{
             }
         }
         this.shadowRootReference.firstChild.setAttribute("data-sheet-name", newValue);
-                
-    }      
+
+    }
 }
 
 customElements.define('req-custom', ReqElem);

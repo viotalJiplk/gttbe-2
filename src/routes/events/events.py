@@ -33,7 +33,7 @@ class Events(Resource):
         except e:
             return {"kind": "DATA", "msg": "There are still data, that is dependent on this."}, 401
         return
-    
+
     @jwsProtected()
     @postJson
     def put(self, data, authResult, eventId):

@@ -35,7 +35,7 @@ def jwsProtected(optional: bool = False):
             if "Authorization" not in request.headers:
                 if optional:
                     return func(authResult = None, *args, **kwargs)
-                else:     
+                else:
                     return {"kind": "JWS", "msg": "Missing Authorization header!"}, 401
             try:
                 result = verifyJWS(request.headers["Authorization"].split(" ")[1])

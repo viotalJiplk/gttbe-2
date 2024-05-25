@@ -14,14 +14,14 @@ BEGIN
     DECLARE expCaptains INT;
     DECLARE expMembers INT;
     DECLARE expReservists INT;
-	
+
     SELECT COUNT(teamId) INTO Captains FROM registrations WHERE teamId = updateTeamId AND role = 'Captain';
     SELECT COUNT(teamId) INTO Members FROM registrations WHERE teamId = updateTeamId AND role = 'Member';
     SELECT COUNT(teamId) INTO Reservists FROM registrations WHERE teamId = updateTeamId AND role = 'Reservist';
     SELECT minCaptains INTO expCaptains FROM games WHERE gameId = (SELECT gameId FROM teams WHERE teamId = updateTeamId);
     SELECT minMembers INTO expMembers FROM games WHERE gameId = (SELECT gameId FROM teams WHERE teamId = updateTeamId);
     SELECT minReservists INTO expReservists FROM games WHERE gameId = (SELECT gameId FROM teams WHERE teamId = updateTeamId);
-    
+
     IF ((Captains >= expCaptains) AND (Members >= expMembers) AND (Reservists >= expReservists)) THEN
         IF (SELECT canPlaySince FROM teams WHERE teamId = updateTeamId) IS NULL THEN
             UPDATE teams SET canPlaySince = NOW() WHERE teamId = updateTeamId;

@@ -22,7 +22,7 @@ class UserModel:
 
     def __str__(self):
         return json.dumps(self.toDict())
-    
+
     def toDict(self):
         return {
             "userId": self.userId,
@@ -38,7 +38,7 @@ class UserModel:
     def updateOrCreateUser(cls, cursor, db, userid = '', refresh_token = '', access_token = '', expires_in = '', name='', surname='', adult='', school_id=''):
         if(userid == ''):
                 raise Exception("Missing userid.")
-       
+
         values = {
             'userid': userid,
         }
@@ -88,7 +88,7 @@ class UserModel:
                 query_start += " `" + toSet +  "`"
                 query_end += "%(" + toSet + ")s"
             cursor.execute(query_start + query_end + ");", values)
-            
+
         return UserModel(userid=userid, refresh_token=refresh_token, access_token=access_token, expires_in=expires_in, name=name, surname=surname, adult=adult, school_id=school_id)
 
     @classmethod
@@ -102,7 +102,7 @@ class UserModel:
             'redirect_uri': redirect_uri
         }
         tokenReq = UserModel.tokenEndpoint(data)
-        
+
         ''' now lets get discords user object'''
         user = UserModel(access_token = tokenReq["access_token"], expires_in = tokenReq["expires_in"])
         userObject = user.getDiscordUserObject()
@@ -118,7 +118,7 @@ class UserModel:
         if row is None:
             return None
         return UserModel(userid=row[0], surname= row[1], name = row[2], adult = row[3], school_id = row[4], access_token=row[5], refresh_token=row[6], expires_in=row[7])
-    
+
     def getDiscordUserObject(self):
         today = datetime.today()
         if(self.__expires_in < today):
@@ -136,14 +136,14 @@ class UserModel:
             #discord token endpoint error
         userObjectReq = userObjectReq.json()
         return userObjectReq['user']
-    
+
     @classmethod
     def tokenEndpoint(cls, data):
-        
+
         headers = {
             'Content-Type': 'application/x-www-form-urlencoded'
         }
-        
+
         try:
             tokenReq = post('%s/oauth2/token' % discord['api_endpoint'], data=data, headers=headers)
         except Exception as e:
@@ -184,7 +184,7 @@ class UserModel:
         self.__expires_in = tokenReq["expires_in"]
 
         return self
-    
+
     @dbConn(autocommit=True, buffered=True)
     def delete(self, cursor, db):
 
@@ -200,6 +200,6 @@ class UserModel:
         self.__access_token = ""
         self.__refresh_token = ""
         self.__expires_in = ""
-    
+
     def canRegister(self):
         return ((self.userId != "") and (self.surname != "") and (self.name != "") and (self.adult != None) and (self.schoolId != None ))

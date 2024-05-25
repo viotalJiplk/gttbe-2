@@ -27,7 +27,7 @@ def fetchOneWithNames(cursor):
     return result
 
 def fetchAllWithNames(cursor):
-    columns = cursor.description 
+    columns = cursor.description
     return [{columns[index][0]:column for index, column in enumerate(value)} for value in cursor.fetchall()]
 
 def dbConn(autocommit: bool = True, buffered: bool = True):

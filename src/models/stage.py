@@ -6,7 +6,7 @@ from utils.objectDbSync import ObjectDbSync
 class StageModel(ObjectDbSync):
     tableName = "stages"
     tableId = "stageId"
-    def __init__(self, stageId:int=None, eventId:int=None, stageName:str="", stageIndex:int=None):        
+    def __init__(self, stageId:int=None, eventId:int=None, stageName:str="", stageIndex:int=None):
         self.stageId = stageId
         self.eventId = eventId
         self.stageName = stageName
@@ -23,7 +23,7 @@ class StageModel(ObjectDbSync):
 
     def __str__(self):
         return dumps(self.toDict())
-    
+
     def getEvent(self):
         return EventModel.getById(self.eventId)
 
@@ -31,7 +31,7 @@ class StageModel(ObjectDbSync):
     def delete(self, cursor, db):
         query = "DELETE FROM `stages` WHERE `stageId` = %s"
         cursor.execute(query, (self.stageId,))
-    
+
     @classmethod
     @dbConn()
     def create(cls, eventId:int, stageName:str, stageIndex:int, cursor, db):

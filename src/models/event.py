@@ -14,7 +14,7 @@ def fromTimeDelta(td: timedelta):
 class EventModel(ObjectDbSync):
     tableName="events"
     tableId="eventId"
-    def __init__(self, eventId:int=None, date:date=date.fromisocalendar(1,1,1), beginTime:time=time(0,0,0,0), endTime:time=time(0,0,0,0), gameId:int=None, description:str="", eventType:str=None):        
+    def __init__(self, eventId:int=None, date:date=date.fromisocalendar(1,1,1), beginTime:time=time(0,0,0,0), endTime:time=time(0,0,0,0), gameId:int=None, description:str="", eventType:str=None):
         self.eventId = eventId
         self.date = date
         self.beginTime = beginTime
@@ -49,7 +49,7 @@ class EventModel(ObjectDbSync):
         query = "INSERT INTO events (date, beginTime, endTime, gameId, description, eventType) VALUES (%s, %s, %s, %s, %s, %s)"
         cursor.execute(query, (date, beginTime, endTime, gameId, description, eventType))
         return cls(eventId=cursor.lastrowid, date=date, beginTime=beginTime, endTime=endTime, gameId=gameId, description=description, eventType= eventType)
-    
+
     @classmethod
     @dbConn()
     def getById(cls, eventId, cursor, db):
@@ -62,7 +62,7 @@ class EventModel(ObjectDbSync):
             return cls(**row)
         else:
             return None
-    
+
     @classmethod
     @dbConn()
     def getAll(cls, cursor, db):

@@ -25,7 +25,7 @@ class StateModel:
     def testAndDelete(cls, state: str, cursor, db):
         query = "DELETE FROM states WHERE `state` = %(state)s;"
         cursor.execute(query, {'state': state})
-        
+
         if cursor.rowcount == 1:
             return True
         elif cursor.rowcount > 1:

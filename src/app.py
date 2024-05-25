@@ -21,7 +21,7 @@ from tests import testRoutes
 app = Flask(__name__)
 #CORS(app)7
 
-# if __name__ == "__main__":  
+# if __name__ == "__main__":
 api = Api(app)
 
 register_routes(api, discordRoutes, '/discord')

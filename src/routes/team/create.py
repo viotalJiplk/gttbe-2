@@ -27,8 +27,8 @@ class createTeam(Resource):
             return {"kind": "JOIN", "msg": "You havent filled info required for creating Team."}, 404
 
         team = TeamModel.create(name=data["name"], gameId=data["game_id"], userId=authResult["userId"], nick=data["nick"], rank=data["rank"], maxRank=data["max_rank"])
-        
+
         if team is None:
             return {"kind": "JOIN", "msg": "Team full or you are in another team for this game."}, 403
-        
+
         return {"teamId": team.teamId}, 200

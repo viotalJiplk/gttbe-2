@@ -40,8 +40,8 @@ services:
       - gtt-internal
     ports:
       - "$AdminerPort:8080"
-    
-  
+
+
 
 networks:
   gtt-internal:

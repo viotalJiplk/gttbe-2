@@ -14,7 +14,7 @@ wget https://raw.githubusercontent.com/viotalJiplk/gttbe-2/main/.env-template -O
  - copy `Client ID` and `Client Secret` and add them to `.env` file
  - add `http://127.0.0.1:5000/test/testpages/discord/login.html#getjws` to Redirects
 3. create database
- - run 
+ - run
  ```bash
  docker compose up -d
  ```
@@ -23,7 +23,7 @@ wget https://raw.githubusercontent.com/viotalJiplk/gttbe-2/main/.env-template -O
  - click SQL command
  - copy content from `create.sql` and click execute
 4. done
- - run 
+ - run
  ```bash
  docker compose up -d
  ```

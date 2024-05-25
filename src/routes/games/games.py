@@ -73,4 +73,3 @@ class GamePage(Resource):
             game.gamePage = data["gamePage"]
         game.update()
         return
-    

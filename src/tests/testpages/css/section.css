@@ -12,7 +12,7 @@ html{
 button{
     color:white;
     cursor: pointer;
-    background-color: #4CAF50;  
+    background-color: #4CAF50;
     border: none;
     font-size: 16px;
     margin: 4px 2px;
@@ -21,7 +21,7 @@ button{
     box-shadow: 0 9px#999;
 }
 button:hover {
-    background-color: 
+    background-color:
     #3e8e41;
 }
 button:active {

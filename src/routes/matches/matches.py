@@ -22,7 +22,7 @@ class Matches(Resource):
         if match is None:
             return {"kind": "DATA", "msg": "Requested resource does not exist."}, 404
         return match.toDict()
-   
+
     @jwsProtected()
     def delete(self, authResult, matchId):
         match = MatchModel.getById(matchId=matchId)
@@ -38,7 +38,7 @@ class Matches(Resource):
         except e:
             return {"kind": "DATA", "msg": "There are still data, that is dependent on this."}, 401
         return
-    
+
     @jwsProtected()
     @postJson
     def put(self, data, authResult, matchId):

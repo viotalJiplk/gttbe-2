@@ -3,7 +3,7 @@ from json import dumps
 from datetime import date
 
 class GameModel:
-    def __init__(self, name=None, registrationStart=date.fromisocalendar(1,1,1), registrationEnd=date.fromisocalendar(9999,1,1), maxCaptains=None, maxMembers=None, maxReservists=None, minCaptains=None, minMembers=None, minReservists=None, gameId=None, gamePage=None, maxTeams=None):        
+    def __init__(self, name=None, registrationStart=date.fromisocalendar(1,1,1), registrationEnd=date.fromisocalendar(9999,1,1), maxCaptains=None, maxMembers=None, maxReservists=None, minCaptains=None, minMembers=None, minReservists=None, gameId=None, gamePage=None, maxTeams=None):
         self.gameId = gameId
         self.name = name
         self.registrationStart = registrationStart
@@ -54,7 +54,7 @@ class GameModel:
         query = "UPDATE `games` SET registrationStart = %s, registrationEnd = %s, maxCaptains = %s, maxMembers = %s, maxReservists = %s, minCaptains = %s, minMembers = %s, minReservists = %s, gamePage = %s, maxTeams = %s WHERE gameId = %s"
         cursor.execute(query, (self.registrationStart, self.registrationEnd, self.maxCaptains, self.maxMembers, self.maxReservists, self.minCaptains, self.minMembers, self.minReservists, self.gamePage, self.gameId, self.maxTeams))
         return True
-    
+
     @classmethod
     @dbConn()
     def getById(cls, gameId, cursor, db):
@@ -65,7 +65,7 @@ class GameModel:
             return cls(**row)
         else:
             return None
-    
+
     @classmethod
     @dbConn()
     def getAll(cls, cursor, db):

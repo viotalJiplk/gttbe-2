@@ -19,7 +19,7 @@ class Stages(Resource):
         if stage is None:
             return {"kind": "DATA", "msg": "Requested resource does not exist."}, 404
         return stage.toDict()
-   
+
     @jwsProtected()
     def delete(self, authResult, stageId):
         stage = StageModel.getById(stageId)

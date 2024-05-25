@@ -18,7 +18,7 @@ class UserEndpoint(Resource):
                 return UserModel.getById(uid).toDict()
             else:
                 return result
-    
+
     @jwsProtected()
     @postJson
     def put(self, data, authResult, uid):

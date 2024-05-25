@@ -25,9 +25,9 @@ class AttributesObserver:
                         x(name, value)
                 for x in self.observerDict["initAll"]:
                     x(name, value)
-        
+
         super().__setattr__(name, value)
-    
+
     def __delattr__(self, name):
         if hasattr(self, "observerDict"):
             if hasattr(self, name):

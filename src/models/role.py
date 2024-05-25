@@ -2,7 +2,7 @@ from utils.db import fetchAllWithNames, dbConn
 from mysql.connector.errors import IntegrityError
 
 class RoleModel:
-    def __init__(self, userId, gameId, role):        
+    def __init__(self, userId, gameId, role):
         self.userId = userId
         self.gameId = gameId
         self.role = role
@@ -33,7 +33,7 @@ class RoleModel:
             if userRole["role"] in roles:
                 return True
         return False
-    
+
     @classmethod
     @dbConn()
     def listRole(cls, userId):

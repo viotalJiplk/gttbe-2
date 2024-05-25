@@ -22,4 +22,3 @@ class PageModel:
         if row is None:
             return None
         return PageModel(name=row['name'], value=row['value'])
-

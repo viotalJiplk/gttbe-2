@@ -21,10 +21,10 @@ class TeamModel:
         except:
             db.rollback()
             return None
-        
+
         cursor.execute("SELECT LAST_INSERT_ID();")
         teamId = cursor.fetchone()[0]
-        
+
         team = cls(name, gameId, teamId)
 
         if not team.__userJoin(userId, nick, rank, maxRank, "Captain", cursor, db):
@@ -42,7 +42,7 @@ class TeamModel:
         if not row:
             return None
         return cls(name=row[0], gameId=row[1], joinString=row[2], teamId=row[3])
-    
+
     @classmethod
     @dbConn()
     def getByName(cls, name, cursor, db):
@@ -50,7 +50,7 @@ class TeamModel:
         cursor.execute(query, (name))
         row = cursor.fetchOneWithNames()
         if not row:
-            return None 
+            return None
         return cls(name=row["name"], gameId=row["gameId"], joinString=row["joinString"], teamId=row["teamId"], dbsync=False)
 
     @classmethod
@@ -61,7 +61,7 @@ class TeamModel:
             query = 'SELECT teamId, nick, role, name, gameId, joinString FROM `teamInfo` WHERE userId=%(userId)s'
         else:
             query = 'SELECT teamId, nick, role, name, gameId FROM `teamInfo` WHERE userId=%(userId)s'
-        
+
         cursor.execute(query, {"userId": userId})
         result = fetchAllWithNames(cursor)
         return result
@@ -69,7 +69,7 @@ class TeamModel:
     @dbConn(autocommit=False, buffered=True)
     def join(self, userId, nick, rank, maxRank, role, cursor, db):
         return self.__userJoin(userId, nick, rank, maxRank, role, cursor, db)
-    
+
     @dbConn(autocommit=True, buffered=False)
     def leave(self, userId, cursor, db):
         query = "DELETE FROM `registrations` WHERE `userId` = %(userId)s AND `teamId` = %(teamId)s LIMIT 1"
@@ -81,7 +81,7 @@ class TeamModel:
 
     def getGame(self):
         return GameModel.getById(self.gameId)
-    
+
     @dbConn()
     def getPlayers(self, cursor, db):
         query = "SELECT `userid`, `nick`, `role`  FROM `registrations` WHERE teamId=%(teamId)s ORDER BY `role` ASC"
@@ -95,7 +95,7 @@ class TeamModel:
                 'role': str(player['role'])
             })
         return result
-    
+
     @classmethod
     @dbConn()
     def listParticipatingTeams(self, gameId, withDetails, withDiscord, cursor, db):
@@ -113,7 +113,7 @@ class TeamModel:
             if withDetails is True:
                 for user in result:
                     user["userId"] =  str(user["userId"])
-                    if withDiscord is True:                
+                    if withDiscord is True:
                         userObject = UserModel.getById(user["userId"])
                         try:
                             user["discordUserObject"] = userObject.getDiscordUserObject()
@@ -135,7 +135,7 @@ class TeamModel:
             return joinString
         except:
             return None
-    
+
     @dbConn()
     def getUsersRole(self, userId, cursor, db):
         query = 'SELECT role FROM `registrations` WHERE `teamId`=%(teamId)s AND `userId`=%(userId)s'
@@ -154,7 +154,7 @@ class TeamModel:
             cursor.execute(query, values)
         except IntegrityError:
             return False
-        
+
         query = "SELECT COUNT(*) FROM registrations WHERE teamId=%(teamId)s and role=%(role)s"
         values = {"teamId":self.teamId,"role":role}
         cursor.execute(query, values)

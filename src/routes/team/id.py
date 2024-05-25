@@ -9,7 +9,7 @@ from utils.errorlog import weberrorlog
 from models.user import UserModel
 
 def getTeam(func):
-    
+
     @wraps(func)
     def wrapGetTeam(*args, **kwargs):
         team = TeamModel.getById(kwargs['teamId'])
@@ -32,7 +32,7 @@ class Team(Resource):
 
 
 class TeamJoinstring(Resource):
-    
+
     @jwsProtected()
     @getTeam
     def get(self, authResult, team, teamId):
@@ -45,7 +45,7 @@ class TeamJoinstring(Resource):
 
 
 class Join(Resource):
-    
+
     @jwsProtected()
     @getTeam
     @postJson
@@ -73,7 +73,7 @@ class Join(Resource):
 
 
 class Kick(Resource):
-    
+
     @jwsProtected()
     @getTeam
     def delete(self, authResult, team, teamId, userId):

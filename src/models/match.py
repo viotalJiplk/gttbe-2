@@ -7,7 +7,7 @@ from models.stage import StageModel
 class MatchModel (ObjectDbSync):
     tableName = "matches"
     tableId = "matchId"
-    def __init__(self, matchId:int=None, stageId:int=None, firstTeamId:int=None, secondTeamId:int=None, firstTeamResult:int=None, secondTeamResult:int=None):        
+    def __init__(self, matchId:int=None, stageId:int=None, firstTeamId:int=None, secondTeamId:int=None, firstTeamResult:int=None, secondTeamResult:int=None):
         self.matchId = matchId
         self.stageId = stageId
         self.firstTeamId = firstTeamId
@@ -38,12 +38,12 @@ class MatchModel (ObjectDbSync):
             defaultLogger.error("Inconsistent db")
             return None
         return stage.getEvent()
-            
+
     @dbConn()
     def delete(self, cursor, db):
         query = "DELETE FROM `matches` WHERE `matchId` = %s"
         cursor.execute(query, (self.matchId,))
-    
+
     @classmethod
     @dbConn()
     def create(cls, stageId:int, firstTeamId:int, secondTeamId:int, firstTeamResult:int, secondTeamResult:int, cursor, db):

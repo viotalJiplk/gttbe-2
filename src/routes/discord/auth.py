@@ -14,7 +14,7 @@ class Auth(Resource):
         state = urllib.parse.quote(state, safe='')
         # redir_url_urlencoded = urllib.parse.quote(discord["redir_url"], safe='')
         return "https://discord.com/oauth2/authorize?response_type=code&client_id="+str(discord["client_id"])+"&scope="+ scope +"&state="+ state +"&prompt=" + prompt
-    
+
     def get(self):
         state = StateModel.create()
         return {"redirect_url": self.__endpoint_url(state.state, "none")}, 200
@@ -22,7 +22,7 @@ class Auth(Resource):
 
 
 class TokenEndpoint(Resource):
-    
+
     @postJson
     def post(self, data):
         if("code" not in data or "state" not in data or "redirect_uri" not in data):
@@ -44,5 +44,5 @@ class TokenEndpoint(Resource):
         claims = {}
         claims[discord["userid_claim"]] = user[0].userId
         jws = generateJWS(claims)
-        
+
         return {"jws":jws, "userObject": user[1]}
