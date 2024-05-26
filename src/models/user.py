@@ -1,12 +1,15 @@
 from utils.db import getConnection, dbConn
 import datetime
 import requests
-from config import discord
+from utils.config import config
 from requests import post
 from datetime import date, datetime, timedelta
 import json
+from utils.objectDbSync import ObjectDbSync
 
-class UserModel:
+class UserModel(ObjectDbSync):
+    tableName = "users"
+    tableId = "userId"
 
     def __init__(self, userid = '', refresh_token = '', access_token = '', expires_in = '', name='', surname='', adult='', school_id=''):
         if(not isinstance(expires_in, datetime) and expires_in != ''):
@@ -75,7 +78,7 @@ class UserModel:
         if(cursor.rowcount != 1):
             # user does not exist yet
             if(refresh_token == '' or access_token == '' or expires_in == ''):
-                raise Exception("Missing something in request.")
+                raise Exception("Missing something in request or there is nothing to update.")
             query_start = "INSERT INTO users ("
             query_end = ") VALUES ("
             first = True
@@ -89,14 +92,14 @@ class UserModel:
                 query_end += "%(" + toSet + ")s"
             cursor.execute(query_start + query_end + ");", values)
 
-        return UserModel(userid=userid, refresh_token=refresh_token, access_token=access_token, expires_in=expires_in, name=name, surname=surname, adult=adult, school_id=school_id)
+        return cls(userid=userid, refresh_token=refresh_token, access_token=access_token, expires_in=expires_in, name=name, surname=surname, adult=adult, school_id=school_id)
 
     @classmethod
     def getByCode(cls, code, redirect_uri, name, surname, adult, school_id):
         '''exchange code for access and refresh tokens'''
         data = {
-            'client_id': discord["client_id"],
-            'client_secret': discord["client_secret"],
+            'client_id': config.discord.client_id,
+            'client_secret': config.discord.client_secret,
             'grant_type': 'authorization_code',
             'code': code,
             'redirect_uri': redirect_uri
@@ -117,7 +120,7 @@ class UserModel:
         row = cursor.fetchone()
         if row is None:
             return None
-        return UserModel(userid=row[0], surname= row[1], name = row[2], adult = row[3], school_id = row[4], access_token=row[5], refresh_token=row[6], expires_in=row[7])
+        return cls(userid=row[0], surname= row[1], name = row[2], adult = row[3], school_id = row[4], access_token=row[5], refresh_token=row[6], expires_in=row[7])
 
     def getDiscordUserObject(self):
         today = datetime.today()
@@ -127,7 +130,7 @@ class UserModel:
             headers = {
                 "Authorization": "Bearer " + self.__access_token
             }
-            userObjectReq = requests.get('%s/oauth2/@me' % discord['api_endpoint'], headers=headers)
+            userObjectReq = requests.get('%s/oauth2/@me' % config.discord.api_endpoint, headers=headers)
         except Exception as e:
             raise Exception("discord /oauth2/@me error: " + e.args[0])
             #discord token endpoint error
@@ -145,7 +148,7 @@ class UserModel:
         }
 
         try:
-            tokenReq = post('%s/oauth2/token' % discord['api_endpoint'], data=data, headers=headers)
+            tokenReq = post('%s/oauth2/token' % config.discord.api_endpoint, data=data, headers=headers)
         except Exception as e:
             raise Exception("discord token endpoint error: "  + e.args[0])
             #discord token endpoint error
@@ -170,8 +173,8 @@ class UserModel:
 
     def __refresh_token_refresh(self):
         data = {
-            'client_id': discord["client_id"],
-            'client_secret': discord["client_secret"],
+            'client_id': config.discord.client_id,
+            'client_secret': config.discord.client_secret,
             'grant_type': 'refresh_token',
             'refresh_token': self.__refresh_token
         }
@@ -191,15 +194,6 @@ class UserModel:
         # try if user already exists
         query = "DELETE FROM users WHERE `userId` = %(userId)s"
         cursor.execute(query, {"userId": self.userId})
-
-        self.userId = ""
-        self.surname = ""
-        self.name = ""
-        self.adult = ""
-        self.schoolId = ""
-        self.__access_token = ""
-        self.__refresh_token = ""
-        self.__expires_in = ""
 
     def canRegister(self):
         return ((self.userId != "") and (self.surname != "") and (self.name != "") and (self.adult != None) and (self.schoolId != None ))

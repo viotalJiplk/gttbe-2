@@ -1,8 +1,12 @@
 from utils.db import fetchAllWithNames, fetchOneWithNames, dbConn
 from json import dumps
 from datetime import date
+from utils.objectDbSync import ObjectDbSync
 
-class GameModel:
+class GameModel(ObjectDbSync):
+    tableName = "games"
+    tableId = "gameId"
+
     def __init__(self, name=None, registrationStart=date.fromisocalendar(1,1,1), registrationEnd=date.fromisocalendar(9999,1,1), maxCaptains=None, maxMembers=None, maxReservists=None, minCaptains=None, minMembers=None, minReservists=None, gameId=None, gamePage=None, maxTeams=None):
         self.gameId = gameId
         self.name = name

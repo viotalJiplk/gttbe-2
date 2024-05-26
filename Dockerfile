@@ -7,8 +7,7 @@ RUN pip install -r requirements.txt
 RUN mkdir /build
 WORKDIR /build
 COPY src /build
-RUN cd utils
-RUN mv config-docker.py config.py
+RUN mv config-template.json config.json
 
 
 

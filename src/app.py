@@ -2,7 +2,7 @@ from flask import Flask, jsonify, request, abort
 #from flask_cors import CORS
 from flask_restful import Resource, Api
 from utils.register_routes import register_routes
-from config import production
+from utils.config import config
 from utils.logging import defaultLogger
 
 # ROUTES
@@ -35,7 +35,7 @@ register_routes(api, roleRoutes, '/role')
 register_routes(api, stageRoutes, '/stage')
 register_routes(api, matchRoutes, '/match')
 
-if not production:
+if not config.production:
     register_routes(api, testRoutes, '/test', False)
     defaultLogger.warning("Test build DO NOT USE IN PRODUCTION!")
 

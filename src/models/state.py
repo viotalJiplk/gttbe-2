@@ -2,7 +2,7 @@ import datetime
 from utils.db import dbConn
 import logging
 from utils.generator import genState
-from config import discord
+from utils.config import config
 
 
 class StateModel:
@@ -15,7 +15,7 @@ class StateModel:
     @dbConn(autocommit =True, buffered=True)
     def create(cls, cursor, db):
         state = genState(200)
-        date = datetime.datetime.now() + datetime.timedelta(0,discord['state_ttl'])
+        date = datetime.datetime.now() + datetime.timedelta(0, config.discord.state_ttl)
         query = "INSERT INTO `states` (`state`, `date`) VALUES (%(state)s, %(date)s);"
         cursor.execute(query, {'state': state,'date': date})
         return cls(state=state, date=date)

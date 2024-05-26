@@ -1,6 +1,10 @@
 from utils.db import fetchAllWithNames, dbConn
+from utils.objectDbSync import ObjectDbSync
 
-class SchoolsModel:
+class SchoolsModel(ObjectDbSync):
+    tableName = "schools"
+    tableId = "schoolId"
+
     def __init__(self, name=None, schoolId=None):
         self.schoolId = schoolId
         self.name = name

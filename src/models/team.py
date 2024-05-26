@@ -3,8 +3,12 @@ from models.game import GameModel
 from models.user import UserModel
 from utils.generator import genState
 from mysql.connector import IntegrityError
+from utils.objectDbSync import ObjectDbSync
 
-class TeamModel:
+class TeamModel(ObjectDbSync):
+    tableName = "teams"
+    tableId = "teamId"
+
     def __init__(self, name, gameId, teamId, joinString=None):
         self.name = name
         self.gameId = gameId

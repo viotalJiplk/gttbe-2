@@ -35,7 +35,7 @@ class UserEndpoint(Resource):
                 UserModel.updateOrCreateUser(userid=authResult["userId"], refresh_token='', access_token='',  expires_in='', name=data["name"], surname=data["surname"], adult=data["adult"], school_id=data["school_id"])
                 return {}, 205
         except:
-            return {"kind": "USER", "msg": "User does not exist."}, 404
+            return {"kind": "USER", "msg": "User does not exist or there was nothing to change."}, 404
 
     @jwsProtected()
     def delete(self, authResult, uid):
@@ -44,7 +44,7 @@ class UserEndpoint(Resource):
                 user = UserModel.getById(authResult["userId"])
                 user.delete()
             except:
-                return {}, 403
+                return {"kind": "USER", "msg": "You are registered in team or you play active role in management."}, 403
             return {}, 200
         else:
             result = hasRoleWithErrMsg(authResult['userId'], ["admin"])

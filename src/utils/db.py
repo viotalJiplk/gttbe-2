@@ -1,13 +1,13 @@
-from config import config
+from utils.config import config
 import mysql.connector
 from functools import wraps
 
 def getConnection(autocommit = True):
     db = mysql.connector.connect(
-        host=config['host'],
-        user=config['user'],
-        password=config['password'],
-        database=config['database'],
+        host=config.db.host,
+        user=config.db.user,
+        password=config.db.password,
+        database=config.db.database,
         charset='utf8mb4',
         collation='utf8mb4_czech_ci',
         use_unicode=True,

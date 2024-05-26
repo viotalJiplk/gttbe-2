@@ -3,7 +3,7 @@ from jwcrypto.common import json_encode, json_decode
 from jwcrypto.jws import InvalidJWSObject, InvalidJWSSignature
 from functools import wraps
 from flask_restful import request
-from config import selfref, discord
+from utils.config import config
 import time
 import json
 
@@ -13,8 +13,8 @@ public = key.export_public()
 
 def generateJWS(claims):
     payload = {
-        "iss": selfref["root_url"],
-        "exp": int(time.time()) + discord["token_ttl"]
+        "iss": config.selfref.root_url,
+        "exp": int(time.time()) + config.discord.token_ttl
     }
     payload = payload | claims
     payload = json_encode(payload)
@@ -46,10 +46,10 @@ def jwsProtected(optional: bool = False):
             result = json_decode(result)
             if(result["exp"] <= int(time.time())):
                 return {"kind": "JWS", "msg": "Expired!"}, 401
-            if(result["iss"] != selfref["root_url"]):
+            if(result["iss"] != config.selfref.root_url):
                 return {"kind": "JWS", "msg": "Untrusted issuer!"}, 401
-            if(result[discord["userid_claim"]] == None):
+            if(result[config.discord.userid_claim] == None):
                 return {"kind": "JWS", "msg": "Missing userid!"}, 401
-            return func(authResult = {"userId": result[discord["userid_claim"]], "payload": result}, *args, **kwargs)
+            return func(authResult = {"userId": result[config.discord.userid_claim], "payload": result}, *args, **kwargs)
         return getAuth
     return wrapper
