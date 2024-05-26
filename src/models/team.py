@@ -26,10 +26,7 @@ class TeamModel(ObjectDbSync):
             db.rollback()
             return None
 
-        cursor.execute("SELECT LAST_INSERT_ID();")
-        teamId = cursor.fetchone()[0]
-
-        team = cls(name, gameId, teamId)
+        team = cls(name, gameId, cursor.lastrowid)
 
         if not team.__userJoin(userId, nick, rank, maxRank, "Captain", cursor, db):
             db.rollback()

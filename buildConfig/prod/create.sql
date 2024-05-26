@@ -111,11 +111,20 @@ END;;
 
 DELIMITER ;
 
+DROP TABLE IF EXISTS `roleTypes`;
+CREATE TABLE `roleTypes` (
+  `role` varchar(20) NOT NULL,
+  `discordRoleId` bigint(20) DEFAULT NULL,
+  PRIMARY KEY (`role`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 DROP TABLE IF EXISTS `roles`;
-CREATE TABLE `roles` (
+CREATE TABLE `roles`(
+  `roleId` int NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `userId` bigint(20) unsigned NOT NULL,
   `gameId` int(10) unsigned DEFAULT NULL,
   `role` enum('admin','gameOrganizer','gameStreamer') NOT NULL,
+  UNIQUE KEY `unique_role` (`userId`,`role`,`gameId`),
   KEY `userId` (`userId`),
   KEY `gameId` (`gameId`),
   CONSTRAINT `roles_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `users` (`userId`),

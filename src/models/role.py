@@ -2,7 +2,8 @@ from utils.db import fetchAllWithNames, dbConn
 from mysql.connector.errors import IntegrityError
 
 class RoleModel:
-    def __init__(self, userId, gameId, role):
+    def __init__(self, roleId, userId, gameId, role):
+        self.roleId = roleId
         self.userId = userId
         self.gameId = gameId
         self.role = role
@@ -15,14 +16,14 @@ class RoleModel:
             cursor.execute(query, (userId, gameId, role))
         except IntegrityError as e:
             raise ValueError("User does not exist")
-        return cls(userId=userId, gameId=gameId, role=role)
+        return cls(roleId=cursor.lastrowid, userId=userId, gameId=gameId, role=role)
 
     @classmethod
     @dbConn()
     def hasRole(cls, userId, roles, gameId = None, cursor = None, db = None):
         query = "SELECT `role` FROM `roles` WHERE `userId`=%s"
         if gameId is not None:
-            query += "AND `gameId`=%s OR `gameId`= NULL"
+            query += " AND `gameId`=%s OR `gameId` is NULL"
             cursor.execute(query, (userId, gameId))
         else:
             cursor.execute(query, (userId,))

@@ -51,7 +51,7 @@ class GameModel(ObjectDbSync):
     def create(cls, name: str, registrationStart: date, registrationEnd: date, maxCaptains: int, maxMembers: int, maxReservists: int, cursor, db):
         query = "INSERT INTO games (name, maxCaptains, maxMembers, maxReservists, maxTeams) VALUES (%s, %s, %s, %s)"
         cursor.execute(query, (name, maxCaptains, maxMembers, maxReservists))
-        return cls(name=name, maxCaptains=maxCaptains, maxMembers=maxMembers, maxReservists=maxReservists)
+        return cls(gameId=cursor.lastrowid, name=name, maxCaptains=maxCaptains, maxMembers=maxMembers, maxReservists=maxReservists)
 
     @dbConn()
     def update(self, cursor, db):

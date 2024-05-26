@@ -19,20 +19,25 @@ INSERT INTO `page` (`name`, `value`) VALUES
 ('sponsors',	'\r\n## [Jihomoravský kraj](https://www.jmk.cz/)\r\n[\r\n![Logo jmk](https://cdn.discordapp.com/attachments/1167383357919875092/1167754064067567616/Logotyp_jihomoravsky_kraj_RGB.svg?ex=654f46b8&is=653cd1b8&hm=1a435ccc8e214dc6aa6ee1cc6e290a415817f1646e8d4ea74d7683a3e1a66a76&)](https://www.jmk.cz/)\r\n\r\n## [Jihomoravská rada dětí a mládeže](https://jrdm.cz/)\r\n[![Logo jmk](https://cdn.discordapp.com/attachments/1167383357919875092/1167747298076397699/JRDM_logo.svg?ex=654f406b&is=653ccb6b&hm=0e2473916e2b95249696aa106f276c9a48ffed9e1be88e76377ceb6463b1fe60&)](https://jrdm.cz/)\r\n## [Helkor.eu](https://link.helkor.eu/from-gtt)\r\n[![Logo Helkoru.eu](https://cdn.discordapp.com/attachments/1167383357919875092/1167391365609553943/logo_white.png?ex=654df4ee&is=653b7fee&hm=f997528b371f37678dd08347a7da2b8efe191883de7d6e5ad7e58b3d5ae8e110&)](https://link.helkor.eu/from-gtt)\r\n## [FakaHeda](https://www.fakaheda.eu/)\r\n[![Logo FakaHeda.eu](https://cdn.discordapp.com/attachments/1167383357919875092/1167759428045516903/wide_green_white_transparent.png)](https://www.fakaheda.eu/)\r\n\r\n## [MŠMT](https://www.msmt.cz/)\r\n[![Logo MŠMT](https://cdn.discordapp.com/attachments/1167383357919875092/1167749150109093968/MSMT_logotyp_text_inverz_cz.svg?ex=654f4225&is=653ccd25&hm=8abd10e3f3e69656717e6800fb2231214488b266f18ab9eb4c65f0cca03052f8&)](https://www.msmt.cz/)\r\n')
 ON DUPLICATE KEY UPDATE `name` = VALUES(`name`), `value` = VALUES(`value`);
 
-INSERT INTO `roles` (`userId`, `gameId`, `role`) VALUES
-(573054998179479552,	2,	'gameOrganizer'),
-(763460918726098974,	2,	'gameOrganizer'),
-(763120483863887883,	1,	'gameOrganizer'),
-(274644431284600832,	3,	'gameOrganizer'),
-(776133479162970183,	3,	'gameOrganizer'),
-(378575366954156044,	6,	'gameOrganizer'),
-(710718989965328395,	6,	'gameOrganizer'),
-(498535534269038592,	4,	'gameOrganizer'),
-(497035269644484608,	4,	'gameOrganizer'),
-(702574173305700393,	5,	'gameOrganizer'),
-(264449522329976832,	1,	'admin'),
-(264449522329976832,	1,	'gameOrganizer'),
-(264449522329976832,	1,	'admin')
+INSERT INTO `roleTypes` (`role`, `discordRoleId`) VALUES
+('admin',	NULL),
+('gameOrganizer',	NULL)
+ON DUPLICATE KEY UPDATE `role` = VALUES(`role`), `discordRoleId` = VALUES(`discordRoleId`);
+
+INSERT INTO `roles` (`roleId`, `userId`, `gameId`, `role`) VALUES
+( 1, 573054998179479552,	2,	'gameOrganizer'),
+( 2, 763460918726098974,	2,	'gameOrganizer'),
+( 3, 763120483863887883,	1,	'gameOrganizer'),
+( 4, 274644431284600832,	3,	'gameOrganizer'),
+( 5, 776133479162970183,	3,	'gameOrganizer'),
+( 6, 378575366954156044,	6,	'gameOrganizer'),
+( 7, 710718989965328395,	6,	'gameOrganizer'),
+( 8, 498535534269038592,	4,	'gameOrganizer'),
+( 9, 497035269644484608,	4,	'gameOrganizer'),
+( 10, 702574173305700393,	5,	'gameOrganizer'),
+( 11, 264449522329976832,	1,	'admin'),
+( 12, 264449522329976832,	1,	'gameOrganizer'),
+( 13, 264449522329976832,	1,	'admin')
 ON DUPLICATE KEY UPDATE `userId` = VALUES(`userId`), `gameId` = VALUES(`gameId`), `role` = VALUES(`role`);
 
 INSERT INTO `schools` (`schoolId`, `name`) VALUES
