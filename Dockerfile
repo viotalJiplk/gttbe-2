@@ -1,6 +1,7 @@
 FROM python:alpine
 
 RUN apk add --update --no-cache bash
+RUN apk add build-base libffi-dev
 COPY buildConfig/prod/requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 
