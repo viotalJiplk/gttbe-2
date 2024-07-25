@@ -9,3 +9,4 @@ jwcrypto
 mysql-connector-python==8.0.29
 flask-cors
 colorlog
+flask-restx

@@ -8,3 +8,4 @@ jwcrypto
 mysql-connector-python
 flask-cors
 colorlog
+flask-restx

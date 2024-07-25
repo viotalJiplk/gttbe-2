@@ -1,4 +1,4 @@
-from flask_restful import Resource, request
+from flask_restx import Resource
 from models.team import TeamModel
 from models.game import GameModel
 from utils.jws import jwsProtected
@@ -10,6 +10,13 @@ class createTeam(Resource):
     @jwsProtected()
     @postJson
     def post(self, data, authResult):
+        """Creates team
+
+        Args:
+
+        Returns:
+            dict: teamId
+        """
         if("game_id" not in data or "name" not in data):
             return {"kind": "JOIN", "msg": "Missing game_id or name."}, 403
         game = GameModel.getById(data["game_id"])

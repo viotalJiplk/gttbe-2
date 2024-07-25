@@ -1,7 +1,3 @@
-def register_routes(api, routes, prefix, isapi = True):
+def register_routes(api, routes):
     for route in routes:
-        if(isapi):
-            location = "/backend" + prefix + route[1]
-        else:
-            location = prefix + route[1]
-        api.add_resource(route[0], location)
+        api.add_resource(route[0], route[1])

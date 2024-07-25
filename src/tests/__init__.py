@@ -1,5 +1,5 @@
 from flask import send_from_directory
-from flask_restful import Resource, request
+from flask_restx import Resource
 
 class TestPages(Resource):
     def get(self, content):

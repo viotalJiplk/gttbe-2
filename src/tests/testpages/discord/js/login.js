@@ -1,4 +1,4 @@
-redirect_url = "http://127.0.0.1:5000/test/testpages/discord/login.html#getjws";
+redirect_url = "http://127.0.0.1:5000/backend/test/testpages/discord/login.html#getjws";
 document.getElementById("getDiscordURL").addConnection(function(text) {
     const input = JSON.parse(text);
     let discordhref = input.redirect_url + "&redirect_uri=" +  encodeURIComponent(redirect_url);

@@ -1,4 +1,4 @@
-from flask_restful import Resource, request
+from flask_restx import Resource
 
 from models.team import TeamModel
 from models.game import GameModel
@@ -23,6 +23,14 @@ class Team(Resource):
 
     @getTeam
     def get(self, team, teamId):
+        """Gets team
+
+        Args:
+            teamId (str): id of team
+
+        Returns:
+            dict: info about team
+        """
         players = team.getPlayers()
         return {
             "teamId": team.teamId,
@@ -36,6 +44,15 @@ class TeamJoinstring(Resource):
     @jwsProtected()
     @getTeam
     def get(self, authResult, team, teamId):
+        """Gets team joinString
+            Captain only
+
+        Args:
+            teamId (str): id of team
+
+        Returns:
+            dict: joinString
+        """
         if team.getUsersRole(authResult["userId"]) != "Captain":
             return {"kind": "TEAMROLE", "msg": "You are not Captain of this team."}, 403
         joinString = team.generateJoinString()
@@ -50,6 +67,15 @@ class Join(Resource):
     @getTeam
     @postJson
     def post(self, authResult, team, data, teamId, joinString):
+        """Joins team
+
+        Args:
+            teamId (str): id of team
+            joinString (str): joinString of team
+
+        Returns:
+            dict: teamId
+        """
         if("nick" not in data or "rank" not in data or "max_rank" not in data or "role" not in data):
             return {"kind": "PAYLOAD", "msg": "Missing nick, rank, max_rank or role."}, 403
 
@@ -77,6 +103,15 @@ class Kick(Resource):
     @jwsProtected()
     @getTeam
     def delete(self, authResult, team, teamId, userId):
+        """Kicks user out of team
+
+        Args:
+            teamId (str): id of team
+            userId (str): @me (or id of user captain and admin only)
+
+        Returns:
+            dict: teamId
+        """
         try:
             if userId == "@me":
                 if not team.leave(userId=authResult["userId"]):
