@@ -1,4 +1,4 @@
-from flask_restful import Resource
+from flask_restx import Resource
 from models.event import EventModel
 from utils.role import getRole
 from utils.jws import jwsProtected
@@ -17,12 +17,28 @@ accessibleAttributes = {
 
 class Events(Resource):
     def get(self, eventId):
+        """Gets event
+
+        Args:
+            eventId (str): id of event
+
+        Returns:
+            dict: info about event
+        """
         event = EventModel.getById(eventId=eventId)
         if event is None:
             return {"kind": "DATA", "msg": "Requested resource does not exist."}, 404
         return event.toDict()
     @jwsProtected()
     def delete(self, authResult, eventId):
+        """Deletes event
+
+        Args:
+            eventId (str): id of event
+
+        Returns:
+            None:
+        """
         event = EventModel.getById(eventId)
         if event is None:
             return {"kind": "DATA", "msg": "Requested resource does not exist."}, 404
@@ -37,6 +53,13 @@ class Events(Resource):
     @jwsProtected()
     @postJson
     def put(self, data, authResult, eventId):
+        """Updates event
+
+        Args:
+
+        Returns:
+            dict: info about event
+        """
         event = EventModel.getById(eventId=eventId)
         if event is None:
             return {"kind": "DATA", "msg": "Requested resource does not exist."}, 404
@@ -61,6 +84,13 @@ class EventCreate(Resource):
     @postJsonParse(expectedJson=accessibleAttributes)
     @getRole(roleArray=["admin"], optional=False)
     def post(self, data, authResult, hasRole):
+        """Creates event
+
+        Args:
+
+        Returns:
+            dict: info about event
+        """
         date = datetime.strptime(data["date"], "%Y-%m-%d").date()
         beginTime = datetime.strptime(data["beginTime"], "%H:%M:%S").time()
         endTime = datetime.strptime(data["endTime"], "%H:%M:%S").time()
@@ -68,4 +98,9 @@ class EventCreate(Resource):
 
 class EventList(Resource):
     def get(self):
+        """Lists all events
+
+        Returns:
+            dict: List of events
+        """
         return EventModel.getAllDict()

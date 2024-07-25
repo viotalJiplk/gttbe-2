@@ -5,7 +5,7 @@ def toBool(value: str)-> bool:
     if(type(value) == str):
         return value.lower() == "yes" or value.lower() == "true"
     else:
-        value == True
+        return value == True
 
 def checkEnvVariable(varName, defaultVAlue) -> str:
     if varName in environ:

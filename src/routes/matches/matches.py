@@ -1,4 +1,4 @@
-from flask_restful import Resource
+from flask_restx import Resource
 from models.stage import StageModel
 from utils.role import getRole
 from utils.jws import jwsProtected
@@ -18,6 +18,14 @@ accessibleAttributes = {
 
 class Matches(Resource):
     def get(self, matchId):
+        """Gets Match
+
+        Args:
+            matchId (str): id of match
+
+        Returns:
+            dict: info about match
+        """
         match = MatchModel.getById(matchId=matchId)
         if match is None:
             return {"kind": "DATA", "msg": "Requested resource does not exist."}, 404
@@ -25,6 +33,14 @@ class Matches(Resource):
 
     @jwsProtected()
     def delete(self, authResult, matchId):
+        """Deletes match
+
+        Args:
+            matchId (str): id of match
+
+        Returns:
+            None:
+        """
         match = MatchModel.getById(matchId=matchId)
         if match is None:
             return {"kind": "DATA", "msg": "Requested resource does not exist."}, 404
@@ -42,6 +58,14 @@ class Matches(Resource):
     @jwsProtected()
     @postJson
     def put(self, data, authResult, matchId):
+        """Updates match
+
+        Args:
+            matchId (str): id of match
+
+        Returns:
+            dict: info about match
+        """
         match = MatchModel.getById(matchId=matchId)
         if match is None:
             return {"kind": "DATA", "msg": "Requested resource does not exist."}, 404
@@ -60,6 +84,13 @@ class MatchCreate(Resource):
     @jwsProtected()
     @postJsonParse(expectedJson=accessibleAttributes)
     def post(self, data, authResult):
+        """Creates match
+
+        Args:
+
+        Returns:
+            dict: info about match
+        """
         stage = StageModel.getById(stageId=data["stageId"])
         if stage is None:
             return {"kind": "DATA", "msg": "Requested resource does not exist."}, 404

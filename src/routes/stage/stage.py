@@ -1,4 +1,4 @@
-from flask_restful import Resource
+from flask_restx import Resource
 from models.stage import StageModel
 from utils.role import getRole
 from utils.jws import jwsProtected
@@ -15,6 +15,14 @@ accessibleAttributes = {
 
 class Stages(Resource):
     def get(self, stageId):
+        """Gets stage
+
+        Args:
+            stageId (str): id of stage
+
+        Returns:
+            dict: info about stage
+        """
         stage = StageModel.getById(stageId=stageId)
         if stage is None:
             return {"kind": "DATA", "msg": "Requested resource does not exist."}, 404
@@ -22,6 +30,14 @@ class Stages(Resource):
 
     @jwsProtected()
     def delete(self, authResult, stageId):
+        """Deletes stage
+
+        Args:
+            stageId (str): id of stage
+
+        Returns:
+            None:
+        """
         stage = StageModel.getById(stageId)
         if stage is None:
             return {"kind": "DATA", "msg": "Requested resource does not exist."}, 404
@@ -39,6 +55,14 @@ class Stages(Resource):
     @jwsProtected()
     @postJson
     def put(self, data, authResult, stageId):
+        """Updates stage
+
+        Args:
+            stageId (str): id of stage
+
+        Returns:
+            dict: info about stage
+        """
         stage = StageModel.getById(stageId=stageId)
         if stage is None:
             return {"kind": "DATA", "msg": "Requested resource does not exist."}, 404
@@ -57,6 +81,13 @@ class StageCreate(Resource):
     @jwsProtected()
     @postJsonParse(expectedJson=accessibleAttributes)
     def post(self, data, authResult):
+        """Creates stage
+
+        Args:
+
+        Returns:
+            dict: info about stage
+        """
         event = EventModel.getById(eventId=data["eventId"])
         if event is None:
             return {"kind": "DATA", "msg": "Requested resource does not exist."}, 404

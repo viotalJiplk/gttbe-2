@@ -1,4 +1,4 @@
-from flask_restful import Resource
+from flask_restx import Resource
 from utils.db import getConnection
 from utils.utils import postJson
 from utils.role import getRole
@@ -8,6 +8,15 @@ from utils.jws import jwsProtected
 
 class Games(Resource):
     def get(self, gameId):
+        """Gets game
+        You can use <gameId> = all to list all games.
+
+        Args:
+            gameId (str): id of the game or 'all'
+
+        Returns:
+            dict: info about game or games
+        """
         if(gameId == "all"):
             return {"games": GameModel.getAllDict()}
         else:
@@ -20,6 +29,14 @@ class Games(Resource):
     @postJson
     @getRole(["gameOrganizer", "admin"], optional=False)
     def put(self, data, authResult, hasRole, gameId):
+        """Updates game
+
+        Args:
+            gameId (str): id of the game
+
+        Returns:
+            dict: info about game
+        """
         if gameId == 'all':
             if 'game_id' in data:
                 gameId = data['game_id']
@@ -51,6 +68,14 @@ class Games(Resource):
 
 class GamePage(Resource):
     def get(self, gameId):
+        """Gets gamepage
+
+        Args:
+            gameId (str): id of the game
+
+        Returns:
+            dict: gameid and gamepage
+        """
         game = GameModel.getById(gameId)
         if game is None:
             return {"kind": "GAME", "msg": "GameId out of scope."}, 403
@@ -61,6 +86,14 @@ class GamePage(Resource):
     @postJson
     @getRole(["gameOrganizer", "admin"], optional=False)
     def put(self, data, authResult, hasRole, gameId):
+        """Updates gamepage
+
+        Args:
+            gameId (str): id of the game
+
+        Returns:
+            None:
+        """
         if gameId == 'all':
             if 'game_id' in data:
                 gameId = data['game_id']

@@ -1,4 +1,4 @@
-from flask_restful import Resource, request
+from flask_restx import Resource
 from models.role import RoleModel
 from utils.jws import jwsProtected
 from utils.utils import postJson
@@ -10,6 +10,13 @@ class AddRole(Resource):
     @postJson
     @getRole(roleArray=["admin"], optional=False)
     def post(self, data, authResult, hasRole):
+        """Adds admin role to user
+
+        Args:
+
+        Returns:
+            dict: info about role
+        """
         if("game_id" not in data or "user_id" not in data or "role" not in data):
             return {"kind":"ROLE", "msg": "Missing game_id or user_id or role in data."}, 401
         try:

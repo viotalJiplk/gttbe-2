@@ -1,4 +1,4 @@
-from flask_restful import Resource, request
+from flask_restx import Resource
 from models.state import StateModel
 from utils.config import config
 from utils.jws import generateJWS
@@ -15,6 +15,12 @@ class Auth(Resource):
         return "https://discord.com/oauth2/authorize?response_type=code&client_id="+str(config.discord.client_id)+"&scope="+ scope +"&state="+ state +"&prompt=" + prompt
 
     def get(self):
+        """
+            Generates discord api uri.
+            You should add &redirect_uri=$uri$ at the end so discord would redirect user to your client.
+        Returns:
+            dict: redirect url
+        """
         state = StateModel.create()
         return {"redirect_url": self.__endpoint_url(state.state, "none")}, 200
         # could technically throw error if state is not unique
@@ -24,6 +30,13 @@ class TokenEndpoint(Resource):
 
     @postJson
     def post(self, data):
+        """
+            Exchange OAuth code for jws.
+        Args:
+
+        Returns:
+            dict: jws and user info
+        """
         if("code" not in data or "state" not in data or "redirect_uri" not in data):
             return {"state": 1, "msg": "Missing something in request."}, 401
         if(StateModel.testAndDelete(data["state"]) == False):
