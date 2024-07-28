@@ -38,25 +38,3 @@ class StageModel(ObjectDbSync):
         query = "INSERT INTO stages (eventId, stageName, stageIndex) VALUES (%s, %s, %s)"
         cursor.execute(query, (eventId, stageName, stageIndex))
         return cls(stageId=cursor.lastrowid, eventId=eventId, stageName=stageName, stageIndex=stageIndex)
-
-    @classmethod
-    @dbConn()
-    def getById(cls, stageId, cursor, db):
-        query = "SELECT stageId, eventId, stageName, stageIndex FROM stages WHERE stageId=%s"
-        cursor.execute(query, (stageId,))
-        row = fetchOneWithNames(cursor)
-        if row:
-            return cls(**row)
-        else:
-            return None
-
-    @classmethod
-    @dbConn()
-    def getAll(cls, cursor, db):
-        query = "SELECT stageId, eventId, stageName, stageIndex FROM stages"
-        cursor.execute(query)
-        rows = fetchAllWithNames(cursor)
-        result = []
-        for row in rows:
-            result.append(cls(**row))
-        return result

@@ -23,7 +23,7 @@ class Stages(Resource):
         Returns:
             dict: info about stage
         """
-        stage = StageModel.getById(stageId=stageId)
+        stage = StageModel.getById(stageId)
         if stage is None:
             return {"kind": "DATA", "msg": "Requested resource does not exist."}, 404
         return stage.toDict()
@@ -63,7 +63,7 @@ class Stages(Resource):
         Returns:
             dict: info about stage
         """
-        stage = StageModel.getById(stageId=stageId)
+        stage = StageModel.getById(stageId)
         if stage is None:
             return {"kind": "DATA", "msg": "Requested resource does not exist."}, 404
         event = stage.getEvent()
@@ -88,7 +88,7 @@ class StageCreate(Resource):
         Returns:
             dict: info about stage
         """
-        event = EventModel.getById(eventId=data["eventId"])
+        event = EventModel.getById(data["eventId"])
         if event is None:
             return {"kind": "DATA", "msg": "Requested resource does not exist."}, 404
         if not RoleModel.hasRole(authResult["userId"], ["admin"], event.gameId):

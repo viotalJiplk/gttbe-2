@@ -26,7 +26,7 @@ class Matches(Resource):
         Returns:
             dict: info about match
         """
-        match = MatchModel.getById(matchId=matchId)
+        match = MatchModel.getById(matchId)
         if match is None:
             return {"kind": "DATA", "msg": "Requested resource does not exist."}, 404
         return match.toDict()
@@ -41,7 +41,7 @@ class Matches(Resource):
         Returns:
             None:
         """
-        match = MatchModel.getById(matchId=matchId)
+        match = MatchModel.getById(matchId)
         if match is None:
             return {"kind": "DATA", "msg": "Requested resource does not exist."}, 404
         event = match.getEvent()
@@ -66,7 +66,7 @@ class Matches(Resource):
         Returns:
             dict: info about match
         """
-        match = MatchModel.getById(matchId=matchId)
+        match = MatchModel.getById(matchId)
         if match is None:
             return {"kind": "DATA", "msg": "Requested resource does not exist."}, 404
         event = match.getEvent()
@@ -91,7 +91,7 @@ class MatchCreate(Resource):
         Returns:
             dict: info about match
         """
-        stage = StageModel.getById(stageId=data["stageId"])
+        stage = StageModel.getById(data["stageId"])
         if stage is None:
             return {"kind": "DATA", "msg": "Requested resource does not exist."}, 404
         event = stage.getEvent()

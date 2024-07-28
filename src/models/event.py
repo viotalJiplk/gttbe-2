@@ -65,24 +65,8 @@ class EventModel(ObjectDbSync):
 
     @classmethod
     @dbConn()
-    def getAll(cls, cursor, db):
-        query = "SELECT eventId, date, beginTime, endTime, gameId, description, eventType FROM events"
-        cursor.execute(query)
-        rows = fetchAllWithNames(cursor)
-        result = []
-        for row in rows:
-            row["beginTime"] = fromTimeDelta(row["beginTime"])
-            row["endTime"] = fromTimeDelta(row["endTime"])
-            result.append(cls(**row))
-        return result
-
-    @classmethod
-    @dbConn()
     def getAllDict(cls, cursor, db):
-        query = "SELECT eventId, date, beginTime, endTime, gameId, description, eventType FROM events"
-        cursor.execute(query)
-        rows = fetchAllWithNames(cursor)
-        result = []
+        rows = super().getAllDict()
         for index in range(0, len(rows)):
             rows[index]["date"] = rows[index]["date"].isoformat()
             rows[index]["beginTime"] = fromTimeDelta(rows[index]["beginTime"]).strftime("%H:%M")

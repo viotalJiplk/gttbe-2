@@ -12,7 +12,7 @@ class Page(Resource):
         Returns:
             dict: name and content of the page
         """
-        page = PageModel.getByName(name)
+        page = PageModel.getById(name)
         if(page == None):
             return {"kind":"Page", "msg": "Page not found."}, 404
         return {

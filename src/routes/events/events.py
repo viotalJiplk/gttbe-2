@@ -25,7 +25,7 @@ class Events(Resource):
         Returns:
             dict: info about event
         """
-        event = EventModel.getById(eventId=eventId)
+        event = EventModel.getById(eventId)
         if event is None:
             return {"kind": "DATA", "msg": "Requested resource does not exist."}, 404
         return event.toDict()
@@ -60,7 +60,7 @@ class Events(Resource):
         Returns:
             dict: info about event
         """
-        event = EventModel.getById(eventId=eventId)
+        event = EventModel.getById(eventId)
         if event is None:
             return {"kind": "DATA", "msg": "Requested resource does not exist."}, 404
         if not RoleModel.hasRole(authResult["userId"], ["admin", "gameOrganizer"], event.gameId):
