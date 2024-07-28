@@ -50,25 +50,3 @@ class MatchModel (ObjectDbSync):
         query = "INSERT INTO matches (stageId, firstTeamId, secondTeamId, firstTeamResult, secondTeamResult) VALUES (%s, %s, %s, %s, %s)"
         cursor.execute(query, (stageId, firstTeamId, secondTeamId, firstTeamResult, secondTeamResult))
         return cls(matchId=cursor.lastrowid , stageId=stageId, firstTeamId = firstTeamId, secondTeamId = secondTeamId, firstTeamResult = firstTeamResult, secondTeamResult = secondTeamResult)
-
-    @classmethod
-    @dbConn()
-    def getById(cls, matchId, cursor, db):
-        query = "SELECT matchId, stageId, firstTeamId, secondTeamId, firstTeamResult, secondTeamResult FROM matches WHERE matchId=%s"
-        cursor.execute(query, (matchId,))
-        row = fetchOneWithNames(cursor)
-        if row:
-            return cls(**row)
-        else:
-            return None
-
-    @classmethod
-    @dbConn()
-    def getAll(cls, cursor, db):
-        query = "SELECT matchId, stageId, eventId, firstTeamId, secondTeamId, firstTeamResult, secondTeamId FROM matches"
-        cursor.execute(query)
-        rows = fetchAllWithNames(cursor)
-        result = []
-        for row in rows:
-            result.append(cls(**row))
-        return result

@@ -61,33 +61,8 @@ class GameModel(ObjectDbSync):
 
     @classmethod
     @dbConn()
-    def getById(cls, gameId, cursor, db):
-        query = "SELECT gameId, name, registrationStart, registrationEnd, maxCaptains, maxMembers, maxReservists, minCaptains, minMembers, minReservists, gamePage, maxTeams FROM games WHERE gameId=%s"
-        cursor.execute(query, (gameId,))
-        row = fetchOneWithNames(cursor)
-        if row:
-            return cls(**row)
-        else:
-            return None
-
-    @classmethod
-    @dbConn()
-    def getAll(cls, cursor, db):
-        query = "SELECT name, registrationStart, registrationEnd, maxCaptains, maxMembers, maxReservists, minCaptains, minMembers, minReservists, gameId, gamePage, maxTeams FROM games"
-        cursor.execute(query)
-        rows = fetchAllWithNames(cursor)
-        result = []
-        for row in rows:
-            result.append(cls(**row))
-        return result
-
-    @classmethod
-    @dbConn()
     def getAllDict(cls, cursor, db):
-        query = "SELECT name, registrationStart, registrationEnd, maxCaptains, maxMembers, maxReservists, minCaptains, minMembers, minReservists, gameId, maxTeams FROM games"
-        cursor.execute(query)
-        rows = fetchAllWithNames(cursor)
-        result = []
+        rows = super().getAllDict()
         for index in range(0, len(rows)):
             rows[index]["registrationStart"] = rows[index]["registrationStart"].isoformat()
             rows[index]["registrationEnd"] = rows[index]["registrationEnd"].isoformat()

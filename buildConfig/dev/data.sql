@@ -25,16 +25,6 @@ INSERT INTO `roleTypes` (`role`, `discordRoleId`) VALUES
 ON DUPLICATE KEY UPDATE `role` = VALUES(`role`), `discordRoleId` = VALUES(`discordRoleId`);
 
 INSERT INTO `roles` (`roleId`, `userId`, `gameId`, `role`) VALUES
-( 1, 573054998179479552,	2,	'gameOrganizer'),
-( 2, 763460918726098974,	2,	'gameOrganizer'),
-( 3, 763120483863887883,	1,	'gameOrganizer'),
-( 4, 274644431284600832,	3,	'gameOrganizer'),
-( 5, 776133479162970183,	3,	'gameOrganizer'),
-( 6, 378575366954156044,	6,	'gameOrganizer'),
-( 7, 710718989965328395,	6,	'gameOrganizer'),
-( 8, 498535534269038592,	4,	'gameOrganizer'),
-( 9, 497035269644484608,	4,	'gameOrganizer'),
-( 10, 702574173305700393,	5,	'gameOrganizer'),
 ( 11, 264449522329976832,	1,	'admin'),
 ( 12, 264449522329976832,	1,	'gameOrganizer'),
 ( 13, 264449522329976832,	1,	'admin')
