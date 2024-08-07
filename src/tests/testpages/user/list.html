@@ -12,10 +12,10 @@
 </body>
 <script>
     let jws = localStorage.getItem("jws");
-    if(jws == "undefined"){
+    if(jws == ""){
         alert("Go to login page to get jws");
     }else{
-        document.getElementById("teamList").setAttribute("data-options", '{"method":"GET", "url":"/backend/team/list/@me/", "headers":"{\\\"Authorization\\\": \\\"Bearer ' + jws + '\\\", \\\"Content-Type\\\": \\\"application/json\\\"}"}');
+        document.getElementById("teamList").setAttribute("data-options", '{"method":"GET", "url":"/backend/user/@me/listTeams/", "headers":"{\\\"Authorization\\\": \\\"Bearer ' + jws + '\\\"}"}');
     }
 </script>
 </html>

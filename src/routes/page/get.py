@@ -1,9 +1,15 @@
 from flask_restx import Resource
-from models.page import PageModel
-from utils.jws import jwsProtected
+from shared.models.page import PageModel
+from utils.jws import AuthResult
+from utils.permissions import hasPermissionDecorator
+from shared.utils.permissionList import perms
+from utils.error import ReturnableError
+from utils.errorList import errorList
+from typing import List
 
 class Page(Resource):
-    def get(self, name):
+    @hasPermissionDecorator([perms.page.read], False)
+    def get(self, name, authResult: AuthResult, permissions: List[str]):
         """Gets a page
 
         Args:
@@ -14,7 +20,7 @@ class Page(Resource):
         """
         page = PageModel.getById(name)
         if(page == None):
-            return {"kind":"Page", "msg": "Page not found."}, 404
+            return errorList.data.doesNotExist
         return {
             "name": page.name,
             "value": page.value

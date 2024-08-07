@@ -1,4 +1,4 @@
-from utils.config import config
+from .config import config
 import mysql.connector
 from functools import wraps
 
@@ -36,9 +36,11 @@ def dbConn(autocommit: bool = True, buffered: bool = True):
         def connection(*args, **kwargs):
             db = getConnection(autocommit)
             cursor = db.cursor(buffered)
-            result = func(cursor=cursor, db=db, *args, **kwargs)
-            cursor.close()
-            db.close()
+            try:
+                result = func(cursor=cursor, db=db, *args, **kwargs)
+            finally:
+                cursor.close()
+                db.close()
             return result
         return connection
     return wrapper

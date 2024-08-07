@@ -1,7 +1,7 @@
 from flask_restx import Resource
-from models.role import RoleModel
+from shared.models.role import RoleModel
 from utils.jws import jwsProtected
-from utils.utils import postJson
+from utils.others import postJson
 from utils.role import getRole
 
 class AddRole(Resource):

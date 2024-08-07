@@ -3,9 +3,12 @@ from jwcrypto.common import json_encode, json_decode
 from jwcrypto.jws import InvalidJWSObject, InvalidJWSSignature
 from functools import wraps
 from flask_restful import request
-from utils.config import config
+from shared.utils.config import config
+from .errorList import errorList
 import time
 import json
+from utils.error import ReturnableError, handleReturnableError
+from utils.errorList import errorList
 
 key = jwk.JWK.generate(kty='RSA', size=2048)
 private = key.export_private()
@@ -28,28 +31,65 @@ def verifyJWS(jwsin):
     # jwstoken.verify(key)
     return jwstoken.payload
 
+class AuthResult:
+    def __init__(self, userId, payload):
+        self.userId = userId
+        self.payload = payload
+
+def getAuth(headers):
+    """Try authenticating from http headers
+
+    Args:
+        headers (List[str]): httpHeaders
+
+    Raises:
+        ReturnableError: When unable to authenticate
+
+    Returns:
+        AuthResult: result of authentication attempt
+    """
+    if "Authorization" not in headers:
+        raise errorList.jws.missingAuthHeader
+    try:
+        result = verifyJWS(headers["Authorization"].split(" ")[1])
+    except InvalidJWSObject:
+        raise errorList.jws.invalidToken
+    except InvalidJWSSignature:
+        raise errorList.jws.missingAuthHeader
+    result = json_decode(result)
+    if(result["exp"] <= int(time.time())):
+        raise errorList.jws.expired
+    if(result["iss"] != config.selfref.root_url):
+        raise errorList.jws.untrusted
+    if(result[config.discord.userid_claim] == None):
+        raise errorList.jws.missingUserId
+    return AuthResult(result[config.discord.userid_claim], result)
+
 def jwsProtected(optional: bool = False):
+    """Decorator that decrypts jws authenticating user
+
+    Args:
+        optional (bool, optional): Is authentication optional. (if unable to authenticate authResult = False) Defaults to False.
+    Returns:
+        callable: The function wrapper.
+    Example:
+        @jwsProtected()
+        def func(authResult: Union[AuthResult, None]):
+            #your logic
+            pass
+    """
     def wrapper(func):
         @wraps(func)
-        def getAuth(*args, **kwargs):
-            if "Authorization" not in request.headers:
-                if optional:
+        @handleReturnableError
+        def wrappedGetAuth(*args, **kwargs):
+            result = None
+            try:
+                result = getAuth(request.headers)
+            except ReturnableError as e:
+                if e == errorList.jws.missingAuthHeader and optional:
                     return func(authResult = None, *args, **kwargs)
                 else:
-                    return {"kind": "JWS", "msg": "Missing Authorization header!"}, 401
-            try:
-                result = verifyJWS(request.headers["Authorization"].split(" ")[1])
-            except InvalidJWSObject:
-                return {"kind": "JWS", "msg": "Invalid JWS token!"}, 401
-            except InvalidJWSSignature:
-                return {"kind": "JWS", "msg": "Invalid signature!"}, 401
-            result = json_decode(result)
-            if(result["exp"] <= int(time.time())):
-                return {"kind": "JWS", "msg": "Expired!"}, 401
-            if(result["iss"] != config.selfref.root_url):
-                return {"kind": "JWS", "msg": "Untrusted issuer!"}, 401
-            if(result[config.discord.userid_claim] == None):
-                return {"kind": "JWS", "msg": "Missing userid!"}, 401
-            return func(authResult = {"userId": result[config.discord.userid_claim], "payload": result}, *args, **kwargs)
-        return getAuth
+                    raise
+            return func(authResult = result, *args, **kwargs)
+        return wrappedGetAuth
     return wrapper

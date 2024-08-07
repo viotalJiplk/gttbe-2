@@ -1,49 +1,56 @@
-from utils.db import getConnection, dbConn
+from ..utils.db import getConnection, dbConn
 import datetime
 import requests
-from utils.config import config
+from ..utils.config import config
 from requests import post
 from datetime import date, datetime, timedelta
 import json
-from utils.objectDbSync import ObjectDbSync
+from ..utils.objectDbSync import ObjectDbSync
+from typing import Union
 
 class UserModel(ObjectDbSync):
     tableName = "users"
     tableId = "userId"
 
-    def __init__(self, userid = '', refresh_token = '', access_token = '', expires_in = '', name='', surname='', adult='', school_id=''):
+    def __init__(self, userId = '', refresh_token = '', access_token = '', expires_in = '', name='', surname='', adult='', schoolId=''):
         if(not isinstance(expires_in, datetime) and expires_in != ''):
             expires_in = datetime.utcfromtimestamp(expires_in)
-        self.userId = userid
+        self.userId = userId
         self.surname = surname
         self.name = name
         self.adult = adult
-        self.schoolId = school_id
+        self.schoolId = schoolId
         self.__access_token = access_token
         self.__refresh_token = refresh_token
         self.__expires_in = expires_in
+        super().__init__()
 
     def __str__(self):
         return json.dumps(self.toDict())
 
     def toDict(self):
+        discordUserObject = None
+        try:
+            discordUserObject = self.getDiscordUserObject()
+        except Exception as e:
+            pass
         return {
             "userId": self.userId,
             "surname": self.surname,
             "name": self.name,
             "adult": self.adult,
             "schoolId": self.schoolId,
-            "discord_user_object": self.getDiscordUserObject()
+            "discord_user_object": discordUserObject
         }
 
     @classmethod
     @dbConn(autocommit=True, buffered=True)
-    def updateOrCreateUser(cls, cursor, db, userid = '', refresh_token = '', access_token = '', expires_in = '', name='', surname='', adult='', school_id=''):
-        if(userid == ''):
+    def updateOrCreateUser(cls, cursor, db, userId = '', refresh_token = '', access_token = '', expires_in = '', name='', surname='', adult='', schoolId=''):
+        if(userId == ''):
                 raise Exception("Missing userid.")
 
         values = {
-            'userid': userid,
+            'userId': userId,
         }
 
         # try if user already exists
@@ -61,8 +68,8 @@ class UserModel(ObjectDbSync):
             values["surname"] = surname
         if(adult != ''):
             values["adult"] = adult
-        if(school_id != ''):
-            values["schoolId"] = school_id
+        if(schoolId != ''):
+            values["schoolId"] = schoolId
 
         first = True
         for toSet in values:
@@ -72,7 +79,7 @@ class UserModel(ObjectDbSync):
                 first = False
             query += " `" + toSet +  "` = %(" + toSet + ")s"
 
-        query += " WHERE `userid` = %(userid)s;"
+        query += " WHERE `userId` = %(userId)s;"
 
         cursor.execute(query, values)
         if(cursor.rowcount != 1):
@@ -92,10 +99,10 @@ class UserModel(ObjectDbSync):
                 query_end += "%(" + toSet + ")s"
             cursor.execute(query_start + query_end + ");", values)
 
-        return cls(userid=userid, refresh_token=refresh_token, access_token=access_token, expires_in=expires_in, name=name, surname=surname, adult=adult, school_id=school_id)
+        return cls(userId=userId, refresh_token=refresh_token, access_token=access_token, expires_in=expires_in, name=name, surname=surname, adult=adult, schoolId=schoolId)
 
     @classmethod
-    def getByCode(cls, code, redirect_uri, name, surname, adult, school_id):
+    def getByCode(cls, code, redirect_uri, name, surname, adult, schoolId):
         '''exchange code for access and refresh tokens'''
         data = {
             'client_id': config.discord.client_id,
@@ -110,17 +117,17 @@ class UserModel(ObjectDbSync):
         user = UserModel(access_token = tokenReq["access_token"], expires_in = tokenReq["expires_in"])
         userObject = user.getDiscordUserObject()
 
-        return (UserModel.updateOrCreateUser(userid = userObject["id"], refresh_token = tokenReq["refresh_token"], access_token = tokenReq["access_token"], expires_in = tokenReq["expires_in"], name=name, surname=surname, adult=adult, school_id=school_id), userObject)
+        return (UserModel.updateOrCreateUser(userId = userObject["id"], refresh_token = tokenReq["refresh_token"], access_token = tokenReq["access_token"], expires_in = tokenReq["expires_in"], name=name, surname=surname, adult=adult, schoolId=schoolId), userObject)
 
-    @classmethod
-    @dbConn(autocommit=True, buffered=True)
-    def getById(cls, userId, cursor, db):
-        sql = "SELECT userId, surname, name, adult, schoolId, access_token, refresh_token, expires_in  FROM users WHERE userId=%(userId)s"
-        cursor.execute(sql, {'userId': userId})
-        row = cursor.fetchone()
-        if row is None:
-            return None
-        return cls(userid=row[0], surname= row[1], name = row[2], adult = row[3], school_id = row[4], access_token=row[5], refresh_token=row[6], expires_in=row[7])
+    # @classmethod
+    # @dbConn(autocommit=True, buffered=True)
+    # def getById(cls, userId, cursor, db):
+    #     sql = "SELECT userId, surname, name, adult, schoolId, access_token, refresh_token, expires_in  FROM users WHERE userId=%(userId)s"
+    #     cursor.execute(sql, {'userId': userId})
+    #     row = cursor.fetchone()
+    #     if row is None:
+    #         return None
+    #     return cls(userid=row[0], surname= row[1], name = row[2], adult = row[3], schoolId = row[4], access_token=row[5], refresh_token=row[6], expires_in=row[7])
 
     def getDiscordUserObject(self):
         today = datetime.today()
@@ -180,7 +187,7 @@ class UserModel(ObjectDbSync):
         }
         tokenReq = UserModel.tokenEndpoint(data)
 
-        UserModel.updateOrCreateUser(userid = self.userId, refresh_token = tokenReq["refresh_token"], access_token = tokenReq["access_token"], expires_in = tokenReq["expires_in"])
+        UserModel.updateOrCreateUser(userId = self.userId, refresh_token = tokenReq["refresh_token"], access_token = tokenReq["access_token"], expires_in = tokenReq["expires_in"])
 
         self.__refresh_token = tokenReq["refresh_token"]
         self.__access_token = tokenReq["access_token"]
@@ -188,12 +195,45 @@ class UserModel(ObjectDbSync):
 
         return self
 
-    @dbConn(autocommit=True, buffered=True)
-    def delete(self, cursor, db):
-
-        # try if user already exists
-        query = "DELETE FROM users WHERE `userId` = %(userId)s"
-        cursor.execute(query, {"userId": self.userId})
-
     def canRegister(self):
         return ((self.userId != "") and (self.surname != "") and (self.name != "") and (self.adult != None) and (self.schoolId != None ))
+
+    @dbConn()
+    def listPermissions(self, gameId: Union[str, None], cursor, db):
+        if gameId is None:
+            query = """SELECT p.permission FROM users u
+JOIN userRoles ur ON u.userId = ur.userId
+JOIN assignedRoles ar ON ur.assignedRoleId = ar.assignedRoleId
+JOIN assignedRolePermissions arp ON ar.assignedRoleId = arp.assignedRoleId
+JOIN permissions p ON arp.permission = p.permission
+WHERE u.userId = %s AND ar.gameId is NULL
+UNION
+SELECT p.permission FROM assignedRolePermissions arp
+JOIN permissions p ON arp.permission = p.permission
+WHERE arp.assignedRoleId IN (
+    SELECT assignedRoleId
+    FROM assignedRoles
+    WHERE roleName IN ('public', 'user') AND gameId is NULL
+);"""
+            cursor.execute(query, (self.userId,))
+        else:
+            query = """SELECT p.permission FROM users u
+JOIN userRoles ur ON u.userId = ur.userId
+JOIN assignedRoles ar ON ur.assignedRoleId = ar.assignedRoleId
+JOIN assignedRolePermissions arp ON ar.assignedRoleId = arp.assignedRoleId
+JOIN permissions p ON arp.permission = p.permission
+WHERE u.userId = %s AND (ar.gameId is NULL OR ar.gameId = %s)
+UNION
+SELECT p.permission FROM assignedRolePermissions arp
+JOIN permissions p ON arp.permission = p.permission
+WHERE arp.assignedRoleId IN (
+    SELECT assignedRoleId
+    FROM assignedRoles
+    WHERE roleName IN ('public', 'user') AND (gameId is NULL OR gameId = %s)
+);"""
+            cursor.execute(query, (self.userId, gameId, gameId))
+        rows = cursor.fetchall()
+        result = []
+        for row in rows:
+            result.append(row[0])
+        return result

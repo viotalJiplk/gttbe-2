@@ -3,8 +3,8 @@ from flask import Flask, jsonify, request, abort
 #from flask_restful import Resource, Api
 from flask_restx import Api, Resource, fields
 from utils.register_routes import register_routes
-from utils.config import config
-from utils.logging import defaultLogger
+from shared.utils.config import config
+from shared.utils.logging import defaultLogger
 
 # ROUTES
 from routes.discord import discordRoutes

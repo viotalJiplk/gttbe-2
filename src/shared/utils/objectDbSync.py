@@ -1,5 +1,5 @@
-from utils.attributesObserver import AttributesObserver
-from utils.db import dbConn, fetchOneWithNames, fetchAllWithNames
+from .attributesObserver import AttributesObserver
+from .db import dbConn, fetchOneWithNames, fetchAllWithNames
 
 class ObjectDbSync(AttributesObserver):
     def __init__(self):

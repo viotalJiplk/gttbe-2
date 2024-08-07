@@ -1,11 +1,18 @@
 from flask_restx import Resource
-from models.stage import StageModel
+from shared.models.stage import StageModel
 from utils.role import getRole
-from utils.jws import jwsProtected
-from utils.utils import postJsonParse, postJson
+from utils.jws import jwsProtected, AuthResult
+from utils.others import postJsonParse, postJson, setAttributeFromList
 from datetime import datetime
-from models.role import RoleModel
-from models.event import EventModel
+from shared.models.role import RoleModel
+from shared.models.event import EventModel
+from utils.error import handleReturnableError
+from shared.models.permission import hasPermission
+from helper.event import getEvent
+from helper.stage import getStage
+from helper.user import getUser
+from shared.utils.permissionList import perms
+from utils.errorList import errorList
 
 accessibleAttributes = {
     "eventId": [int],
@@ -14,7 +21,9 @@ accessibleAttributes = {
 }
 
 class Stages(Resource):
-    def get(self, stageId):
+    @handleReturnableError
+    @jwsProtected(optional=True)
+    def get(self, authResult: AuthResult, stageId: str):
         """Gets stage
 
         Args:
@@ -23,13 +32,17 @@ class Stages(Resource):
         Returns:
             dict: info about stage
         """
-        stage = StageModel.getById(stageId)
-        if stage is None:
-            return {"kind": "DATA", "msg": "Requested resource does not exist."}, 404
+        user = getUser(authResult)
+        stage = getStage(stageId)
+        event = getEvent(stage.eventId)
+        permission = hasPermission(user, event.gameId, perms.stage.read)
+        if len(permission) < 1:
+            raise errorList.permission.missingPermission
         return stage.toDict()
 
-    @jwsProtected()
-    def delete(self, authResult, stageId):
+    @handleReturnableError
+    @jwsProtected(optional=True)
+    def delete(self, authResult: AuthResult, stageId: str):
         """Deletes stage
 
         Args:
@@ -38,23 +51,22 @@ class Stages(Resource):
         Returns:
             None:
         """
-        stage = StageModel.getById(stageId)
-        if stage is None:
-            return {"kind": "DATA", "msg": "Requested resource does not exist."}, 404
-        event = EventModel.getById(stage.eventId)
-        if event is None:
-            return {"kind": "DATA", "msg": "Requested resource does not exist."}, 404
-        if not RoleModel.hasRole(authResult["userId"], ["admin"], event.gameId):
-            return {"kind": "ROLE", "msg": "Inadequate role."}, 401
+        user = getUser(authResult)
+        stage = getStage(stageId)
+        event = getEvent(stage.eventId)
+        permission = hasPermission(user, event.gameId, perms.stage.delete)
+        if len(permission) < 1:
+            raise errorList.permission.missingPermission
         try:
             stage.delete()
         except e:
-            return {"kind": "DATA", "msg": "There are still data, that is dependent on this."}, 401
+            raise errorList.data.stillDepends
         return
 
-    @jwsProtected()
+    @handleReturnableError
+    @jwsProtected(optional=True)
     @postJson
-    def put(self, data, authResult, stageId):
+    def put(self, data, authResult: AuthResult, stageId: str):
         """Updates stage
 
         Args:
@@ -63,24 +75,20 @@ class Stages(Resource):
         Returns:
             dict: info about stage
         """
-        stage = StageModel.getById(stageId)
-        if stage is None:
-            return {"kind": "DATA", "msg": "Requested resource does not exist."}, 404
-        event = stage.getEvent()
-        if event is None:
-            return {"kind": "DATA", "msg": "Requested resource does not exist."}, 404
-        if not RoleModel.hasRole(authResult["userId"], ["admin", "gameOrganizer"], event.gameId):
-            return {"kind": "ROLE", "msg": "Inadequate role."}, 401
-        for x in data:
-            if x in accessibleAttributes:
-                if type(data[x]) in accessibleAttributes[x]:
-                    setattr(stage, x, data[x])
+        user = getUser(authResult)
+        stage = getStage(stageId)
+        event = getEvent(stage.eventId)
+        permission = hasPermission(user, event.gameId, perms.stage.update)
+        if len(permission) < 1:
+            raise errorList.permission.missingPermission
+        setAttributeFromList(stage, data, accessibleAttributes)
         return stage.toDict()
 
 class StageCreate(Resource):
-    @jwsProtected()
+    @handleReturnableError
+    @jwsProtected(optional=True)
     @postJsonParse(expectedJson=accessibleAttributes)
-    def post(self, data, authResult):
+    def post(self, data, authResult: AuthResult):
         """Creates stage
 
         Args:
@@ -88,9 +96,9 @@ class StageCreate(Resource):
         Returns:
             dict: info about stage
         """
-        event = EventModel.getById(data["eventId"])
-        if event is None:
-            return {"kind": "DATA", "msg": "Requested resource does not exist."}, 404
-        if not RoleModel.hasRole(authResult["userId"], ["admin"], event.gameId):
-            return {"kind": "ROLE", "msg": "Inadequate role."}, 401
+        user = getUser(authResult)
+        event = getEvent(data["eventId"])
+        permission = hasPermission(user, event.gameId, perms.stage.create)
+        if len(permission) < 1:
+            raise errorList.permission.missingPermission
         return StageModel.create(data["eventId"], data["stageName"], data["stageIndex"]).toDict()

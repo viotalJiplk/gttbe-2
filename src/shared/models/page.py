@@ -1,7 +1,7 @@
-from utils.db import fetchAllWithNames, fetchOneWithNames, dbConn
+from ..utils.db import fetchAllWithNames, fetchOneWithNames, dbConn
 from json import dumps
 from datetime import date
-from utils.objectDbSync import ObjectDbSync
+from ..utils.objectDbSync import ObjectDbSync
 
 class PageModel(ObjectDbSync):
     tableName = "page"
@@ -10,6 +10,7 @@ class PageModel(ObjectDbSync):
     def __init__(self, name=None, value=None):
         self.name = name
         self.value = value
+        super().__init__()
 
     def __str__(self):
         return json.dumps({

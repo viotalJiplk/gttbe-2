@@ -1,22 +1,32 @@
 from flask_restx import Resource
-from models.event import EventModel
+from shared.models.event import EventModel
 from utils.role import getRole
-from utils.jws import jwsProtected
-from utils.utils import postJsonParse, postJson
-from datetime import datetime
-from models.role import RoleModel
+from utils.jws import jwsProtected, AuthResult
+from datetime import datetime, date, time
+from shared.models.role import RoleModel
+from shared.models.permission import hasPermission
+from shared.utils.permissionList import perms
+from utils.permissions import hasPermissionDecorator
+from utils.others import postJsonParse, postJson, setAttributeFromList
+from utils.error import handleReturnableError
+from helper.event import getEvent
+from helper.user import getUser
+from utils.errorList import errorList
+from typing import List
 
 accessibleAttributes = {
-    "date": [str],
-    "beginTime": [str],
-    "endTime": [str],
+    "date": [date],
+    "beginTime": [time],
+    "endTime": [time],
     "gameId": [int],
     "description": [str],
     "eventType": [str, type(None)]
 }
 
 class Events(Resource):
-    def get(self, eventId):
+    @handleReturnableError
+    @jwsProtected(optional=True)
+    def get(self, authResult: AuthResult, eventId: str):
         """Gets event
 
         Args:
@@ -25,12 +35,15 @@ class Events(Resource):
         Returns:
             dict: info about event
         """
-        event = EventModel.getById(eventId)
-        if event is None:
-            return {"kind": "DATA", "msg": "Requested resource does not exist."}, 404
+        user = getUser(authResult)
+        event = getEvent(eventId)
+        permission = hasPermission(user, event.gameId, perms.event.read)
+        if len(permission) < 1:
+            raise errorList.permission.missingPermission
         return event.toDict()
-    @jwsProtected()
-    def delete(self, authResult, eventId):
+    @handleReturnableError
+    @jwsProtected(optional=True)
+    def delete(self, authResult: AuthResult, eventId: str):
         """Deletes event
 
         Args:
@@ -39,20 +52,21 @@ class Events(Resource):
         Returns:
             None:
         """
-        event = EventModel.getById(eventId)
-        if event is None:
-            return {"kind": "DATA", "msg": "Requested resource does not exist."}, 404
-        if not RoleModel.hasRole(authResult["userId"], ["admin"], event.gameId):
-            return {"kind": "ROLE", "msg": "Inadequate role."}, 401
+        user = getUser(authResult)
+        event = getEvent(eventId)
+        permission = hasPermission(user, event.gameId, perms.event.delete)
+        if len(permission) < 1:
+            raise errorList.permission.missingPermission
         try:
             event.delete()
         except e:
-            return {"kind": "DATA", "msg": "There are still data, that is dependent on this."}, 401
+            raise errorList.data.stillDepends
         return
 
-    @jwsProtected()
+    @handleReturnableError
+    @jwsProtected(optional=True)
     @postJson
-    def put(self, data, authResult, eventId):
+    def put(self, data, authResult: AuthResult, eventId: str):
         """Updates event
 
         Args:
@@ -60,30 +74,18 @@ class Events(Resource):
         Returns:
             dict: info about event
         """
-        event = EventModel.getById(eventId)
-        if event is None:
-            return {"kind": "DATA", "msg": "Requested resource does not exist."}, 404
-        if not RoleModel.hasRole(authResult["userId"], ["admin", "gameOrganizer"], event.gameId):
-            return {"kind": "ROLE", "msg": "Inadequate role."}, 401
-        for x in data:
-            if x in accessibleAttributes:
-                if type(data[x]) in accessibleAttributes[x]:
-                    if x == "beginTime" or x== "endTime":
-                        final = datetime.strptime(data[x], "%H:%M:%S").time()
-                        setattr(event, x, final)
-                    elif x == "date":
-                        final = datetime.strptime(data[x], "%Y-%m-%d").date()
-                        setattr(event, x, final)
-                    else:
-                        setattr(event, x, data[x])
-
+        user = getUser(authResult)
+        event = getEvent(eventId)
+        permission = hasPermission(user, event.gameId, perms.event.update)
+        if len(permission) < 1:
+            raise errorList.permission.missingPermission
+        setAttributeFromList(event, data, accessibleAttributes)
         return event.toDict()
 
 class EventCreate(Resource):
-    @jwsProtected()
     @postJsonParse(expectedJson=accessibleAttributes)
-    @getRole(roleArray=["admin"], optional=False)
-    def post(self, data, authResult, hasRole):
+    @hasPermissionDecorator(perms.event.create, True)
+    def post(self, data, authResult: AuthResult, permissions: List[str]):
         """Creates event
 
         Args:
@@ -97,7 +99,8 @@ class EventCreate(Resource):
         return EventModel.create(date, beginTime, endTime, data["gameId"], data["description"], data["eventType"]).toDict()
 
 class EventList(Resource):
-    def get(self):
+    @hasPermissionDecorator(perms.event.listAll, False)
+    def get(self, authResult: AuthResult, permissions: List[str]):
         """Lists all events
 
         Returns:

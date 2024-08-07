@@ -1,9 +1,9 @@
-from utils.db import getConnection, fetchAllWithNames, fetchOneWithNames, dbConn
-from models.game import GameModel
-from models.user import UserModel
-from utils.generator import genState
+from ..utils.db import getConnection, fetchAllWithNames, fetchOneWithNames, dbConn
+from .game import GameModel
+from .user import UserModel
+from ..utils.generator import genState
 from mysql.connector import IntegrityError
-from utils.objectDbSync import ObjectDbSync
+from ..utils.objectDbSync import ObjectDbSync
 
 class TeamModel(ObjectDbSync):
     tableName = "teams"
@@ -14,6 +14,7 @@ class TeamModel(ObjectDbSync):
         self.gameId = gameId
         self.teamId = teamId
         self.joinString = joinString
+        super().__init__()
 
     @classmethod
     @dbConn(autocommit=False, buffered=True)

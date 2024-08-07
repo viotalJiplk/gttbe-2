@@ -1,8 +1,8 @@
 import datetime
-from utils.db import dbConn
-import logging
-from utils.generator import genState
-from utils.config import config
+from ..utils.db import dbConn
+from ..utils.logging import defaultLogger
+from ..utils.generator import genState
+from ..utils.config import config
 
 
 class StateModel:
@@ -29,6 +29,6 @@ class StateModel:
         if cursor.rowcount == 1:
             return True
         elif cursor.rowcount > 1:
-            logging.warning("DB: The state was not unique.")
+            defaultLogger.warning("DB: The state was not unique.")
 
         return False

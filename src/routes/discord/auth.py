@@ -1,9 +1,9 @@
 from flask_restx import Resource
-from models.state import StateModel
-from utils.config import config
+from shared.models.state import StateModel
+from shared.utils.config import config
 from utils.jws import generateJWS
-from models.user import UserModel
-from utils.utils import postJson
+from shared.models.user import UserModel
+from utils.others import postJson
 import urllib
 import json
 
@@ -13,7 +13,6 @@ class Auth(Resource):
         state = urllib.parse.quote(state, safe='')
         # redir_url_urlencoded = urllib.parse.quote(discord["redir_url"], safe='')
         return "https://discord.com/oauth2/authorize?response_type=code&client_id="+str(config.discord.client_id)+"&scope="+ scope +"&state="+ state +"&prompt=" + prompt
-
     def get(self):
         """
             Generates discord api uri.

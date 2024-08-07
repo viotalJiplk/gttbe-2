@@ -1,7 +1,7 @@
-from utils.db import fetchAllWithNames, fetchOneWithNames, dbConn
+from ..utils.db import fetchAllWithNames, fetchOneWithNames, dbConn
 from json import dumps
 from datetime import date
-from utils.objectDbSync import ObjectDbSync
+from ..utils.objectDbSync import ObjectDbSync
 
 class GameModel(ObjectDbSync):
     tableName = "games"
@@ -20,6 +20,7 @@ class GameModel(ObjectDbSync):
         self.minReservists = minReservists
         self.gamePage = gamePage
         self.maxTeams = maxTeams
+        super().__init__()
 
     def canBeRegistered(self):
         # <registrationStart, registrationEnd)
@@ -52,12 +53,6 @@ class GameModel(ObjectDbSync):
         query = "INSERT INTO games (name, maxCaptains, maxMembers, maxReservists, maxTeams) VALUES (%s, %s, %s, %s)"
         cursor.execute(query, (name, maxCaptains, maxMembers, maxReservists))
         return cls(gameId=cursor.lastrowid, name=name, maxCaptains=maxCaptains, maxMembers=maxMembers, maxReservists=maxReservists)
-
-    @dbConn()
-    def update(self, cursor, db):
-        query = "UPDATE `games` SET registrationStart = %s, registrationEnd = %s, maxCaptains = %s, maxMembers = %s, maxReservists = %s, minCaptains = %s, minMembers = %s, minReservists = %s, gamePage = %s, maxTeams = %s WHERE gameId = %s"
-        cursor.execute(query, (self.registrationStart, self.registrationEnd, self.maxCaptains, self.maxMembers, self.maxReservists, self.minCaptains, self.minMembers, self.minReservists, self.gamePage, self.gameId, self.maxTeams))
-        return True
 
     @classmethod
     @dbConn()
