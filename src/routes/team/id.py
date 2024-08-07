@@ -1,28 +1,29 @@
 from flask_restx import Resource
 
-from models.team import TeamModel
-from models.game import GameModel
-from utils.jws import jwsProtected
+from shared.models.team import TeamModel
+from shared.models.game import GameModel
+from utils.jws import jwsProtected, AuthResult
 from functools import wraps
-from utils.utils import postJson
-from utils.errorlog import weberrorlog
-from models.user import UserModel
+from utils.others import postJson
+from shared.models.user import UserModel
+from helper.team import getTeam
+from helper.user import getUser
+from helper.game import getGame
+from utils.error import handleReturnableError
+from shared.models.permission import hasPermission
+from shared.utils.permissionList import perms
+from utils.errorList import errorList
 
-def getTeam(func):
-
-    @wraps(func)
-    def wrapGetTeam(*args, **kwargs):
-        team = TeamModel.getById(kwargs['teamId'])
-        if team is None:
-            return {"kind": "TEAM", "msg": "Wrong teamId."}, 404
-        return func(team=team, *args, **kwargs)
-    return wrapGetTeam
-
+accessibleAttributes = {
+    "name": [str],
+    "gameId": [int],
+    "teamId": [int]
+}
 
 class Team(Resource):
-
-    @getTeam
-    def get(self, team, teamId):
+    @handleReturnableError
+    @jwsProtected(optional=True)
+    def get(self, authResult: AuthResult, teamId: str):
         """Gets team
 
         Args:
@@ -31,8 +32,14 @@ class Team(Resource):
         Returns:
             dict: info about team
         """
+        user = getUser(authResult)
+        team = getTeam(teamId)
+        permission = hasPermission(user, team.gameId, perms.team.read)
+        if len(permission) < 1:
+            raise errorList.permission.missingPermission
         players = team.getPlayers()
         return {
+            "name": team.name,
             "teamId": team.teamId,
             "gameId": team.gameId,
             "Players": players
@@ -40,10 +47,9 @@ class Team(Resource):
 
 
 class TeamJoinstring(Resource):
-
-    @jwsProtected()
-    @getTeam
-    def get(self, authResult, team, teamId):
+    @handleReturnableError
+    @jwsProtected(optional=True)
+    def get(self, authResult: AuthResult, teamId: str):
         """Gets team joinString
             Captain only
 
@@ -53,20 +59,29 @@ class TeamJoinstring(Resource):
         Returns:
             dict: joinString
         """
-        if team.getUsersRole(authResult["userId"]) != "Captain":
-            return {"kind": "TEAMROLE", "msg": "You are not Captain of this team."}, 403
-        joinString = team.generateJoinString()
+        user = getUser(authResult)
+        team = getTeam(teamId)
+        permission = hasPermission(user, team.gameId, [perms.team.generateJoinString, perms.team.generateJoinStringMyTeam])
+        if len(permission) < 1:
+            raise errorList.permission.missingPermission
+        joinString = None
+        if perms.team.generateJoinString in permission:
+            joinString = team.generateJoinString()
+        elif perms.team.generateJoinStringMyTeam in permission:
+            if team.getUsersRole(authResult.userId) != "Captain":
+                raise errorList.team.notCaptain
+            joinString = team.generateJoinString()
         if joinString is None:
-            return {"state": "TEAM", "msg": "Team does not exist"}, 404
-        return {"joinString": team.generateJoinString()}, 200
+            raise errorList.data.doesNotExist
+        return {"joinString": joinString}, 200
 
 
 class Join(Resource):
 
-    @jwsProtected()
-    @getTeam
+    @handleReturnableError
+    @jwsProtected(optional=True)
     @postJson
-    def post(self, authResult, team, data, teamId, joinString):
+    def post(self, authResult: AuthResult, teamId: str, data, joinString: str):
         """Joins team
 
         Args:
@@ -77,32 +92,36 @@ class Join(Resource):
             dict: teamId
         """
         if("nick" not in data or "rank" not in data or "max_rank" not in data or "role" not in data):
-            return {"kind": "PAYLOAD", "msg": "Missing nick, rank, max_rank or role."}, 403
+           raise errorList.team.invalidPayload
 
-        game = GameModel.getById(team.gameId)
+        team = getTeam(teamId)
+        user = getUser(authResult)
+        game = getGame(team.gameId)
         if game == None:
-            return {"kind": "JOIN", "msg": "Game not found."}, 403
+            raise errorList.data.doesNotExist
         if not game.canBeRegistered():
-            return {"kind": "JOIN", "msg": "Registration is not opened for this game"}, 410
+            raise errorList.team.registrationNotOpened
 
+        permission = hasPermission(user, team.gameId, [perms.team.join])
+        if len(permission) < 1:
+            raise errorList.permission.missingPermission
 
         if(team.joinString != joinString):
-            return {"kind": "JOIN", "msg": "Wrong joinString."}, 403
-        user = UserModel.getById(authResult["userId"])
+            raise errorList.team.wrongJoinString
         if user is None:
-            return {"kind": "JOIN", "msg": "User is not in database."}, 404
+            raise errorList.data.doesNotExist
         if not user.canRegister():
-            return {"kind": "JOIN", "msg": "You havent filled info required for creating Team."}, 404
-        if not team.join(userId=authResult["userId"], nick=data["nick"], rank=data["rank"], maxRank=data["max_rank"], role=data["role"]):
-            return {"kind": "JOIN", "msg": "Team full or you are in another team for this game."}, 403
+            raise errorList.user.couldNotRegister
+        if not team.join(userId=authResult.userId, nick=data["nick"], rank=data["rank"], maxRank=data["max_rank"], role=data["role"]):
+            raise errorList.team.unableToJoin
         return {"teamId":team.teamId}, 200
 
 
 class Kick(Resource):
 
-    @jwsProtected()
-    @getTeam
-    def delete(self, authResult, team, teamId, userId):
+    @handleReturnableError
+    @jwsProtected(optional=True)
+    def delete(self, authResult: AuthResult, teamId: str, userId: str):
         """Kicks user out of team
 
         Args:
@@ -112,17 +131,21 @@ class Kick(Resource):
         Returns:
             dict: teamId
         """
-        try:
-            if userId == "@me":
-                if not team.leave(userId=authResult["userId"]):
-                    return {"kind": "TEAM", "msg": "Cannot kick form team. You are not part of this team."}, 404
+        team = getTeam(teamId)
+        user = getUser(authResult)
+        permission = hasPermission(user, team.gameId, [perms.team.kickTeam, perms.team.leave, perms.team.kick])
+        if len(permission) < 1:
+            raise errorList.permission.missingPermission
 
-            else:
-                if(team.getUsersRole(authResult["userId"]) == "Captain"):
-                    if not team.leave(userId=userId):
-                        return {"kind": "TEAM", "msg": "Cannot kick form team. User is not part of this team."}, 404
-                else:
-                    return {"kind": "TEAMROLE", "msg": "Cannot kick form team. You are not Captain of this team."}, 403
-        except:
-            return {"kind": "TEAMROLE", "msg": "Cannot kick or leave team. Are you member of this team?"}, 403
+        if perms.team.kick in permission:
+            if not team.leave(userId):
+                raise errorList.team.userNotPartOfTeam
+        elif perms.team.kickTeam in permission and team.getUsersRole(authResult.userId) == "Captain":
+            if not team.leave(userId):
+                raise errorList.team.userNotPartOfTeam
+        elif perms.team.leave in permission and userId == "@me":
+            if not team.leave(userId=authResult.userId):
+                raise errorList.team.userNotPartOfTeam
+        else:
+            raise errorList.permission.missingPermission
         return {"teamId":team.teamId}, 200

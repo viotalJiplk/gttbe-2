@@ -1,5 +1,5 @@
-from utils.db import fetchAllWithNames, dbConn
-from utils.objectDbSync import ObjectDbSync
+from ..utils.db import fetchAllWithNames, dbConn
+from ..utils.objectDbSync import ObjectDbSync
 
 class SchoolsModel(ObjectDbSync):
     tableName = "schools"
@@ -8,6 +8,7 @@ class SchoolsModel(ObjectDbSync):
     def __init__(self, name=None, schoolId=None):
         self.schoolId = schoolId
         self.name = name
+        super().__init__()
 
     @classmethod
     @dbConn()

@@ -1,5 +1,5 @@
 from functools import wraps
-from models.role import RoleModel
+from shared.models.role import RoleModel
 
 def getRole(roleArray, optional=True):
     def wrapper(func):

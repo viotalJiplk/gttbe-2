@@ -9,6 +9,14 @@
 </head>
 <body>
 
-    <req-custom id="userexists", data-options='{"method":"GET", "url":"/backend/user/exists/<uid>/"}'></req-custom>
+    <req-custom id="userexists"></req-custom>
 </body>
+<script>
+    let jws = localStorage.getItem("jws");
+    if(jws == ""){
+        alert("Go to login page to get jws");
+    }else{
+        document.getElementById("userexists").setAttribute("data-options", '{"method":"GET", "url":"/backend/user/exists/<uid>/", "headers":"{\\\"Authorization\\\": \\\"Bearer ' + jws + '\\\"}"}');
+    }
+</script>
 </html>

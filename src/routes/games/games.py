@@ -1,13 +1,31 @@
 from flask_restx import Resource
-from utils.db import getConnection
-from utils.utils import postJson
+from utils.others import postJson, setAttributeFromList
 from utils.role import getRole
-from models.game import GameModel
-from datetime import date
+from shared.models.game import GameModel
+from datetime import datetime, date, time
 from utils.jws import jwsProtected
+from shared.utils.permissionList import perms
+from utils.permissions import hasPermissionDecorator
+from typing import List
+from utils.jws import AuthResult
+from utils.errorList import errorList
+
+accessibleAttributes = {
+    "name": [str],
+    "registrationStart": [date],
+    "registrationEnd": [date],
+    "maxCaptains": [int],
+    "maxMembers": [int],
+    "maxReservists": [int],
+    "minCaptains": [int],
+    "minMembers": [int],
+    "minReservists": [int],
+    "maxTeams": [int],
+}
 
 class Games(Resource):
-    def get(self, gameId):
+    @hasPermissionDecorator([perms.game.read, perms.game.listAll], True)
+    def get(self, gameId, authResult: AuthResult, permissions: List[str]):
         """Gets game
         You can use <gameId> = all to list all games.
 
@@ -18,17 +36,22 @@ class Games(Resource):
             dict: info about game or games
         """
         if(gameId == "all"):
-            return {"games": GameModel.getAllDict()}
+            if perms.game.listAll in permissions:
+                return {"games": GameModel.getAllDict()}
+            else:
+                raise errorList.permission.missingPermission
         else:
-            game = GameModel.getById(gameId)
-            if game is None:
-                return {"kind": "GAME", "msg": "GameId out of scope."}, 403
-            return game.toDict(), 200
+            if perms.game.read:
+                game = GameModel.getById(gameId)
+                if game is None:
+                    raise errorList.data.doesNotExist
+                return game.toDict(), 200
+            else:
+                raise errorList.permission.missingPermission
 
-    @jwsProtected()
     @postJson
-    @getRole(["gameOrganizer", "admin"], optional=False)
-    def put(self, data, authResult, hasRole, gameId):
+    @hasPermissionDecorator(perms.game.update, True)
+    def put(self, gameId, data, authResult: AuthResult, permissions: List[str]):
         """Updates game
 
         Args:
@@ -37,37 +60,13 @@ class Games(Resource):
         Returns:
             dict: info about game
         """
-        if gameId == 'all':
-            if 'game_id' in data:
-                gameId = data['game_id']
-            else:
-                return {"kind": "GAME", "msg": "GameId not specified."}, 403
         game = GameModel.getById(gameId)
-        if game is None:
-            return {"kind": "GAME", "msg": "GameId out of scope."}, 403
-        if "registrationStart" in data and isinstance(data["registrationStart"], str):
-            game.registrationStart = date.fromisoformat(data["registrationStart"])
-        if "registrationEnd" in data and isinstance(data["registrationEnd"], str):
-            game.registrationEnd = date.fromisoformat(data["registrationEnd"])
-        if "maxCaptains" in data and isinstance(data["maxCaptains"], int):
-            game.maxCaptains = data["maxCaptains"]
-        if "maxMembers" in data and isinstance(data["maxMembers"], int):
-            game.maxMembers = data["maxMembers"]
-        if "maxReservists" in data and isinstance(data["maxReservists"], int):
-            game.maxReservists = data["maxReservists"]
-        if "minCaptains" in data and isinstance(data["minCaptains"], int):
-            game.minCaptains = data["minCaptains"]
-        if "minMembers" in data and isinstance(data["minMembers"], int):
-            game.minMembers = data["minMembers"]
-        if "minReservists" in data and isinstance(data["minReservists"], int):
-            game.minReservists = data["minReservists"]
-        if "maxTeams" in data and isinstance(data["maxTeams"], int):
-            game.maxTeams = data["maxTeams"]
-        game.update()
+        setAttributeFromList(game, data, accessibleAttributes)
         return game.toDict()
 
 class GamePage(Resource):
-    def get(self, gameId):
+    @hasPermissionDecorator(perms.gamePage.read, True)
+    def get(self, gameId, authResult: AuthResult, permissions: List[str]):
         """Gets gamepage
 
         Args:
@@ -78,14 +77,13 @@ class GamePage(Resource):
         """
         game = GameModel.getById(gameId)
         if game is None:
-            return {"kind": "GAME", "msg": "GameId out of scope."}, 403
+            raise errorList.data.doesNotExist
         gamePage = game.getGamePage()
         return {"game_id": gameId, "page": gamePage}
 
-    @jwsProtected()
     @postJson
-    @getRole(["gameOrganizer", "admin"], optional=False)
-    def put(self, data, authResult, hasRole, gameId):
+    @hasPermissionDecorator(perms.gamePage.update, True)
+    def put(self, data, authResult: AuthResult, permissions: List[str], gameId):
         """Updates gamepage
 
         Args:
@@ -94,14 +92,9 @@ class GamePage(Resource):
         Returns:
             None:
         """
-        if gameId == 'all':
-            if 'game_id' in data:
-                gameId = data['game_id']
-            else:
-                return {"kind": "GAME", "msg": "GameId not specified."}, 403
         game = GameModel.getById(gameId)
         if game is None:
-            return {"kind": "GAME", "msg": "GameId out of scope."}, 403
+            raise errorList.data.doesNotExist
         if "gamePage" in data and isinstance(data["gamePage"], str):
             game.gamePage = data["gamePage"]
         game.update()

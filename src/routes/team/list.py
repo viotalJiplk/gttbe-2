@@ -1,32 +1,15 @@
 from flask_restx import Resource
-from models.team import TeamModel
+from shared.models.team import TeamModel
 from utils.jws import jwsProtected
 from utils.role import getRole
-
-class ListTeam(Resource):
-
-    @jwsProtected(optional=True)
-    def get(self, authResult, userId):
-        """List teams user is currently in
-
-        Args:
-            userId (str): @me or id of user
-
-        Returns:
-            dict: list of teams
-        """
-        if userId == "@me":
-            if authResult is None:
-                return {"kind": "Auth", "msg": "You have to provide valid jws for @me."}, 401
-            return TeamModel.listUsersTeams(authResult["userId"], True), 200
-        else:
-            return TeamModel.listUsersTeams(userId, False), 200
+from shared.utils.permissionList import perms
+from utils.permissions import hasPermissionDecorator
+from helper.game import getGame
 
 class ListParticipatingTeam(Resource):
-    @jwsProtected(optional=True)
-    @getRole(['admin','gameOrganizer'])
-    def get(self, gameId, withDiscord, authResult, hasRole):
-        """List teams currently able to participate in tornament
+    @hasPermissionDecorator([perms.team.listParticipating, perms.team.listParticipatingDiscord], True)
+    def get(self, gameId, withDiscord, authResult, permissions):
+        """List teams currently able to participate in tournament
 
         Args:
             gameId (str): id of game
@@ -35,4 +18,5 @@ class ListParticipatingTeam(Resource):
         Returns:
             dict: list of teams
         """
-        return TeamModel.listParticipatingTeams(gameId, hasRole, withDiscord == 'true')
+        game = getGame(gameId)
+        return TeamModel.listParticipatingTeams(game.gameId, perms.team.listParticipatingDiscord in permissions, withDiscord == 'true')

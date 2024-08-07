@@ -1,15 +1,21 @@
 from flask_restx import Resource
-from models.team import TeamModel
-from models.game import GameModel
-from utils.jws import jwsProtected
-from utils.utils import postJson
-from models.user import UserModel
+from shared.models.team import TeamModel
+from shared.models.game import GameModel
+from utils.jws import AuthResult
+from utils.others import postJson
+from shared.models.user import UserModel
+from shared.utils.permissionList import perms
+from helper.game import getGame
+from helper.user import getUser
+from utils.errorList import errorList
+from utils.permissions import hasPermissionDecorator
+from typing import List
 
 class createTeam(Resource):
 
-    @jwsProtected()
     @postJson
-    def post(self, data, authResult):
+    @hasPermissionDecorator(perms.team.create, True)
+    def post(self, data, authResult: AuthResult, permissions: List[str]):
         """Creates team
 
         Args:
@@ -18,24 +24,20 @@ class createTeam(Resource):
             dict: teamId
         """
         if("game_id" not in data or "name" not in data):
-            return {"kind": "JOIN", "msg": "Missing game_id or name."}, 403
-        game = GameModel.getById(data["game_id"])
-        if game == None:
-            return {"kind": "JOIN", "msg": "Game not found."}, 403
+            raise errorList.team.missingGameIdOrName
+        game = getGame(data["game_id"])
         if not game.canBeRegistered():
-            return {"kind": "JOIN", "msg": "Registration is not opened for this game"}, 410
-
+           raise errorList.team.registrationNotOpened
         if("nick" not in data or "rank" not in data or "max_rank" not in data):
-            return {"kind": "JOIN", "msg": "Missing nick, rank, or max_rank of capitain."}, 403
-        user = UserModel.getById(authResult["userId"])
+            raise errorList.team.invalidPayload
+        user = getUser(authResult)
         if user is None:
-            return {"kind": "JOIN", "msg": "User is not in database."}, 404
+            raise errorList.data.doesNotExist
         if not user.canRegister():
-            return {"kind": "JOIN", "msg": "You havent filled info required for creating Team."}, 404
+           raise errorList.user.couldNotRegister
 
-        team = TeamModel.create(name=data["name"], gameId=data["game_id"], userId=authResult["userId"], nick=data["nick"], rank=data["rank"], maxRank=data["max_rank"])
+        team = TeamModel.create(name=data["name"], gameId=data["game_id"], userId=authResult.userId, nick=data["nick"], rank=data["rank"], maxRank=data["max_rank"])
 
         if team is None:
-            return {"kind": "JOIN", "msg": "Team full or you are in another team for this game."}, 403
-
+            raise errorList.team.unableToJoin
         return {"teamId": team.teamId}, 200

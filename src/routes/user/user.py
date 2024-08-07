@@ -1,15 +1,26 @@
 from flask_restx import Resource
-from models.user import UserModel
-from utils.jws import jwsProtected
-from models.role import RoleModel
+from shared.models.user import UserModel
+from shared.models.team import TeamModel
+from utils.jws import jwsProtected, AuthResult
+from utils.role import RoleModel
 from utils.role import hasRoleWithErrMsg
-from models.user import UserModel
-from utils.utils import postJson
+from shared.utils.permissionList import perms
+from utils.others import postJson, setAttributeFromList
+from helper.user import getUser
+from utils.errorList import errorList
+from utils.permissions import hasPermissionDecorator
+from typing import List
+
+accessibleAttributes = {
+    "surname": [str],
+    "name": [str],
+    "adult": [bool],
+    "schoolId": [int],
+}
 
 class UserEndpoint(Resource):
-
-    @jwsProtected()
-    def get(self, authResult, uid):
+    @hasPermissionDecorator([perms.user.readMe, perms.user.read], False)
+    def get(self, authResult:AuthResult, uid: str, permissions: List[str]):
         """Gets info about user
             For non admin accounts only <userId> = @me is allowed.
 
@@ -19,18 +30,22 @@ class UserEndpoint(Resource):
         Returns:
             dict: info about user
         """
+        user = None
         if uid == '@me':
-            return UserModel.getById(authResult["userId"]).toDict()
+            if perms.user.readMe not in permissions:
+                raise errorList.permission.missingPermission
+            if authResult.userId is None:
+                raise errorList.request.missingHeaderForMe
+            user = getUser(authResult)
         else:
-            result = hasRoleWithErrMsg(authResult['userId'], ["admin"])
-            if result is True:
-                return UserModel.getById(uid).toDict()
-            else:
-                return result
+            if perms.user.read not in permissions:
+                raise errorList.permission.missingPermission
+            user = getUser(AuthResult(uid, None))
+        return user.toDict()
 
-    @jwsProtected()
     @postJson
-    def put(self, data, authResult, uid):
+    @hasPermissionDecorator([perms.user.updateMe, perms.user.update], False)
+    def put(self, data, authResult:AuthResult, uid: str, permissions: List[str]):
         """Updates info about user
             For non admin accounts only <userId> = @me is allowed.
         Args:
@@ -39,30 +54,22 @@ class UserEndpoint(Resource):
         Returns:
             None:
         """
-        if("name" not in data):
-            data["name"] = ''
-        if("surname" not in data):
-            data["surname"] = ''
-        if("adult" not in data):
-            data["adult"] = ''
-        if("school_id" not in data):
-            data["school_id"] = ''
-        try:
-            if(uid == '@me'):
-                UserModel.updateOrCreateUser(userid=authResult["userId"], refresh_token='', access_token='',  expires_in='', name=data["name"], surname=data["surname"], adult=data["adult"], school_id=data["school_id"])
-                return {}, 205
-            else:
-                result = hasRoleWithErrMsg(authResult['userId'], ["admin"])
-                if result is True:
-                    UserModel.updateOrCreateUser(userid=authResult["userId"], refresh_token='', access_token='',  expires_in='', name=data["name"], surname=data["surname"], adult=data["adult"], school_id=data["school_id"])
-                    return {}, 205
-                else:
-                    return result
-        except:
-            return {"kind": "USER", "msg": "User does not exist or there was nothing to change."}, 404
+        user = None
+        if uid == '@me':
+            if perms.user.updateMe not in permissions:
+                raise errorList.permission.missingPermission
+            if authResult.userId is None:
+                raise errorList.request.missingHeaderForMe
+            user = getUser(authResult)
+        else:
+            if perms.user.update not in permissions:
+                raise errorList.permission.missingPermission
+            user = getUser(AuthResult(uid, None))
+        setAttributeFromList(user, data, accessibleAttributes)
+        return user.toDict()
 
-    @jwsProtected()
-    def delete(self, authResult, uid):
+    @hasPermissionDecorator([perms.user.deleteMe, perms.user.delete], False)
+    def delete(self, authResult:AuthResult, uid: str, permissions: List[str]):
         """Deletes user
             For non admin accounts only <userId> = @me is allowed.
 
@@ -72,27 +79,26 @@ class UserEndpoint(Resource):
         Returns:
             None:
         """
-        if(uid == '@me'):
-            try:
-                user = UserModel.getById(authResult["userId"])
-                user.delete()
-            except:
-                return {"kind": "USER", "msg": "You are registered in team or you play active role in management."}, 403
-            return {}, 200
+        user = None
+        if uid == '@me':
+            if perms.user.deleteMe not in permissions:
+                raise errorList.permission.missingPermission
+            if authResult.userId is None:
+                raise errorList.request.missingHeaderForMe
+            user = getUser(authResult)
         else:
-            result = hasRoleWithErrMsg(authResult['userId'], ["admin"])
-            if result is True:
-                try:
-                    user = UserModel.getById(uid)
-                    user.delete()
-                    return {}, 200
-                except:
-                    return {}, 403
-            else:
-                return result
+            if perms.user.delete not in permissions:
+                raise errorList.permission.missingPermission
+            user = getUser(AuthResult(uid, None))
+        try:
+            user.delete()
+        except e:
+            raise errorList.data.stillDepends
+        return {}, 200
 
 class UserExistsEndpoint(Resource):
-    def get(self, uid):
+    @hasPermissionDecorator(perms.user.exists, False)
+    def get(self, authResult:AuthResult, uid: str, permissions: List[str]):
         """Tests if user exists in db
 
         Args:
@@ -102,3 +108,57 @@ class UserExistsEndpoint(Resource):
             dict: exists
         """
         return {"exits": UserModel.getById(uid) is not None}
+
+class UserPermissions(Resource):
+    @hasPermissionDecorator([perms.user.permissionList, perms.user.permissionListMe], True)
+    def get(self, authResult:AuthResult, uid: str, gameId: str, permissions: List[str]):
+        """Returns users permissions for specific game
+
+        Args:
+            uid (str): userId (can be @me)
+            gameId (str): gameId (can be all = permission for all games)
+
+        Returns:
+            List[str]: permission list
+        """
+        user = None
+        if uid == '@me':
+            if perms.user.permissionListMe not in permissions:
+                raise errorList.permission.missingPermission
+            if authResult.userId is None:
+                raise errorList.request.missingHeaderForMe
+            user = getUser(authResult)
+        else:
+            if perms.user.permissionList not in permissions:
+                raise errorList.permission.missingPermission
+            user = getUser(AuthResult(uid, None))
+        if gameId == "all":
+            gameId = None
+        userPerms = user.listPermissions(gameId)
+        return userPerms
+
+class ListTeam(Resource):
+    @hasPermissionDecorator([perms.user.listTeamsMe, perms.user.listTeams], False)
+    def get(self, authResult:AuthResult, userId: str, permissions: List[str]):
+        """List teams user is currently in
+
+        Args:
+            userId (str): @me or id of user
+
+        Returns:
+            dict: list of teams
+        """
+        user = None
+        withJoinString = False
+        if userId == '@me':
+            if perms.user.listTeamsMe not in permissions:
+                raise errorList.permission.missingPermission
+            if authResult.userId is None:
+                raise errorList.request.missingHeaderForMe
+            user = getUser(authResult)
+            withJoinString = True
+        else:
+            if perms.user.listTeams not in permissions:
+                raise errorList.permission.missingPermission
+            user = getUser(AuthResult(userId, None))
+        return TeamModel.listUsersTeams(user.userId, withJoinString), 200

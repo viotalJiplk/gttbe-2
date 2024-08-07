@@ -1,4 +1,4 @@
-from utils.db import fetchAllWithNames, dbConn
+from ..utils.db import fetchAllWithNames, dbConn
 from mysql.connector.errors import IntegrityError
 
 class RoleModel:
