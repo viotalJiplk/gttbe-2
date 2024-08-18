@@ -57,3 +57,11 @@ class TokenEndpoint(Resource):
         jws = generateJWS(claims)
 
         return {"jws":jws, "userObject": user[1]}
+
+class TestGetJWS(Resource):
+    def get(self, userId):
+        claims = {}
+        claims[config.discord.userid_claim] = userId
+        jws = generateJWS(claims)
+
+        return {"jws":jws}

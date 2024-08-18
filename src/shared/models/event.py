@@ -31,8 +31,8 @@ class EventModel(ObjectDbSync):
         return {
             "eventId": self.eventId,
             "date": self.date.isoformat(),
-            "beginTime": self.beginTime.strftime("%H:%M"),
-            "endTime": self.endTime.strftime("%H:%M"),
+            "beginTime": self.beginTime.strftime("%H:%M:%S"),
+            "endTime": self.endTime.strftime("%H:%M:%S"),
             "gameId": self.gameId,
             "description": self.description,
             "eventType": self.eventType

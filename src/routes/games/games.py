@@ -1,6 +1,5 @@
 from flask_restx import Resource
 from utils.others import postJson, setAttributeFromList
-from utils.role import getRole
 from shared.models.game import GameModel
 from datetime import datetime, date, time
 from utils.jws import jwsProtected
@@ -79,7 +78,7 @@ class GamePage(Resource):
         if game is None:
             raise errorList.data.doesNotExist
         gamePage = game.getGamePage()
-        return {"game_id": gameId, "page": gamePage}
+        return {"game_id": gameId, "gamePage": gamePage}
 
     @postJson
     @hasPermissionDecorator(perms.gamePage.update, True)
@@ -97,5 +96,4 @@ class GamePage(Resource):
             raise errorList.data.doesNotExist
         if "gamePage" in data and isinstance(data["gamePage"], str):
             game.gamePage = data["gamePage"]
-        game.update()
         return

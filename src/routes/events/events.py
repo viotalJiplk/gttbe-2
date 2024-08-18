@@ -1,9 +1,7 @@
 from flask_restx import Resource
 from shared.models.event import EventModel
-from utils.role import getRole
 from utils.jws import jwsProtected, AuthResult
 from datetime import datetime, date, time
-from shared.models.role import RoleModel
 from shared.models.permission import hasPermission
 from shared.utils.permissionList import perms
 from utils.permissions import hasPermissionDecorator
@@ -93,10 +91,7 @@ class EventCreate(Resource):
         Returns:
             dict: info about event
         """
-        date = datetime.strptime(data["date"], "%Y-%m-%d").date()
-        beginTime = datetime.strptime(data["beginTime"], "%H:%M:%S").time()
-        endTime = datetime.strptime(data["endTime"], "%H:%M:%S").time()
-        return EventModel.create(date, beginTime, endTime, data["gameId"], data["description"], data["eventType"]).toDict()
+        return EventModel.create(data["date"], data["beginTime"], data["endTime"], data["gameId"], data["description"], data["eventType"]).toDict()
 
 class EventList(Resource):
     @hasPermissionDecorator(perms.event.listAll, False)

@@ -16,7 +16,7 @@
     if(jws == ""){
         alert("Go to login page to get jws");
     }else{
-        document.getElementById("userexists").setAttribute("data-options", '{"method":"GET", "url":"/backend/user/exists/<uid>/", "headers":"{\\\"Authorization\\\": \\\"Bearer ' + jws + '\\\"}"}');
+        document.getElementById("userexists").setAttribute("data-options", '{"method":"GET", "url":"/backend/user/<uid>/exists", "headers":"{\\\"Authorization\\\": \\\"Bearer ' + jws + '\\\"}"}');
     }
 </script>
 </html>

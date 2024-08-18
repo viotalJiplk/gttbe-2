@@ -119,16 +119,6 @@ class UserModel(ObjectDbSync):
 
         return (UserModel.updateOrCreateUser(userId = userObject["id"], refresh_token = tokenReq["refresh_token"], access_token = tokenReq["access_token"], expires_in = tokenReq["expires_in"], name=name, surname=surname, adult=adult, schoolId=schoolId), userObject)
 
-    # @classmethod
-    # @dbConn(autocommit=True, buffered=True)
-    # def getById(cls, userId, cursor, db):
-    #     sql = "SELECT userId, surname, name, adult, schoolId, access_token, refresh_token, expires_in  FROM users WHERE userId=%(userId)s"
-    #     cursor.execute(sql, {'userId': userId})
-    #     row = cursor.fetchone()
-    #     if row is None:
-    #         return None
-    #     return cls(userid=row[0], surname= row[1], name = row[2], adult = row[3], schoolId = row[4], access_token=row[5], refresh_token=row[6], expires_in=row[7])
-
     def getDiscordUserObject(self):
         today = datetime.today()
         if(self.__expires_in < today):

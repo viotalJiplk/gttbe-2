@@ -1,3 +1,3 @@
-from routes.schools.schools import Schools
+from .schools import Schools
 
 schoolsRoutes = [(Schools, '')]

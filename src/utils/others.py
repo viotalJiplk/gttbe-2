@@ -3,6 +3,7 @@ from flask_restful import request
 from utils.date import dateFromString, timeFromString
 from datetime import date, time
 from utils.errorList import errorList
+from utils.error import handleReturnableError
 
 def postJson(func):
     @wraps(func)
@@ -17,6 +18,7 @@ def postJson(func):
 def postJsonParse(expectedJson:dict={}):
     def wrapper(func):
         @wraps(func)
+        @handleReturnableError
         def wrapPostJson(*args, **kwargs):
             try:
                 data = request.get_json()
@@ -25,7 +27,11 @@ def postJsonParse(expectedJson:dict={}):
             for key, value in expectedJson.items():
                 if key not in data:
                     return {"kind": "JSON", "msg": f"Missing key '{key}' in request."}, 401
-                if type(data[key])  not in value:
+                if type(data[key]) == str and date in value:
+                    data[key] = dateFromString(data[key])
+                elif type(data[key]) == str and time in value:
+                    data[key] = timeFromString(data[key])
+                elif type(data[key])  not in value:
                     return {"kind": "JSON", "msg": f"Value of key '{key}' does not have expected type '{str(value)}' type '{str(type(data[key]))}' found instead."}, 401
             return func(data=data, *args, **kwargs)
         return wrapPostJson
