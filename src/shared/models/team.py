@@ -2,7 +2,7 @@ from ..utils.db import getConnection, fetchAllWithNames, fetchOneWithNames, dbCo
 from .game import GameModel
 from .user import UserModel
 from ..utils.generator import genState
-from mysql.connector import IntegrityError
+from mysql.connector import DatabaseError
 from ..utils.objectDbSync import ObjectDbSync
 
 class TeamModel(ObjectDbSync):
@@ -15,6 +15,14 @@ class TeamModel(ObjectDbSync):
         self.teamId = teamId
         self.joinString = joinString
         super().__init__()
+
+    def toDict(self):
+        return {
+            "teamId": self.teamId,
+            "gameId": self.gameId,
+            "name": self.name,
+            "joinString": self.joinString
+        }
 
     @classmethod
     @dbConn(autocommit=False, buffered=True)
@@ -107,9 +115,9 @@ class TeamModel(ObjectDbSync):
         else:
             query = ""
             if withDetails is True:
-                query += "SELECT teamId, name, userId, nick, role, canPlaySince, rank, maxRank FROM eligibleTeams WHERE gameId = %(gameId)s"
+                query += "SELECT teamId, name, userId, nick, role, canPlaySince, rank, maxRank FROM eligibleTeams WHERE gameId = %(gameId)s ORDER BY canPlaySince"
             else:
-                query += "SELECT teamId, name, nick, role, canPlaySince FROM eligibleTeams WHERE gameId = %(gameId)s"
+                query += "SELECT teamId, name, nick, role, canPlaySince FROM eligibleTeams WHERE gameId = %(gameId)s ORDER BY canPlaySince"
             cursor.execute(query, {"gameId": game.gameId})
             result = fetchAllWithNames(cursor)
             if withDetails is True:
@@ -154,8 +162,10 @@ class TeamModel(ObjectDbSync):
             query = "INSERT INTO registrations (userId, teamId, nick, role, rank, maxRank) VALUES (%(userId)s, %(teamId)s, %(nick)s, %(role)s, %(rank)s, %(maxRank)s)"
             values = {"userId": userId, "teamId": self.teamId, "nick": nick, "role": role, "rank": rank, "maxRank": maxRank}
             cursor.execute(query, values)
-        except IntegrityError:
-            return False
+        except DatabaseError as e:
+            if e.sqlstate == "45000" and e.msg == 'Already registered for game':
+                return False
+            raise
 
         query = "SELECT COUNT(*) FROM registrations WHERE teamId=%(teamId)s and role=%(role)s"
         values = {"teamId":self.teamId,"role":role}

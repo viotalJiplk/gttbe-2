@@ -1,10 +1,8 @@
 from flask_restx import Resource
 from shared.models.stage import StageModel
-from utils.role import getRole
 from utils.jws import jwsProtected, AuthResult
 from utils.others import postJsonParse, postJson, setAttributeFromList
 from datetime import datetime
-from shared.models.role import RoleModel
 from shared.models.event import EventModel
 from utils.error import handleReturnableError
 from shared.models.permission import hasPermission

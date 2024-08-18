@@ -19,8 +19,8 @@ class Page(Resource):
             dict: name and content of the page
         """
         page = PageModel.getById(name)
-        if(page == None):
-            return errorList.data.doesNotExist
+        if page is None :
+            raise errorList.data.doesNotExist
         return {
             "name": page.name,
             "value": page.value

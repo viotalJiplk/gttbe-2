@@ -1,10 +1,8 @@
 from flask_restx import Resource
 from shared.models.stage import StageModel
-from utils.role import getRole
 from utils.jws import jwsProtected, AuthResult
 from utils.others import postJsonParse, postJson, setAttributeFromList
 from datetime import datetime
-from shared.models.role import RoleModel
 from shared.models.event import EventModel
 from shared.models.match import MatchModel
 from utils.error import handleReturnableError
@@ -109,4 +107,4 @@ class MatchCreate(Resource):
         permission = hasPermission(user, event.gameId, perms.match.create)
         if len(permission) < 1:
             raise errorList.permission.missingPermission
-        return MatchModel.create(data["stageId"], data["firstTeamId"], data["secondTeamId"], data["firstTeamResult"], data["secondTeamId"]).toDict()
+        return MatchModel.create(data["stageId"], data["firstTeamId"], data["secondTeamId"], data["firstTeamResult"], data["secondTeamResult"]).toDict()

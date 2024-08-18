@@ -40,4 +40,4 @@ class createTeam(Resource):
 
         if team is None:
             raise errorList.team.unableToJoin
-        return {"teamId": team.teamId}, 200
+        return team.toDict(), 200

@@ -1,8 +1,12 @@
-from pathlib import Path
 import os
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
+from pathlib import Path
 import importlib
 import logging
 import colorlog
+from utils import Server
+from utils import resetDb
 
 directory = 'tests/'
 
@@ -38,34 +42,54 @@ def listModules(directory):
             result.append(removeExtension(str(file)).replace("/", "."))
     return result
 
+server = Server()
+
 passed = 0
 skipped = 0
 failed = 0
 
 modules = listModules(directory)
 for module in modules:
+    name = ".".join(module.split(".")[1:])
+    resetDb()
+    testFailed = False
+    if not server.isRunning():
+        defaultLogger.error(f"Server crashed before loading module `{name}`")
+        testFailed = True
+        break
     try:
         mod = importlib.import_module(module)
     except:
-        defaultLogger.error(f"Loading of module `{module}` failed")
-        break
+        defaultLogger.error(f"Loading of module `{name}` failed")
+        testFailed = True
+        continue
 
     try:
         testCls = mod.Test()
     except:
-        defaultLogger.error(f"Initializing of module `{module}` failed")
+        defaultLogger.error(f"Initializing of module `{name}` failed")
         skipped += 1
-        break
+        testFailed = True
+        continue
 
     try:
         testCls.run()
     except Exception as e:
-        defaultLogger.error(f"Test `{module}` failed with message: \n {e}")
+        defaultLogger.error(f"Test `{name}` failed with message: \n  {str(e).replace("\n", "\n  ")}")
         failed += 1
+        testFailed = True
 
     try:
         del testCls
     except:
-        defaultLogger.error(f"Destruction of test `{module}` failed")
+        defaultLogger.error(f"Destruction of test `{name}` failed")
+        testFailed = True
+        continue
 
-    defaultLogger.info(f"Test `{module}` succeed")
+    if not server.isRunning():
+        defaultLogger.error(f"Server crashed after loading module `{name}`")
+        testFailed = True
+        break
+
+    if not testFailed:
+        defaultLogger.info(f"Test `{name}` succeed")

@@ -2,8 +2,6 @@ from flask_restx import Resource
 from shared.models.user import UserModel
 from shared.models.team import TeamModel
 from utils.jws import jwsProtected, AuthResult
-from utils.role import RoleModel
-from utils.role import hasRoleWithErrMsg
 from shared.utils.permissionList import perms
 from utils.others import postJson, setAttributeFromList
 from helper.user import getUser
@@ -107,7 +105,7 @@ class UserExistsEndpoint(Resource):
         Returns:
             dict: exists
         """
-        return {"exits": UserModel.getById(uid) is not None}
+        return {"exists": UserModel.getById(uid) is not None}
 
 class UserPermissions(Resource):
     @hasPermissionDecorator([perms.user.permissionList, perms.user.permissionListMe], True)
