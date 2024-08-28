@@ -1,6 +1,6 @@
-from ..utils.db import dbConn
+from ..utils import dbConn
 from mysql.connector.errors import IntegrityError
-from ..utils.objectDbSync import ObjectDbSync
+from ..utils import ObjectDbSync
 
 class RoleTypeModel(ObjectDbSync):
     tableName = "userRoles"

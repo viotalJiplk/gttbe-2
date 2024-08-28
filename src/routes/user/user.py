@@ -2,7 +2,7 @@ from flask_restx import Resource
 from shared.models.user import UserModel
 from shared.models.team import TeamModel
 from utils.jws import jwsProtected, AuthResult
-from shared.utils.permissionList import perms
+from shared.utils import perms, DatabaseError
 from utils.others import postJson, setAttributeFromList
 from helper.user import getUser
 from utils.errorList import errorList
@@ -90,8 +90,11 @@ class UserEndpoint(Resource):
             user = getUser(AuthResult(uid, None))
         try:
             user.delete()
-        except e:
-            raise errorList.data.stillDepends
+        except DatabaseError as e:
+            if e.message == "Still depends":
+                raise errorList.data.stillDepends
+            else:
+                raise
         return {}, 200
 
 class UserExistsEndpoint(Resource):

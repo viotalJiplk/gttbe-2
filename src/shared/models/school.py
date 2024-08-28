@@ -1,5 +1,5 @@
-from ..utils.db import fetchAllWithNames, dbConn
-from ..utils.objectDbSync import ObjectDbSync
+from ..utils import fetchAllWithNames, dbConn
+from ..utils import ObjectDbSync
 
 class SchoolsModel(ObjectDbSync):
     tableName = "schools"

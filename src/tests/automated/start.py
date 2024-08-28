@@ -57,6 +57,9 @@ for module in modules:
         defaultLogger.error(f"Server crashed before loading module `{name}`")
         testFailed = True
         break
+    # remove all previous logs from stdout and stderr
+    server.readStdOutNonBlocking()
+    server.readStdErrNonBlocking()
     try:
         mod = importlib.import_module(module)
     except:
@@ -75,7 +78,7 @@ for module in modules:
     try:
         testCls.run()
     except Exception as e:
-        defaultLogger.error(f"Test `{name}` failed with message: \n  {str(e).replace("\n", "\n  ")}")
+        defaultLogger.error(f"Test `{name}` failed with message:\n  {str(e).replace("\n", "\n  ")}\nServer stdout:\n  {server.readStdOutNonBlocking().replace("\n", "\n  ")}\nServer stderr:\n  {server.readStdErrNonBlocking().replace("\n", "\n  ")}")
         failed += 1
         testFailed = True
 

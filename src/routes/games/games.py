@@ -13,12 +13,6 @@ accessibleAttributes = {
     "name": [str],
     "registrationStart": [date],
     "registrationEnd": [date],
-    "maxCaptains": [int],
-    "maxMembers": [int],
-    "maxReservists": [int],
-    "minCaptains": [int],
-    "minMembers": [int],
-    "minReservists": [int],
     "maxTeams": [int],
 }
 

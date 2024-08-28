@@ -7,21 +7,24 @@ result = {
     "gameId": 6,
     "Players": [
         {
-            "userid": "914450748079974600",
-            "nick": "AJwpGdDq",
-            "role": "Captain"
-        }, {
-            "userid": "183190492953263839",
-            "nick": "NXHQvsww",
-            "role": "Member"
-        }, {
-            "userid": "765775025559645184",
-            "nick": "JtnDmQKK",
-            "role": "Member"
-        }, {
-            "userid": "609174111951229484",
+            "userid": "315241566832246282",
             "nick": "tKncBSwU",
-            "role": "Reservist"
+            "generatedRoleId": "11"
+        },
+        {
+            "userid": "817942517970237079",
+            "nick": "NXHQvsww",
+            "generatedRoleId": "12"
+        },
+        {
+            "userid": "859505747524140731",
+            "nick": "AJwpGdDq",
+            "generatedRoleId": "12"
+        },
+        {
+            "userid": "944849240707485390",
+            "nick": "JtnDmQKK",
+            "generatedRoleId": "12"
         }
     ]
 }

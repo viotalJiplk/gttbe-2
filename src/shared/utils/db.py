@@ -1,4 +1,4 @@
-from .config import config
+from .configLoader import config
 import mysql.connector
 from functools import wraps
 
@@ -44,3 +44,8 @@ def dbConn(autocommit: bool = True, buffered: bool = True):
             return result
         return connection
     return wrapper
+
+class DatabaseError(Exception):
+    def __init__(self, message: str):
+        super().__init__(message)
+        self.message = message

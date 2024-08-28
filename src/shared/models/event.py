@@ -1,7 +1,7 @@
-from ..utils.db import fetchAllWithNames, fetchOneWithNames, dbConn
+from ..utils import fetchAllWithNames, fetchOneWithNames, dbConn
 from json import dumps
 from datetime import date, time, timedelta
-from ..utils.objectDbSync import ObjectDbSync
+from ..utils import ObjectDbSync
 
 def fromTimeDelta(td: timedelta):
     totalSeconds = td.total_seconds()

@@ -11,7 +11,7 @@ from helper.user import getUser
 from helper.game import getGame
 from utils.error import handleReturnableError
 from shared.models.permission import hasPermission
-from shared.utils.permissionList import perms
+from shared.utils import perms, DatabaseError
 from utils.errorList import errorList
 
 accessibleAttributes = {
@@ -91,7 +91,7 @@ class Join(Resource):
         Returns:
             dict: teamId
         """
-        if("nick" not in data or "rank" not in data or "max_rank" not in data or "role" not in data):
+        if("nick" not in data or "rank" not in data or "max_rank" not in data or "generatedRoleId" not in data):
            raise errorList.team.invalidPayload
 
         team = getTeam(teamId)
@@ -112,8 +112,14 @@ class Join(Resource):
             raise errorList.data.doesNotExist
         if not user.canRegister():
             raise errorList.user.couldNotRegister
-        if not team.join(userId=authResult.userId, nick=data["nick"], rank=data["rank"], maxRank=data["max_rank"], role=data["role"]):
-            raise errorList.team.unableToJoin
+        try:
+            team.join(userId=authResult.userId, nick=data["nick"], rank=data["rank"], maxRank=data["max_rank"], generatedRoleId=data["generatedRoleId"])
+        except DatabaseError as e:
+            if e.message == "Already registered for game":
+                raise errorList.team.alreadyRegistered
+            elif e.message == "No space for this role in this team":
+                raise errorList.team.noSpaceLeft
+            raise
         return {"teamId":team.teamId}, 200
 
 

@@ -2,7 +2,7 @@ from testUtils import getJws, requestExpect
 from copy import deepcopy
 
 read = [
-    {"teamId": 23, "nick": "dZGgAVQF", "role": "Member", "name": "Foxtrot", "gameId": 5}
+    {"teamId": 10, "generatedRoleId": 4, "nick": "KAEEvxfK", "name": "Alpha", "gameId": 2}
 ]
 
 class Test:

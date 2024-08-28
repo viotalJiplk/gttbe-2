@@ -9,12 +9,6 @@ class Test:
             "name": "COUNTER_STRIKE",
             "registrationStart": "2024-01-29",
             "registrationEnd": "2025-02-21",
-            "maxCaptains": 1,
-            "maxMembers": 2,
-            "maxReservists": 3,
-            "minCaptains": 1,
-            "minMembers": 1,
-            "minReservists": 0,
             "maxTeams": 0
         })
 

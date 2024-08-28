@@ -6,37 +6,42 @@ join = {
     "nick":"winner",
     "rank": 4,
     "max_rank": 6,
-    "role": "Reservist"
+    "generatedRoleId": 8
 }
 result = {
     "name": "Alpha",
     "teamId": 7,
     "gameId": 4,
-    "Players":[
+    "Players": [
         {
-            "userid": "127705315212148643",
-            "nick": "aSGCENNA",
-            "role": "Captain"
-        }, {
-            "userid": "788530474257249249",
-            "nick": "VCYfccLv",
-            "role": "Member"
-        }, {
-            "userid": "520784028952126515",
+            "userid": "122891840080562664",
             "nick": "CmgYaDjZ",
-            "role": "Reservist"
-        },{
-            "userid": "800618827210965495",
+            "generatedRoleId": "7"
+        },
+        {
+            "userid": "135346983583891046",
+            "nick": "aSGCENNA",
+            "generatedRoleId": "8"
+        },
+        {
+            "userid": "210568825432375324",
             "nick": "EvNdqWrq",
-            "role": "Reservist"
-        },{
-            "userid": "819559661680635792",
+            "generatedRoleId": "8"
+        },
+        {
+            "userid": "774007414509236186",
             "nick": "sBXYANzZ",
-            "role": "Reservist"
-        },{
+            "generatedRoleId": "8"
+        },
+        {
+            "userid": "798209625306537808",
+            "nick": "VCYfccLv",
+            "generatedRoleId": "8"
+        },
+        {
             "userid": "114316488057882015",
             "nick": "winner",
-            "role": "Reservist"
+            "generatedRoleId": "8"
         }
     ]
 }

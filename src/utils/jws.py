@@ -3,7 +3,7 @@ from jwcrypto.common import json_encode, json_decode
 from jwcrypto.jws import InvalidJWSObject, InvalidJWSSignature
 from functools import wraps
 from flask_restful import request
-from shared.utils.config import config
+from shared.utils import config
 from .errorList import errorList
 import time
 import json
