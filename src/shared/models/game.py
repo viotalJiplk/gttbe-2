@@ -1,7 +1,7 @@
-from ..utils.db import fetchAllWithNames, fetchOneWithNames, dbConn
+from ..utils import fetchAllWithNames, fetchOneWithNames, dbConn
 from json import dumps
 from datetime import date
-from ..utils.objectDbSync import ObjectDbSync
+from ..utils import ObjectDbSync
 
 class GameModel(ObjectDbSync):
     tableName = "games"
@@ -12,12 +12,6 @@ class GameModel(ObjectDbSync):
         self.name = name
         self.registrationStart = registrationStart
         self.registrationEnd = registrationEnd
-        self.maxCaptains = maxCaptains
-        self.maxMembers = maxMembers
-        self.maxReservists = maxReservists
-        self.minCaptains = minCaptains
-        self.minMembers = minMembers
-        self.minReservists = minReservists
         self.gamePage = gamePage
         self.maxTeams = maxTeams
         super().__init__()
@@ -35,12 +29,6 @@ class GameModel(ObjectDbSync):
             "name": self.name,
             "registrationStart": self.registrationStart.isoformat(),
             "registrationEnd": self.registrationEnd.isoformat(),
-            "maxCaptains": self.maxCaptains,
-            "maxMembers": self.maxMembers,
-            "maxReservists": self.maxReservists,
-            "minCaptains": self.minCaptains,
-            "minMembers": self.minMembers,
-            "minReservists": self.minReservists,
             "maxTeams": self.maxTeams
         }
 

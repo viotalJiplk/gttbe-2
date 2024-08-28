@@ -1,11 +1,11 @@
-from ..utils.db import getConnection, dbConn
+from ..utils import dbConn
 import datetime
 import requests
-from ..utils.config import config
+from ..utils import config
 from requests import post
 from datetime import date, datetime, timedelta
 import json
-from ..utils.objectDbSync import ObjectDbSync
+from ..utils import ObjectDbSync
 from typing import Union
 
 class UserModel(ObjectDbSync):
@@ -196,32 +196,46 @@ JOIN userRoles ur ON u.userId = ur.userId
 JOIN assignedRoles ar ON ur.assignedRoleId = ar.assignedRoleId
 JOIN assignedRolePermissions arp ON ar.assignedRoleId = arp.assignedRoleId
 JOIN permissions p ON arp.permission = p.permission
-WHERE u.userId = %s AND ar.gameId is NULL
+WHERE u.userId = %(userId)s AND arp.gameId is NULL
 UNION
 SELECT p.permission FROM assignedRolePermissions arp
 JOIN permissions p ON arp.permission = p.permission
 WHERE arp.assignedRoleId IN (
     SELECT assignedRoleId
     FROM assignedRoles
-    WHERE roleName IN ('public', 'user') AND gameId is NULL
-);"""
-            cursor.execute(query, (self.userId,))
+    WHERE roleName IN ('public', 'user')
+) AND arp.gameId is NULL
+UNION
+SELECT generatedRolePermissions.permission AS permission FROM `registrations`
+JOIN generatedRoles ON generatedRoles.generatedRoleId = registrations.generatedRoleID
+JOIN generatedRolePermissions ON generatedRolePermissions.generatedRoleID =  generatedRoles.generatedRoleId
+JOIN teams ON registrations.teamId = teams.teamId
+WHERE `userId` = %(userId)s AND ((teams.canPlaySince IS NOT NULL and generatedRolePermissions.eligible = 1)
+OR (teams.canPlaySince IS NULL and generatedRolePermissions.eligible = 0)) AND generatedRoles.gameId IS NULL"""
+            cursor.execute(query,  {'userId': self.userId})
         else:
             query = """SELECT p.permission FROM users u
 JOIN userRoles ur ON u.userId = ur.userId
 JOIN assignedRoles ar ON ur.assignedRoleId = ar.assignedRoleId
 JOIN assignedRolePermissions arp ON ar.assignedRoleId = arp.assignedRoleId
 JOIN permissions p ON arp.permission = p.permission
-WHERE u.userId = %s AND (ar.gameId is NULL OR ar.gameId = %s)
+WHERE u.userId = %(userId)s AND (arp.gameId is NULL OR arp.gameId = %(gameId)s)
 UNION
 SELECT p.permission FROM assignedRolePermissions arp
 JOIN permissions p ON arp.permission = p.permission
 WHERE arp.assignedRoleId IN (
     SELECT assignedRoleId
     FROM assignedRoles
-    WHERE roleName IN ('public', 'user') AND (gameId is NULL OR gameId = %s)
-);"""
-            cursor.execute(query, (self.userId, gameId, gameId))
+    WHERE roleName IN ('public', 'user')
+) AND (arp.gameId is NULL OR arp.gameId = %(gameId)s)
+UNION
+SELECT generatedRolePermissions.permission AS permission FROM `registrations`
+JOIN generatedRoles ON generatedRoles.generatedRoleId = registrations.generatedRoleID
+JOIN generatedRolePermissions ON generatedRolePermissions.generatedRoleID =  generatedRoles.generatedRoleId
+JOIN teams ON registrations.teamId = teams.teamId
+WHERE `userId` = %(userId)s AND ((teams.canPlaySince IS NOT NULL and generatedRolePermissions.eligible = 1)
+OR (teams.canPlaySince IS NULL and generatedRolePermissions.eligible = 0)) AND (generatedRoles.gameId IS NULL OR generatedRoles.gameId = %(gameId)s)"""
+            cursor.execute(query, {'userId': self.userId, 'gameId': gameId})
         rows = cursor.fetchall()
         result = []
         for row in rows:

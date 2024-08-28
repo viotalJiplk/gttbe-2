@@ -10,6 +10,7 @@ from helper.user import getUser
 from utils.errorList import errorList
 from utils.permissions import hasPermissionDecorator
 from typing import List
+from shared.utils import DatabaseError
 
 class createTeam(Resource):
 
@@ -35,9 +36,12 @@ class createTeam(Resource):
             raise errorList.data.doesNotExist
         if not user.canRegister():
            raise errorList.user.couldNotRegister
-
-        team = TeamModel.create(name=data["name"], gameId=data["game_id"], userId=authResult.userId, nick=data["nick"], rank=data["rank"], maxRank=data["max_rank"])
-
-        if team is None:
-            raise errorList.team.unableToJoin
+        try:
+            team = TeamModel.create(name=data["name"], gameId=data["game_id"], userId=authResult.userId, nick=data["nick"], rank=data["rank"], maxRank=data["max_rank"])
+        except DatabaseError as e:
+            if e.message == "Already registered for game":
+                raise errorList.team.alreadyRegistered
+            elif e.message == "No space for this role in this team":
+                raise errorList.team.noSpaceLeft
+            raise
         return team.toDict(), 200

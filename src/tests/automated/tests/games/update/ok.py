@@ -5,12 +5,6 @@ update = {
     "name": "COUNTER_STRIKE1",
     "registrationStart": "2024-02-29",
     "registrationEnd": "2030-01-29",
-    "maxCaptains": 3,
-    "maxMembers": 4,
-    "maxReservists": 2,
-    "minCaptains": 0,
-    "minMembers": 7,
-    "minReservists": 8,
     "maxTeams": 9
 }
 

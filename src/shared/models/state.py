@@ -1,8 +1,8 @@
 import datetime
-from ..utils.db import dbConn
-from ..utils.logging import defaultLogger
-from ..utils.generator import genState
-from ..utils.config import config
+from ..utils import dbConn
+from ..utils import defaultLogger
+from ..utils import genState
+from ..utils import config
 
 
 class StateModel:

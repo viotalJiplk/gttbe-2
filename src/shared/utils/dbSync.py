@@ -1,5 +1,7 @@
 from .attributesObserver import AttributesObserver
-from .db import dbConn, fetchOneWithNames, fetchAllWithNames
+from .db import dbConn, fetchOneWithNames, fetchAllWithNames, DatabaseError
+from mysql.connector import IntegrityError
+from .configLoader import config
 
 class ObjectDbSync(AttributesObserver):
     def __init__(self):
@@ -18,7 +20,17 @@ class ObjectDbSync(AttributesObserver):
     @dbConn()
     def delete(self, cursor, db):
         query = f"DELETE FROM `{self.tableName}` WHERE `{self.tableId}` = %s;"
-        cursor.execute(query, (getattr(self, self.tableId),))
+        try:
+            cursor.execute(query, (getattr(self, self.tableId),))
+        except IntegrityError as e:
+            expectedMsg = f'Cannot delete or update a parent row: a foreign key constraint fails (`{config.db.database}`.`registrations`, CONSTRAINT `registrations_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `users` (`userId`))'
+            if e.sqlstate == '23000' and e.msg == expectedMsg:
+                raise DatabaseError("Still depends")
+            else:
+                print(e.msg)
+                print(expectedMsg)
+                print(e.sqlstate)
+                raise
 
     @classmethod
     @dbConn()

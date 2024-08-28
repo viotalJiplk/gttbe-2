@@ -1,7 +1,7 @@
-from ..utils.db import fetchAllWithNames, fetchOneWithNames, dbConn
+from ..utils import fetchAllWithNames, fetchOneWithNames, dbConn
 from json import dumps
-from ..utils.objectDbSync import ObjectDbSync
-from ..utils.logging import defaultLogger
+from ..utils import ObjectDbSync
+from ..utils import defaultLogger
 from .stage import StageModel
 
 class MatchModel (ObjectDbSync):

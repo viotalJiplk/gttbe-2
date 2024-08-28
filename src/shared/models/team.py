@@ -1,9 +1,8 @@
-from ..utils.db import getConnection, fetchAllWithNames, fetchOneWithNames, dbConn
+from ..utils import fetchAllWithNames, fetchOneWithNames, dbConn, genState, ObjectDbSync, DatabaseError
 from .game import GameModel
 from .user import UserModel
-from ..utils.generator import genState
-from mysql.connector import DatabaseError
-from ..utils.objectDbSync import ObjectDbSync
+from .generatedRole import GeneratedRole
+from mysql import connector
 
 class TeamModel(ObjectDbSync):
     tableName = "teams"
@@ -34,12 +33,13 @@ class TeamModel(ObjectDbSync):
         except:
             db.rollback()
             return None
-
-        team = cls(name, gameId, cursor.lastrowid)
-
-        if not team.__userJoin(userId, nick, rank, maxRank, "Captain", cursor, db):
+        try:
+            team = cls(name, gameId, cursor.lastrowid)
+            defaultGeneratedRoleId = GeneratedRole.getDefaultForGame(gameId)
+            team.__userJoin(userId, nick, rank, maxRank, defaultGeneratedRoleId, cursor, db)
+        except DatabaseError as e:
             db.rollback()
-            return None
+            raise
         db.commit()
         return team
 
@@ -68,17 +68,17 @@ class TeamModel(ObjectDbSync):
     def listUsersTeams(self, userId, withJoinstring, cursor, db):
         query = ""
         if withJoinstring:
-            query = 'SELECT teamId, nick, role, name, gameId, joinString FROM `teamInfo` WHERE userId=%(userId)s'
+            query = 'SELECT teamId, nick, generatedRoleId, name, gameId, joinString FROM `teamInfo` WHERE userId=%(userId)s'
         else:
-            query = 'SELECT teamId, nick, role, name, gameId FROM `teamInfo` WHERE userId=%(userId)s'
+            query = 'SELECT teamId, nick, generatedRoleId, name, gameId FROM `teamInfo` WHERE userId=%(userId)s'
 
         cursor.execute(query, {"userId": userId})
         result = fetchAllWithNames(cursor)
         return result
 
-    @dbConn(autocommit=False, buffered=True)
-    def join(self, userId, nick, rank, maxRank, role, cursor, db):
-        return self.__userJoin(userId, nick, rank, maxRank, role, cursor, db)
+    @dbConn(autocommit=True, buffered=True)
+    def join(self, userId, nick, rank, maxRank, generatedRoleId, cursor, db):
+        return self.__userJoin(userId, nick, rank, maxRank, generatedRoleId, cursor, db)
 
     @dbConn(autocommit=True, buffered=False)
     def leave(self, userId, cursor, db):
@@ -94,7 +94,7 @@ class TeamModel(ObjectDbSync):
 
     @dbConn()
     def getPlayers(self, cursor, db):
-        query = "SELECT `userid`, `nick`, `role`  FROM `registrations` WHERE teamId=%(teamId)s ORDER BY `role` ASC"
+        query = "SELECT `userid`, `nick`, `generatedRoleId`  FROM `registrations` WHERE teamId=%(teamId)s ORDER BY `generatedRoleId` ASC"
         cursor.execute(query, {"teamId": self.teamId})
         fetched = fetchAllWithNames(cursor)
         result = []
@@ -102,7 +102,7 @@ class TeamModel(ObjectDbSync):
             result.append({
                 'userid': str(player['userid']),
                 'nick': str(player['nick']),
-                'role': str(player['role'])
+                'generatedRoleId': str(player['generatedRoleId'])
             })
         return result
 
@@ -115,9 +115,9 @@ class TeamModel(ObjectDbSync):
         else:
             query = ""
             if withDetails is True:
-                query += "SELECT teamId, name, userId, nick, role, canPlaySince, rank, maxRank FROM eligibleTeams WHERE gameId = %(gameId)s ORDER BY canPlaySince"
+                query += "SELECT teamId, name, userId, nick, generatedRoleId, canPlaySince, rank, maxRank FROM eligibleTeams WHERE gameId = %(gameId)s ORDER BY canPlaySince"
             else:
-                query += "SELECT teamId, name, nick, role, canPlaySince FROM eligibleTeams WHERE gameId = %(gameId)s ORDER BY canPlaySince"
+                query += "SELECT teamId, name, nick, generatedRoleId, canPlaySince FROM eligibleTeams WHERE gameId = %(gameId)s ORDER BY canPlaySince"
             cursor.execute(query, {"gameId": game.gameId})
             result = fetchAllWithNames(cursor)
             if withDetails is True:
@@ -148,33 +148,23 @@ class TeamModel(ObjectDbSync):
 
     @dbConn()
     def getUsersRole(self, userId, cursor, db):
-        query = 'SELECT role FROM `registrations` WHERE `teamId`=%(teamId)s AND `userId`=%(userId)s'
+        query = 'SELECT generatedRoleId FROM `registrations` WHERE `teamId`=%(teamId)s AND `userId`=%(userId)s'
         cursor.execute(query, {"teamId": self.teamId, "userId": userId})
         result = fetchOneWithNames(cursor)
         if(result):
-            return result["role"]
+            return result["generatedRoleId"]
         else:
             return None
 
-    def __userJoin(self, userId, nick, rank, maxRank, role, cursor, db):
+    def __userJoin(self, userId, nick, rank, maxRank, generatedRoleId, cursor, db):
         try:
             game = self.getGame()
-            query = "INSERT INTO registrations (userId, teamId, nick, role, rank, maxRank) VALUES (%(userId)s, %(teamId)s, %(nick)s, %(role)s, %(rank)s, %(maxRank)s)"
-            values = {"userId": userId, "teamId": self.teamId, "nick": nick, "role": role, "rank": rank, "maxRank": maxRank}
+            query = "INSERT INTO registrations (userId, teamId, nick, generatedRoleId, rank, maxRank) VALUES (%(userId)s, %(teamId)s, %(nick)s, %(generatedRoleId)s, %(rank)s, %(maxRank)s)"
+            values = {"userId": userId, "teamId": self.teamId, "nick": nick, "generatedRoleId": generatedRoleId, "rank": rank, "maxRank": maxRank}
             cursor.execute(query, values)
-        except DatabaseError as e:
+        except connector.DatabaseError as e:
             if e.sqlstate == "45000" and e.msg == 'Already registered for game':
-                return False
+                raise DatabaseError("Already registered for game")
+            elif e.sqlstate == "45000" and e.msg == 'Already registered for game':
+                raise DatabaseError("No space for this role in this team")
             raise
-
-        query = "SELECT COUNT(*) FROM registrations WHERE teamId=%(teamId)s and role=%(role)s"
-        values = {"teamId":self.teamId,"role":role}
-        cursor.execute(query, values)
-        row = cursor.fetchone()
-        if(row[0] > getattr(game, "max"+role+"s")):
-            db.rollback()
-            return False
-
-        else:
-            db.commit()
-            return True

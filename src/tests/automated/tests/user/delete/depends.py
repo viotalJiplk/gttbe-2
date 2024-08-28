@@ -3,10 +3,10 @@ from copy import deepcopy
 
 class Test:
     def __init__(self):
-        self.jws = getJws("993504523045320908")
+        self.jws = getJws("800368402471736591")
 
     def run(self):
-        res = requestExpect.delete("/backend/user/@me/", 200,
+        res = requestExpect.delete("/backend/user/@me/", 400,
             {
                 "Authorization":f"Bearer {self.jws}",
             }

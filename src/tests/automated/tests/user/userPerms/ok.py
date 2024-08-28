@@ -1,7 +1,8 @@
 from testUtils import getJws, requestExpect
 from copy import deepcopy
 
-read = ["event.create",
+read = [
+        "event.create",
         "event.update",
         "event.delete",
         "gamePage.update",
@@ -21,26 +22,26 @@ read = ["event.create",
         "team.genJoinStr",
         "team.kick",
         "event.listAll",
+        "user.readMe",
+        "user.updateMe",
+        "user.deleteMe",
+        "user.exists",
+        "user.permsListMe",
+        "user.listTeamsMe",
+        "team.create",
+        "team.join",
+        "team.genJoinStrMy",
+        "team.leave",
+        "team.kickTeam",
         "event.read",
         "game.listAll",
         "gamePage.read",
+        "stage.read",
         "match.read",
         "page.read",
         "school.listAll",
-        "stage.read",
-        "team.create",
-        "team.genJoinStrMy",
-        "team.join",
-        "team.kickTeam",
-        "team.leave",
         "team.listPartic",
-        "team.read",
-        "user.deleteMe",
-        "user.exists",
-        "user.listTeamsMe",
-        "user.permsListMe",
-        "user.readMe",
-        "user.updateMe"
+        "team.read"
     ]
 
 class Test:
@@ -48,7 +49,7 @@ class Test:
         self.jws = getJws("114316488057882015")
 
     def run(self):
-        res = requestExpect.get("/backend/user/@me/permissions/1", 200,
+        requestExpect.get("/backend/user/@me/permissions/1", 200,
             {
                 "Authorization":f"Bearer {self.jws}",
             }, read

@@ -1,6 +1,6 @@
 from flask_restx import Resource
 from shared.models.state import StateModel
-from shared.utils.config import config
+from shared.utils import config
 from utils.jws import generateJWS
 from shared.models.user import UserModel
 from utils.others import postJson

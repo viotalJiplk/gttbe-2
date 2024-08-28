@@ -1,6 +1,6 @@
 from mysql.connector.errors import IntegrityError
-from ..utils.objectDbSync import ObjectDbSync
-from ..utils.db import dbConn
+from ..utils import ObjectDbSync
+from ..utils import dbConn
 from typing import Union, List
 from ..models.user import UserModel
 

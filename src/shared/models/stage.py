@@ -1,7 +1,7 @@
-from ..utils.db import fetchAllWithNames, fetchOneWithNames, dbConn
+from ..utils import fetchAllWithNames, fetchOneWithNames, dbConn
 from json import dumps
 from .event import EventModel
-from ..utils.objectDbSync import ObjectDbSync
+from ..utils import ObjectDbSync
 
 class StageModel(ObjectDbSync):
     tableName = "stages"
