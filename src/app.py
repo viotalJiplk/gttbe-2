@@ -2,7 +2,7 @@
 import os
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-from flask import Flask, jsonify, request, abort
+from flask import Flask, request, abort, Response
 #from flask_cors import CORS
 #from flask_restful import Resource, Api
 from flask_restx import Api, Resource, fields
@@ -21,15 +21,9 @@ from routes.events import eventRoutes
 from routes.stage import stageRoutes
 from routes.matches import matchRoutes
 from tests import testRoutes
-from json import JSONEncoder
-app = Flask(__name__)
 
-class nonAsciiJSONEncoder(JSONEncoder):
-    def __init__(self, **kwargs):
-        kwargs['ensure_ascii'] = False
-        super(NonASCIIJSONEncoder, self).__init__(**kwargs)
-app.json_encoder = nonAsciiJSONEncoder
 
+app = Flask(import_name=__name__)
 
 #CORS(app)
 docs = False
@@ -41,7 +35,6 @@ api = Api(app, version='2.0', title='gtt-be',
           doc=docs,
           prefix='/backend'
           )
-api.json_encoder = nonAsciiJSONEncoder
 
 registerRoutes(api.namespace('discord', description="login"), discordRoutes)
 registerRoutes(api.namespace('schools', description='schools'), schoolsRoutes)
