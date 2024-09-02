@@ -1,6 +1,6 @@
-from shared.models.stage import StageModel
-from utils.error import ReturnableError
-from utils.errorList import errorList
+from shared.models import StageModel
+from utils import ReturnableError
+from utils import errorList
 
 def getStage(stageId: str):
     """Gets stage from stageId

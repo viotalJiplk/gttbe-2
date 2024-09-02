@@ -1,8 +1,8 @@
-from shared.models.user import UserModel
-from utils.jws import AuthResult
-from utils.error import ReturnableError
+from shared.models import UserModel
+from utils import AuthResult
+from utils import ReturnableError
 from typing import Union
-from utils.errorList import errorList
+from utils import errorList
 
 def getUser(authResult: Union[AuthResult, None]):
     """Returns user from AuthResult

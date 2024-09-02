@@ -1,7 +1,7 @@
 from flask_restx import Resource
-from shared.models.event import EventModel
-from utils.error import handleReturnableError
-from utils.jws import jwsProtected
+from shared.models import EventModel
+from utils import handleReturnableError
+from utils import jwsProtected
 
 class MatchesList(Resource):
     @handleReturnableError

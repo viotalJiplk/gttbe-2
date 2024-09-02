@@ -1,18 +1,10 @@
 from flask_restx import Resource
 
-from shared.models.team import TeamModel
-from shared.models.game import GameModel
-from utils.jws import jwsProtected, AuthResult
-from functools import wraps
-from utils.others import postJson
-from shared.models.user import UserModel
-from helper.team import getTeam
-from helper.user import getUser
-from helper.game import getGame
-from utils.error import handleReturnableError
-from shared.models.permission import hasPermission
+from shared.models import TeamModel
+from utils import jwsProtected, AuthResult, postJson, handleReturnableError, errorList
+from shared.models import hasPermission
+from helper import getTeam, getUser, getGame
 from shared.utils import perms, DatabaseError
-from utils.errorList import errorList
 
 accessibleAttributes = {
     "name": [str],

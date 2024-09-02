@@ -1,6 +1,6 @@
-from shared.models.game import GameModel
-from utils.error import ReturnableError
-from utils.errorList import errorList
+from shared.models import GameModel
+from utils import ReturnableError
+from utils import errorList
 
 def getGame(gameId: str):
     """Gets game from gameId

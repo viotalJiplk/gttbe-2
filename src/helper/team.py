@@ -1,6 +1,6 @@
-from shared.models.team import TeamModel
-from utils.error import ReturnableError
-from utils.errorList import errorList
+from shared.models import TeamModel
+from utils import ReturnableError
+from utils import errorList
 
 def getTeam(teamId: str):
     """Gets team from teamId

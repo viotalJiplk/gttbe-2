@@ -1,11 +1,10 @@
 from functools import wraps
 from flask_restful import request
-from utils.error import handleReturnableError, ReturnableError
-from utils.jws import getAuth, AuthResult
-from utils.errorList import errorList
+from .error import handleReturnableError, ReturnableError
+from .jws import getAuth, AuthResult
+from .errorListFile import errorList
 from shared.models.permission import hasPermission
 from typing import Union, List
-from utils.errorList import errorList
 
 def hasPermissionDecorator(permissions: Union[List[str], str], detectGame=False):
     if isinstance(permissions, str):

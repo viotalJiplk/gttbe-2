@@ -1,18 +1,9 @@
 from flask_restx import Resource
-from shared.models.stage import StageModel
-from utils.jws import jwsProtected, AuthResult
-from utils.others import postJsonParse, postJson, setAttributeFromList
+from utils import jwsProtected, AuthResult, postJsonParse, postJson, setAttributeFromList, handleReturnableError, errorList
 from datetime import datetime
-from shared.models.event import EventModel
-from shared.models.match import MatchModel
-from utils.error import handleReturnableError
-from shared.models.permission import hasPermission
-from helper.event import getEvent
-from helper.stage import getStage
-from helper.user import getUser
-from helper.match import getMatch
-from shared.utils.permissionList import perms
-from utils.errorList import errorList
+from shared.models import EventModel, MatchModel, hasPermission, StageModel
+from helper import getEvent, getStage, getUser, getMatch
+from shared.utils import perms
 
 accessibleAttributes = {
     "stageId": [int],

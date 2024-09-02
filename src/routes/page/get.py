@@ -1,10 +1,7 @@
 from flask_restx import Resource
 from shared.models.page import PageModel
-from utils.jws import AuthResult
-from utils.permissions import hasPermissionDecorator
-from shared.utils.permissionList import perms
-from utils.error import ReturnableError
-from utils.errorList import errorList
+from utils import AuthResult, hasPermissionDecorator, ReturnableError, errorList
+from shared.utils import perms
 from typing import List
 
 class Page(Resource):

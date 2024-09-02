@@ -1,6 +1,6 @@
 from ..utils import ObjectDbSync, dbConn, fetchOneWithNames
 
-class GeneratedRole(ObjectDbSync):
+class GeneratedRoleModel(ObjectDbSync):
     tableName = "generatedRoles"
     tableId = "generatedRoleId"
 
@@ -14,6 +14,18 @@ class GeneratedRole(ObjectDbSync):
         self.minimal = minimal
         self.maximal = maximal
         super().__init__()
+
+    def toDict(self):
+        return {
+            "generatedRoleId": self.generatedRoleId,
+            "roleName": self.roleName,
+            "discordRoleId": self.discordRoleId,
+            "discordRoleIdEligible": self.discordRoleIdEligible,
+            "gameId": self.gameId,
+            "default": self.default,
+            "minimal": self.minimal,
+            "maximal": self.maximal
+        }
 
     @classmethod
     @dbConn()
