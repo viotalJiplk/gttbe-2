@@ -9,7 +9,7 @@ class Test:
             "name": "COUNTER_STRIKE",
             "registrationStart": "2024-01-29",
             "registrationEnd": "2025-02-21",
-            "maxTeams": 0
+            "maxTeams": 16
         })
 
     def __del__(self):
