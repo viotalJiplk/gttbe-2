@@ -1,6 +1,6 @@
 class AttributesObserver(dict):
     def __init__(self):
-        self.__observerDict = {
+        self["__observerDict"] = {
             "init": {},
             "initAll": [],
             "update": {},
@@ -14,9 +14,16 @@ class AttributesObserver(dict):
     def __setattr__(self, name, value):
         self.__setitem__(name, value)
 
+    def __hasItem__(self, key):
+        try:
+            super().__getitem__(key)
+            return True
+        except KeyError:
+            return False
+
     def __setitem__(self, key, value):
-        if hasattr(self, "__observerDict"):
-            if super().__getitem__(name):
+        if hasattr(self, "_AttributesObserver__observerDict"):
+            if self.__hasItem__(key):
                 if hasattr(self.__observerDict["update"], key):
                     for x in self.__observerDict["update"][key]:
                         x(key, value)
@@ -35,8 +42,8 @@ class AttributesObserver(dict):
         self.__delitem__(name)
 
     def __delitem__(self, key):
-        if hasattr(self, "__observerDict"):
-            if super().__getitem__(name):
+        if hasattr(self, "_AttributesObserver__observerDict"):
+            if self.__hasItem__(key):
                 if hasattr(self.__observerDict["delete"], key):
                     for x in self.__observerDict["delete"][key]:
                         x(key, value)
@@ -45,21 +52,23 @@ class AttributesObserver(dict):
         super().__delitem__(key, value)
 
     def __getattr__(self, name):
-        if name == "__observerDict":
-            return self.__getattribute__(name)
         try:
-            return self.__getitem__(name)
+            if name == "_AttributesObserver__observerDict":
+                return self.__getitem__("__observerDict")
+            else:
+                return self.__getitem__(name)
         except KeyError as e:
-            raise AttributeError(e.args)
+            raise AttributeError(f"'{type(self).__name__}' object has no attribute '{name}'")
 
     def __getitem__(self, key):
-        if hasattr(self, "__observerDict"):
-            if super().__getitem__(key):
-                if hasattr(self.__observerDict["read"], key):
-                    for x in self.__observerDict["read"][key]:
+        if key != "__observerDict":
+            if hasattr(self, "_AttributesObserver__observerDict"):
+                if self.__hasItem__(key):
+                    if hasattr(self.__observerDict["read"], key):
+                        for x in self.__observerDict["read"][key]:
+                            x(key)
+                    for x in self.__observerDict["readAll"]:
                         x(key)
-                for x in self.__observerDict["readAll"]:
-                    x(key)
         return super().__getitem__(key)
 
 

@@ -9,6 +9,12 @@
 </head>
 <body>
     <p>For testing only</p>
-    <req-custom data-options='{"method":"GET", "url":"/backend/jwsfortestingonly/<userId>/"}'></req-custom>
+    <req-custom id="getjws" data-options='{"method":"GET", "url":"/backend/jwsfortestingonly/<userId>/"}'></req-custom>
 </body>
+<script>
+    document.getElementById("getjws").addConnection(function(text) {
+        const input = JSON.parse(text);
+        localStorage.setItem("jws", input.jws)
+    });
+</script>
 </html>
