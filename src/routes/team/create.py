@@ -1,16 +1,9 @@
 from flask_restx import Resource
-from shared.models.team import TeamModel
-from shared.models.game import GameModel
-from utils.jws import AuthResult
-from utils.others import postJson
-from shared.models.user import UserModel
-from shared.utils.permissionList import perms
-from helper.game import getGame
-from helper.user import getUser
-from utils.errorList import errorList
-from utils.permissions import hasPermissionDecorator
+from shared.models import TeamModel
+from utils import AuthResult, postJson, errorList, hasPermissionDecorator
+from shared.utils import perms, DatabaseError
+from helper import getGame, getUser
 from typing import List
-from shared.utils import DatabaseError
 
 class createTeam(Resource):
 

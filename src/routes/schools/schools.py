@@ -1,10 +1,7 @@
 from flask_restx import Resource
-from shared.models.school import SchoolsModel
-from utils.jws import AuthResult
-from utils.permissions import hasPermissionDecorator
-from shared.utils.permissionList import perms
-from utils.error import ReturnableError
-from utils.errorList import errorList
+from shared.models import SchoolsModel
+from utils import AuthResult, hasPermissionDecorator
+from shared.utils import perms
 from typing import List
 
 class Schools(Resource):

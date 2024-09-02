@@ -1,13 +1,13 @@
 from flask_restx import Resource
-from utils.others import postJson, setAttributeFromList
-from shared.models.game import GameModel
+from utils import postJson, setAttributeFromList
+from shared.models import GameModel
 from datetime import datetime, date, time
-from utils.jws import jwsProtected
-from shared.utils.permissionList import perms
-from utils.permissions import hasPermissionDecorator
+from utils import jwsProtected
+from shared.utils import perms
+from utils import hasPermissionDecorator
 from typing import List
-from utils.jws import AuthResult
-from utils.errorList import errorList
+from utils import AuthResult
+from utils import errorList
 
 accessibleAttributes = {
     "name": [str],

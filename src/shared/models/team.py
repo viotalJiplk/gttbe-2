@@ -1,7 +1,7 @@
 from ..utils import fetchAllWithNames, fetchOneWithNames, dbConn, genState, ObjectDbSync, DatabaseError
 from .game import GameModel
 from .user import UserModel
-from .generatedRole import GeneratedRole
+from .generatedRole import GeneratedRoleModel
 from mysql import connector
 
 class TeamModel(ObjectDbSync):
@@ -35,7 +35,7 @@ class TeamModel(ObjectDbSync):
             return None
         try:
             team = cls(name, gameId, cursor.lastrowid)
-            defaultGeneratedRoleId = GeneratedRole.getDefaultForGame(gameId)
+            defaultGeneratedRoleId = GeneratedRoleModel.getDefaultForGame(gameId)
             team.__userJoin(userId, nick, rank, maxRank, defaultGeneratedRoleId, cursor, db)
         except DatabaseError as e:
             db.rollback()

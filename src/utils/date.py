@@ -1,5 +1,5 @@
 from datetime import datetime, date, time
-from utils.errorList import errorList
+from .errorListFile import errorList
 
 def dateFromString(date: str):
     try:

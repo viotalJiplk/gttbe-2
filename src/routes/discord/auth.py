@@ -1,9 +1,9 @@
 from flask_restx import Resource
-from shared.models.state import StateModel
+from shared.models import StateModel
 from shared.utils import config
-from utils.jws import generateJWS
-from shared.models.user import UserModel
-from utils.others import postJson
+from utils import generateJWS
+from shared.models import UserModel
+from utils import postJson
 import urllib
 import json
 

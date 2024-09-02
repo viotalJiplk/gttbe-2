@@ -2,7 +2,7 @@ from ..utils import dbConn
 from mysql.connector.errors import IntegrityError
 from ..utils import ObjectDbSync
 
-class AssignedRole(ObjectDbSync):
+class AssignedRoleModel(ObjectDbSync):
     tableName = "rolePermissions"
     tableId = "assignedRoleId"
 
@@ -11,6 +11,12 @@ class AssignedRole(ObjectDbSync):
         self.permission = permission
         self.discordRoleId = discordRoleId
 
+    def toDict(self):
+        return {
+            "assignedRoleId": self.assignedRoleId,
+            "permission": self.permission,
+            "discordRoleId": self.discordRoleId
+        }
 
     @classmethod
     @dbConn()

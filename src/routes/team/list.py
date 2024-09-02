@@ -1,9 +1,8 @@
 from flask_restx import Resource
-from shared.models.team import TeamModel
-from utils.jws import jwsProtected
-from shared.utils.permissionList import perms
-from utils.permissions import hasPermissionDecorator
-from helper.game import getGame
+from shared.models import TeamModel
+from utils import jwsProtected, hasPermissionDecorator
+from shared.utils import perms
+from helper import getGame
 
 class ListParticipatingTeam(Resource):
     @hasPermissionDecorator([perms.team.listParticipating, perms.team.listParticipatingDiscord], True)

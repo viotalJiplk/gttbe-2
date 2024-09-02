@@ -1,4 +1,4 @@
-from utils.error import ReturnableError
+from .error import ReturnableError
 
 class Jws:
     invalidToken = ReturnableError("Invalid JWS token!", "JWS", 401)

@@ -6,7 +6,7 @@ from flask import Flask, request, abort, Response
 #from flask_cors import CORS
 #from flask_restful import Resource, Api
 from flask_restx import Api, Resource, fields
-from utils.register import registerRoutes
+from utils import registerRoutes
 from shared.utils import config
 from shared.utils import defaultLogger
 

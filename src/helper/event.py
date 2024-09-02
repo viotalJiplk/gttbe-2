@@ -1,6 +1,6 @@
-from shared.models.event import EventModel
-from utils.error import ReturnableError
-from utils.errorList import errorList
+from shared.models import EventModel
+from utils import ReturnableError
+from utils import errorList
 
 def getEvent(eventId: str):
     """Gets event from eventId

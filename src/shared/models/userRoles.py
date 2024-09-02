@@ -2,7 +2,7 @@ from ..utils import dbConn
 from mysql.connector.errors import IntegrityError
 from ..utils import ObjectDbSync
 
-class RoleTypeModel(ObjectDbSync):
+class UserRoleModel(ObjectDbSync):
     tableName = "userRoles"
     tableId = "userRoleId"
 
@@ -12,7 +12,12 @@ class RoleTypeModel(ObjectDbSync):
         self.userId = userId
         super().__init__()
 
-
+    def toDict(self):
+        return {
+            "userRoleId": self.userRoleId,
+            "roleId": self.roleId,
+            "userId": self.userId
+        }
 
     @classmethod
     @dbConn()

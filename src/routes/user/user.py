@@ -1,12 +1,8 @@
 from flask_restx import Resource
-from shared.models.user import UserModel
-from shared.models.team import TeamModel
-from utils.jws import jwsProtected, AuthResult
+from shared.models import UserModel, TeamModel
+from utils import AuthResult, postJson, setAttributeFromList, errorList, hasPermissionDecorator
 from shared.utils import perms, DatabaseError
-from utils.others import postJson, setAttributeFromList
-from helper.user import getUser
-from utils.errorList import errorList
-from utils.permissions import hasPermissionDecorator
+from helper import getUser
 from typing import List
 
 accessibleAttributes = {

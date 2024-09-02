@@ -1,6 +1,6 @@
-from shared.models.match import MatchModel
-from utils.error import ReturnableError
-from utils.errorList import errorList
+from shared.models import MatchModel
+from utils import ReturnableError
+from utils import errorList
 
 def getMatch(matchId: str):
     """Gets match from matchId

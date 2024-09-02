@@ -4,11 +4,10 @@ from jwcrypto.jws import InvalidJWSObject, InvalidJWSSignature
 from functools import wraps
 from flask_restful import request
 from shared.utils import config
-from .errorList import errorList
+from .errorListFile import errorList
 import time
 import json
-from utils.error import ReturnableError, handleReturnableError
-from utils.errorList import errorList
+from .error import ReturnableError, handleReturnableError
 
 key = jwk.JWK.generate(kty='RSA', size=2048)
 private = key.export_private()
