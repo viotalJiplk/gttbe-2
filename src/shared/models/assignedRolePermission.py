@@ -4,17 +4,18 @@ from ..utils import ObjectDbSync
 
 class AssignedRolePermissionModel(ObjectDbSync):
     tableName = "assignedRolePermissions"
-    tableId = "rolePermissionId"
+    tableId = "assignedRolePermissionId"
 
-    def __init__(self, rolePermissionId, permission, assignedRoleId, gameId):
-        self.rolePermissionId = rolePermissionId
+    def __init__(self, assignedRolePermissionId: int, permission: str, assignedRoleId: int, gameId: int):
+        self.assignedRolePermissionId = assignedRolePermissionId
         self.permission = permission
         self.assignedRoleId = assignedRoleId
         self.gameId = gameId
+        super().__init__()
 
     def toDict(self):
         return {
-            "rolePermissionId": self.rolePermissionId,
+            "assignedRolePermissionId": self.assignedRolePermissionId,
             "permission": self.permission,
             "assignedRoleId": self.assignedRoleId,
             "gameId": self.gameId
@@ -25,7 +26,7 @@ class AssignedRolePermissionModel(ObjectDbSync):
     def create(cls, permission, assignedRoleId, gameId, cursor, db):
         query = f"INSERT INTO `{cls.tableName}` (`permission`, `assignedRoleId`, `gameId`) VALUES (%s, %s, %s)"
         try:
-            cursor.execute(query, (permission, discordRoleId))
+            cursor.execute(query, (permission, assignedRoleId, gameId))
         except IntegrityError as e:
             raise ValueError("Role with this name already exists")
-        return cls(rolePermissionId=cursor.lastrowid, permission=permission, assignedRoleId=assignedRoleId, gameId=gameId)
+        return cls(assignedRolePermissionId=cursor.lastrowid, permission=permission, assignedRoleId=assignedRoleId, gameId=gameId)

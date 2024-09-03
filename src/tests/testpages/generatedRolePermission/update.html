@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flow testing page</title>
+    <script src="../js/main.js"></script>
+</head>
+<body>
+    <p>update Event</p>
+    <req-custom id="create" data-options=''></req-custom>
+    <p>Fields that are not changing should be omitted.</p>
+    <script>
+        let jws = localStorage.getItem("jws");
+        if(jws == ""){
+            alert("Go to login page to get jws");
+        }else{
+            document.getElementById("create").setAttribute("data-options", JSON.stringify({
+                "method":"PUT",
+                "url":"/backend/generatedRolePermission/<generatedRolePermissionId>/",
+                "headers":JSON.stringify({
+                    "Authorization": "Bearer " + jws,
+                    "Content-Type": "application/json"
+                }),
+                "body": JSON.stringify({
+                    "permission": "assignedRole.update",
+                    "generatedRoleId": 2,
+                    "gameId": 3,
+                    "eligible": false,
+                })
+            }));
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flow testing page</title>
+    <script src="../js/main.js"></script>
+</head>
+<body>
+    <p>delete Event</p>
+    <req-custom id="delete" data-options=''></req-custom>
+    <script>
+        let jws = localStorage.getItem("jws");
+        if(jws == ""){
+            alert("Go to login page to get jws");
+        }else{
+            document.getElementById("delete").setAttribute("data-options", JSON.stringify({
+                "method":"DELETE",
+                "url":"/backend/generatedRolePermission/<generatedRolePermissionId>/",
+                "headers":JSON.stringify({
+                    "Authorization": "Bearer " + jws,
+                    "Content-Type": "application/json"
+                })
+            }));
+        }
+    </script>
+</body>
+</html>

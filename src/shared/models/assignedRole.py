@@ -3,27 +3,28 @@ from mysql.connector.errors import IntegrityError
 from ..utils import ObjectDbSync
 
 class AssignedRoleModel(ObjectDbSync):
-    tableName = "rolePermissions"
+    tableName = "assignedRoles"
     tableId = "assignedRoleId"
 
-    def __init__(self, assignedRoleId, permission, roleId):
+    def __init__(self, assignedRoleId: int, roleName: str, discordRoleId: int):
         self.assignedRoleId = assignedRoleId
-        self.permission = permission
+        self.roleName = roleName
         self.discordRoleId = discordRoleId
+        super().__init__()
 
     def toDict(self):
         return {
             "assignedRoleId": self.assignedRoleId,
-            "permission": self.permission,
+            "roleName": self.roleName,
             "discordRoleId": self.discordRoleId
         }
 
     @classmethod
     @dbConn()
-    def create(cls, permission, discordRoleId, cursor, db):
-        query = f"INSERT INTO `{cls.tableName}` (`permission`, `discordRoleId`) VALUES (%s, %s)"
+    def create(cls, roleName, discordRoleId, cursor, db):
+        query = f"INSERT INTO `{cls.tableName}` (`roleName`, `discordRoleId`) VALUES (%s, %s)"
         try:
-            cursor.execute(query, (permission, discordRoleId))
+            cursor.execute(query, (roleName, discordRoleId))
         except IntegrityError as e:
             raise ValueError("Role with this name already exists")
-        return cls(assignedRoleId=cursor.lastrowid, permission=permission, discordRoleId=discordRoleId)
+        return cls(assignedRoleId=cursor.lastrowid, roleName=roleName, discordRoleId=discordRoleId)

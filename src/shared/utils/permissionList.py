@@ -47,10 +47,10 @@ class TeamPermissions:
     kick = "team.kick"
     leave = "team.leave"
     listUsers = "team.listUsers"
-    listParticipating = "team.listPartic"
-    listParticipatingDiscord = "team.listParticDisc"
-    generateJoinString = "team.genJoinStr"
-    generateJoinStringMyTeam = "team.genJoinStrMy"
+    listParticipating = "team.listParticipating"
+    listParticipatingDiscord = "team.listParticipatingDiscord"
+    generateJoinString = "team.generateJoinString"
+    generateJoinStringMyTeam = "team.generateJoinStringMy"
 class UserPermissions:
     read = "user.read"
     update = "user.update"
@@ -63,6 +63,31 @@ class UserPermissions:
     exists = "user.exists"
     permissionList = "user.permissionList"
     permissionListMe = "user.permsListMe"
+class AssignedRoles:
+    create = "assignedRole.create"
+    read = "assignedRole.read"
+    update = "assignedRole.update"
+    delete = "assignedRole.delete"
+class AssignedRolePermissions:
+    create = "assignedRolePermission.create"
+    read = "assignedRolePermission.read"
+    update = "assignedRolePermission.update"
+    delete = "assignedRolePermission.delete"
+class GeneratedRoles:
+    create = "generatedRole.create"
+    read = "generatedRole.read"
+    update = "generatedRole.update"
+    delete = "generatedRole.delete"
+class GeneratedRolePermissions:
+    create = "generatedRolePermission.create"
+    read = "generatedRolePermission.read"
+    update = "generatedRolePermission.update"
+    delete = "generatedRolePermission.delete"
+class UserRoles:
+    create = "userRole.create"
+    read = "userRole.read"
+    update = "userRole.update"
+    delete = "userRole.delete"
 
 class PermissionList:
     event = EventPermissions()
@@ -74,5 +99,10 @@ class PermissionList:
     stage = StagePermissions()
     team = TeamPermissions()
     user = UserPermissions()
+    assignedRole = AssignedRoles()
+    assignedRolePermission = AssignedRolePermissions()
+    generatedRole = GeneratedRoles()
+    generatedRolePermission = GeneratedRolePermissions()
+    userRole = UserRoles()
 
 perms = PermissionList()

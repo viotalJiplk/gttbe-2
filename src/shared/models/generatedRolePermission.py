@@ -3,19 +3,20 @@ from mysql.connector.errors import IntegrityError
 from ..utils import ObjectDbSync
 
 class GeneratedRolePermissionModel(ObjectDbSync):
-    tableName = "generatedRolePermissionsId"
-    tableId = "generatedRolePermissions"
+    tableName = "generatedRolePermissions"
+    tableId = "generatedRolePermissionId"
 
-    def __init__(self, generatedRolePermissionsId, permission, generatedRoleId, gameId, eligible):
-        self.generatedRolePermissionsId = generatedRolePermissionsId
+    def __init__(self, generatedRolePermissionId: int, permission: str, generatedRoleId: int, gameId: int, eligible: bool):
+        self.generatedRolePermissionId = generatedRolePermissionId
         self.permission = permission
         self.generatedRoleId = generatedRoleId
         self.gameId = gameId
         self.eligible = eligible
+        super().__init__()
 
     def toDict(self):
         return {
-            "generatedRolePermissionsId": self.generatedRolePermissionsId,
+            "generatedRolePermissionId": self.generatedRolePermissionId,
             "permission": self.permission,
             "generatedRoleId": self.generatedRoleId,
             "gameId": self.gameId,
@@ -30,4 +31,4 @@ class GeneratedRolePermissionModel(ObjectDbSync):
             cursor.execute(query, (permission, generatedRoleId, gameId, eligible))
         except IntegrityError as e:
             raise ValueError("Role with this name already exists")
-        return cls(generatedRolePermissionsId=cursor.lastrowid, permission=permission, generatedRoleId=generatedRoleId, gameId=gameId, eligible=eligible)
+        return cls(generatedRolePermissionId=cursor.lastrowid, permission=permission, generatedRoleId=generatedRoleId, gameId=gameId, eligible=eligible)
