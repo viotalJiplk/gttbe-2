@@ -20,6 +20,11 @@ from routes.page import pageRoutes
 from routes.events import eventRoutes
 from routes.stage import stageRoutes
 from routes.matches import matchRoutes
+from routes.assignedRoles import assignedRoleRoutes
+from routes.assignedRolePermissions import assignedRolePermissionRoutes
+from routes.generatedRoles import generatedRoleRoutes
+from routes.generatedRolePermissions import generatedRolePermissionRoutes
+from routes.userRoles import userRolesRoutes
 from tests import testRoutes
 
 
@@ -45,6 +50,11 @@ registerRoutes(api.namespace('page', description='page'), pageRoutes)
 registerRoutes(api.namespace('event', description='event'), eventRoutes)
 registerRoutes(api.namespace('stage', description='stage'), stageRoutes)
 registerRoutes(api.namespace('match', description='match'), matchRoutes)
+registerRoutes(api.namespace('assignedRole', description='assignedRole'), assignedRoleRoutes)
+registerRoutes(api.namespace('assignedRolePermission', description='assignedRolePermission'), assignedRolePermissionRoutes)
+registerRoutes(api.namespace('generatedRole', description='generatedRole'), generatedRoleRoutes)
+registerRoutes(api.namespace('generatedRolePermission', description='generatedRolePermission'), generatedRolePermissionRoutes)
+registerRoutes(api.namespace('userRole', description='userRole'), userRolesRoutes)
 
 if not config.production:
     registerRoutes(api.namespace('test', description='for backend development'), testRoutes)

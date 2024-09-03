@@ -4,3 +4,8 @@ from .match import getMatch
 from .stage import getStage
 from .team import getTeam
 from .user import getUser
+from .assignedRole import getAssignedRole
+from .assignedRolePermission import getAssignedRolePermission
+from .generatedRole import getGeneratedRole
+from .generatedRolePermission import getGeneratedRolePermission
+from .userRoles import getUserRole

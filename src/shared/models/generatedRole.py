@@ -16,11 +16,17 @@ class GeneratedRoleModel(ObjectDbSync):
         super().__init__()
 
     def toDict(self):
+        discordRoleId = None
+        if self.discordRoleId is not None:
+            discordRoleId = str(self.discordRoleId)
+        discordRoleIdEligible = None
+        if self.discordRoleIdEligible is not None:
+            discordRoleIdEligible = str(self.discordRoleIdEligible)
         return {
             "generatedRoleId": self.generatedRoleId,
             "roleName": self.roleName,
-            "discordRoleId": self.discordRoleId,
-            "discordRoleIdEligible": self.discordRoleIdEligible,
+            "discordRoleId": discordRoleId,
+            "discordRoleIdEligible": discordRoleIdEligible,
             "gameId": self.gameId,
             "default": self.default,
             "minimal": self.minimal,

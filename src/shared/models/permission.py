@@ -32,8 +32,8 @@ JOIN permissions p ON arp.permission = p.permission
 WHERE arp.assignedRoleId IN (
     SELECT assignedRoleId
     FROM assignedRoles
-    WHERE roleName IN ('public') AND gameId IS NULL
-);"""
+    WHERE roleName IN ('public')
+) AND gameId IS NULL;"""
             cursor.execute(query)
         else:
             query = """SELECT p.permission FROM assignedRolePermissions arp
@@ -41,8 +41,8 @@ JOIN permissions p ON arp.permission = p.permission
 WHERE arp.assignedRoleId IN (
     SELECT assignedRoleId
     FROM assignedRoles
-    WHERE roleName IN ('public') AND (gameId IS NULL OR gameId = %s)
-);"""
+    WHERE roleName IN ('public')
+) AND (gameId IS NULL OR gameId = %s);"""
             cursor.execute(query, (gameId,))
         rows = cursor.fetchall()
         result = []

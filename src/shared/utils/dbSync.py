@@ -23,8 +23,8 @@ class ObjectDbSync(AttributesObserver):
         try:
             cursor.execute(query, (getattr(self, self.tableId),))
         except IntegrityError as e:
-            expectedMsg = f'Cannot delete or update a parent row: a foreign key constraint fails (`{config.db.database}`.`registrations`, CONSTRAINT `registrations_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `users` (`userId`))'
-            if e.sqlstate == '23000' and e.msg == expectedMsg:
+            expectedMsg = f'Cannot delete or update a parent row: a foreign key constraint fails (`{config.db.database}`'
+            if e.sqlstate == '23000' and e.msg.startswith(expectedMsg):
                 raise DatabaseError("Still depends")
             else:
                 print(e.msg)

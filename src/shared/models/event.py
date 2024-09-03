@@ -2,6 +2,7 @@ from ..utils import fetchAllWithNames, fetchOneWithNames, dbConn
 from json import dumps
 from datetime import date, time, timedelta
 from ..utils import ObjectDbSync
+from mysql.connector.errors import IntegrityError
 
 def fromTimeDelta(td: timedelta):
     totalSeconds = td.total_seconds()
@@ -37,11 +38,6 @@ class EventModel(ObjectDbSync):
             "description": self.description,
             "eventType": self.eventType
         }
-
-    @dbConn()
-    def delete(self, cursor, db):
-        query = "DELETE FROM events WHERE eventId = %s"
-        cursor.execute(query, (self.eventId,))
 
     @classmethod
     @dbConn()

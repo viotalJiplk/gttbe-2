@@ -31,7 +31,12 @@ def postJsonParse(expectedJson:dict={}):
                     data[key] = dateFromString(data[key])
                 elif type(data[key]) == str and time in value:
                     data[key] = timeFromString(data[key])
-                elif type(data[key])  not in value:
+                elif type(data[key]) == str and int in value:
+                    try:
+                        data[key] = int(data[key])
+                    except ValueError:
+                        return {"kind": "JSON", "msg": f"Value of key '{key}' does not have expected type '{str(value)}' type '{str(type(data[key]))}' found instead."}, 401
+                elif type(data[key]) not in value:
                     return {"kind": "JSON", "msg": f"Value of key '{key}' does not have expected type '{str(value)}' type '{str(type(data[key]))}' found instead."}, 401
             return func(data=data, *args, **kwargs)
         return wrapPostJson

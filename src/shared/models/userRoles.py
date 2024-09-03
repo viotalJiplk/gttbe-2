@@ -6,25 +6,25 @@ class UserRoleModel(ObjectDbSync):
     tableName = "userRoles"
     tableId = "userRoleId"
 
-    def __init__(self, userRoleId, roleId, userId, gameId):
+    def __init__(self, userRoleId: int, assignedRoleId: int, userId: str):
         self.userRoleId = userRoleId
-        self.roleId = roleId
+        self.assignedRoleId = assignedRoleId
         self.userId = userId
         super().__init__()
 
     def toDict(self):
         return {
             "userRoleId": self.userRoleId,
-            "roleId": self.roleId,
-            "userId": self.userId
+            "assignedRoleId": self.assignedRoleId,
+            "userId": str(self.userId)
         }
 
     @classmethod
     @dbConn()
-    def create(cls, roleId, userId, cursor, db):
-        query = f"INSERT INTO `{cls.tableName}` (`roleId`, `userId`) VALUES (%s, %s)"
+    def create(cls, assignedRoleId, userId, cursor, db):
+        query = f"INSERT INTO `{cls.tableName}` (`assignedRoleId`, `userId`) VALUES (%s, %s)"
         try:
-            cursor.execute(query, (roleId, userId))
+            cursor.execute(query, (assignedRoleId, userId))
         except IntegrityError as e:
             raise ValueError("This userRole already exists.")
-        return cls(userRoleId=cursor.lastrowid, roleId=roleId, userId=userId, gameId=gameId)
+        return cls(userRoleId=cursor.lastrowid, assignedRoleId=assignedRoleId, userId=userId)

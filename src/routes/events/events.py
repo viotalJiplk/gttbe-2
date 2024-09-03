@@ -1,15 +1,10 @@
 from flask_restx import Resource
-from shared.models.event import EventModel
+from shared.models import EventModel, hasPermission
 from utils import jwsProtected, AuthResult
 from datetime import datetime, date, time
-from shared.models import hasPermission
 from shared.utils import perms
-from utils import hasPermissionDecorator
-from utils import postJsonParse, postJson, setAttributeFromList
-from utils import handleReturnableError
-from helper import getEvent
-from helper import getUser
-from utils import errorList
+from utils import hasPermissionDecorator, postJsonParse, postJson, setAttributeFromList, handleReturnableError, errorList
+from helper import getEvent, getUser
 from typing import List
 
 accessibleAttributes = {

@@ -226,8 +226,10 @@ class ReqElem extends HTMLElement{
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
-        if(name == "data-options"){
-            newValue = JSON.parse(newValue);
+        if (name == "data-options") {
+            if (newValue !== "") {
+                newValue = JSON.parse(newValue);
+            }
             if (newValue.body){
                 this.shadowRootReference.getElementById("textarea").value = newValue.body;
             }
