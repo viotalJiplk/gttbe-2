@@ -1,4 +1,4 @@
-from ..utils import ObjectDbSync, dbConn, fetchOneWithNames
+from ..utils import ObjectDbSync, dbConn, fetchOneWithNames, fetchAllWithNames
 
 class GeneratedRoleModel(ObjectDbSync):
     tableName = "generatedRoles"
@@ -53,3 +53,11 @@ class GeneratedRoleModel(ObjectDbSync):
             return None
         else:
             return row["generatedRoleId"]
+
+    @dbConn()
+    def listPermissions(self, cursor, db):
+        query ="""SELECT grp.* FROM generatedRoles AS gr
+                    INNER JOIN generatedRolePermissions AS grp ON gr.generatedRoleId = grp.generatedRoleId
+                    INNER JOIN permissions AS p ON p.permission = grp.permission WHERE gr.generatedRoleId = %(generatedRoleId)s"""
+        cursor.execute(query,  {'generatedRoleId': self.generatedRoleId})
+        return fetchAllWithNames(cursor)

@@ -1,6 +1,6 @@
 from ..utils import dbConn
 from mysql.connector.errors import IntegrityError
-from ..utils import ObjectDbSync
+from ..utils import ObjectDbSync, fetchAllWithNames
 
 class AssignedRoleModel(ObjectDbSync):
     tableName = "assignedRoles"
@@ -28,3 +28,11 @@ class AssignedRoleModel(ObjectDbSync):
         except IntegrityError as e:
             raise ValueError("Role with this name already exists")
         return cls(assignedRoleId=cursor.lastrowid, roleName=roleName, discordRoleId=discordRoleId)
+
+    @dbConn()
+    def listPermissions(self, cursor, db):
+        query ="""SELECT arp.* FROM assignedRoles AS ar
+                    INNER JOIN assignedRolePermissions AS arp ON ar.assignedRoleId = arp.assignedRoleId
+                    INNER JOIN permissions AS p ON p.permission = arp.permission WHERE ar.assignedRoleId = %(assignedRoleId)s"""
+        cursor.execute(query,  {'assignedRoleId': self.assignedRoleId})
+        return fetchAllWithNames(cursor)

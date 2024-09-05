@@ -46,6 +46,17 @@ WHERE arp.assignedRoleId IN (
             cursor.execute(query, (gameId,))
         return fetchAllWithNames(cursor)
 
+    @classmethod
+    @dbConn()
+    def listAll(self, cursor, db):
+        query = """SELECT permission FROM permissions;"""
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        result = []
+        for row in rows:
+            result.append(row[0])
+        return result
+
 def hasPermission(user: Union[str, UserModel, None], gameId: Union[str, None], permissions: Union[List[str], str]):
     """Returns list of permissions that user have from listed permissions
 

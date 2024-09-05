@@ -94,3 +94,22 @@ class GeneratedRolesCreate(Resource):
             dict: info about generatedRole
         """
         return GeneratedRoleModel.create(data["roleName"], data["discordRoleId"], data["discordRoleIdEligible"], data["gameId"], data["default"], data["minimal"], data["maximal"]).toDict()
+
+class GeneratedRolePermissions(Resource):
+    @handleReturnableError
+    @jwsProtected(optional=True)
+    def get(self, authResult: AuthResult, generatedRoleId: str):
+        """Gets generatedRoles permissions
+
+        Args:
+            generatedRoleId (str): id of generatedRole
+
+        Returns:
+            dict: list of generated role permissions
+        """
+        user = getUser(authResult)
+        generatedRole = getGeneratedRole(generatedRoleId)
+        permission = hasPermission(user, generatedRole.gameId, perms.generatedRole.listPermissions)
+        if len(permission) < 1:
+            raise errorList.permission.missingPermission
+        return generatedRole.listPermissions()
