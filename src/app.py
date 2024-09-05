@@ -25,6 +25,7 @@ from routes.assignedRolePermissions import assignedRolePermissionRoutes
 from routes.generatedRoles import generatedRoleRoutes
 from routes.generatedRolePermissions import generatedRolePermissionRoutes
 from routes.userRoles import userRolesRoutes
+from routes.permissions import permissionsRoutes
 from tests import testRoutes
 
 
@@ -55,6 +56,7 @@ registerRoutes(api.namespace('assignedRolePermission', description='assignedRole
 registerRoutes(api.namespace('generatedRole', description='generatedRole'), generatedRoleRoutes)
 registerRoutes(api.namespace('generatedRolePermission', description='generatedRolePermission'), generatedRolePermissionRoutes)
 registerRoutes(api.namespace('userRole', description='userRole'), userRolesRoutes)
+registerRoutes(api.namespace('permission', description='permissions'), permissionsRoutes)
 
 if not config.production:
     registerRoutes(api.namespace('test', description='for backend development'), testRoutes)

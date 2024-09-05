@@ -72,6 +72,7 @@ class AssignedRoles:
     read = "assignedRole.read"
     update = "assignedRole.update"
     delete = "assignedRole.delete"
+    listPermissions = "assignedRole.listPermissions"
 class AssignedRolePermissions:
     create = "assignedRolePermission.create"
     read = "assignedRolePermission.read"
@@ -82,6 +83,7 @@ class GeneratedRoles:
     read = "generatedRole.read"
     update = "generatedRole.update"
     delete = "generatedRole.delete"
+    listPermissions = "generatedRole.listPermissions"
 class GeneratedRolePermissions:
     create = "generatedRolePermission.create"
     read = "generatedRolePermission.read"
@@ -92,6 +94,8 @@ class UserRoles:
     read = "userRole.read"
     update = "userRole.update"
     delete = "userRole.delete"
+class Permissions:
+    listAll = "permission.listAll"
 
 class PermissionList:
     event = EventPermissions()
@@ -108,5 +112,6 @@ class PermissionList:
     generatedRole = GeneratedRoles()
     generatedRolePermission = GeneratedRolePermissions()
     userRole = UserRoles()
+    permission = Permissions()
 
 perms = PermissionList()

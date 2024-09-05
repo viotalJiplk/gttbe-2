@@ -1302,3 +1302,8 @@ INSERT INTO `users` (`userId`, `surname`, `name`, `adult`, `schoolId`, `access_t
 INSERT INTO `userRoles` (`userRoleId`, `assignedRoleId`, `userId`) VALUES
 (1,	1,	114316488057882015),
 (2,	2,	115423241599600111);
+INSERT INTO `generatedRolePermissions` (`generatedRolePermissionId`, `permission`, `generatedRoleId`, `gameId`, `eligible`) VALUES
+(1,	'school.listAll',	1,	1,	CONV('1', 2, 10) + 0);
+
+INSERT INTO `assignedRolePermissions` (`permission`, `gameId`, `assignedRoleId`)
+VALUES ('school.listAll', '4', '2');
