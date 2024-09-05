@@ -1,6 +1,6 @@
 from mysql.connector.errors import IntegrityError
 from ..utils import ObjectDbSync
-from ..utils import dbConn
+from ..utils import dbConn, fetchAllWithNames
 from typing import Union, List
 from ..models.user import UserModel
 
@@ -27,7 +27,7 @@ class PermissionModel(ObjectDbSync):
     @dbConn()
     def listPublic(cls, gameId, cursor, db):
         if(gameId is None):
-            query = """SELECT p.permission FROM assignedRolePermissions arp
+            query = """SELECT p.permission, arp.gameId FROM assignedRolePermissions arp
 JOIN permissions p ON arp.permission = p.permission
 WHERE arp.assignedRoleId IN (
     SELECT assignedRoleId
@@ -36,7 +36,7 @@ WHERE arp.assignedRoleId IN (
 ) AND gameId IS NULL;"""
             cursor.execute(query)
         else:
-            query = """SELECT p.permission FROM assignedRolePermissions arp
+            query = """SELECT p.permission, arp.gameId FROM assignedRolePermissions arp
 JOIN permissions p ON arp.permission = p.permission
 WHERE arp.assignedRoleId IN (
     SELECT assignedRoleId
@@ -44,11 +44,7 @@ WHERE arp.assignedRoleId IN (
     WHERE roleName IN ('public')
 ) AND (gameId IS NULL OR gameId = %s);"""
             cursor.execute(query, (gameId,))
-        rows = cursor.fetchall()
-        result = []
-        for row in rows:
-            result.append(row[0])
-        return result
+        return fetchAllWithNames(cursor)
 
 def hasPermission(user: Union[str, UserModel, None], gameId: Union[str, None], permissions: Union[List[str], str]):
     """Returns list of permissions that user have from listed permissions
@@ -61,6 +57,8 @@ def hasPermission(user: Union[str, UserModel, None], gameId: Union[str, None], p
     Returns:
         List[str]: list of permission from permission list that user has
     """
+    if type(gameId) not in [str, int]:
+        gameId = None
     userPerms = []
     if isinstance(user, str):
         user = UserModel.getById(user)
@@ -70,5 +68,8 @@ def hasPermission(user: Union[str, UserModel, None], gameId: Union[str, None], p
         userPerms = PermissionModel.listPublic(gameId=gameId)
     else:
         userPerms = user.listPermissions(gameId=gameId)
-    foundPerms = list(set(userPerms).intersection(set(permissions)))
+    uPermsFlat = []
+    for perm in userPerms:
+        uPermsFlat.append(perm["permission"])
+    foundPerms = list(set(uPermsFlat).intersection(set(permissions)))
     return foundPerms

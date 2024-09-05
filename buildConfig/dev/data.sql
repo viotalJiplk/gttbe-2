@@ -1301,7 +1301,4 @@ INSERT INTO `users` (`userId`, `surname`, `name`, `adult`, `schoolId`, `access_t
 
 INSERT INTO `userRoles` (`userRoleId`, `assignedRoleId`, `userId`) VALUES
 (1,	1,	114316488057882015),
-(2,	2,	115423241599600111),
-(3,	3,	122891840080562664),
-(4,	4,	127854629519701467),
-(5,	5,	128643565886368599);
+(2,	2,	115423241599600111);

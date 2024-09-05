@@ -18,7 +18,7 @@ def resolveResponse(response, responseCode, expectedReturn):
             res = response.json()
             differ = diff(expectedReturn, res)
             if differ != {} and differ != []:
-                raise Exception(f"Wrong returned json.\ndiff:\n{differ}")
+                raise Exception(f"Wrong returned json.\ndiff:\n{dumps(differ, ensure_ascii=False, indent=4)}")
             return res
     return response.content.decode('unicode_escape')
 

@@ -1,7 +1,7 @@
 from ..utils import dbConn
 import datetime
 import requests
-from ..utils import config
+from ..utils import config, fetchAllWithNames
 from requests import post
 from datetime import date, datetime, timedelta
 import json
@@ -189,16 +189,24 @@ class UserModel(ObjectDbSync):
         return ((self.userId != "") and (self.surname != "") and (self.name != "") and (self.adult != None) and (self.schoolId != None ))
 
     @dbConn()
-    def listPermissions(self, gameId: Union[str, None], cursor, db):
+    def listPermissions(self, gameId: Union[str, None, True], cursor, db):
+        """List users permission
+
+        Args:
+            gameId (Union[str, None]): str with gameId (specific game), None (only for all games), True for all games
+
+        Returns:
+            dict: list of teams
+        """
         if gameId is None:
-            query = """SELECT p.permission FROM users u
+            query = """SELECT p.permission, arp.gameId FROM users u
 JOIN userRoles ur ON u.userId = ur.userId
 JOIN assignedRoles ar ON ur.assignedRoleId = ar.assignedRoleId
 JOIN assignedRolePermissions arp ON ar.assignedRoleId = arp.assignedRoleId
 JOIN permissions p ON arp.permission = p.permission
 WHERE u.userId = %(userId)s AND arp.gameId is NULL
 UNION
-SELECT p.permission FROM assignedRolePermissions arp
+SELECT p.permission, arp.gameId FROM assignedRolePermissions arp
 JOIN permissions p ON arp.permission = p.permission
 WHERE arp.assignedRoleId IN (
     SELECT assignedRoleId
@@ -206,22 +214,45 @@ WHERE arp.assignedRoleId IN (
     WHERE roleName IN ('public', 'user')
 ) AND arp.gameId is NULL
 UNION
-SELECT generatedRolePermissions.permission AS permission FROM `registrations`
+SELECT generatedRolePermissions.permission AS permission, generatedRolePermissions.gameId AS gameId FROM `registrations`
 JOIN generatedRoles ON generatedRoles.generatedRoleId = registrations.generatedRoleID
 JOIN generatedRolePermissions ON generatedRolePermissions.generatedRoleID =  generatedRoles.generatedRoleId
 JOIN teams ON registrations.teamId = teams.teamId
 WHERE `userId` = %(userId)s AND ((teams.canPlaySince IS NOT NULL and generatedRolePermissions.eligible = 1)
 OR (teams.canPlaySince IS NULL and generatedRolePermissions.eligible = 0)) AND generatedRoles.gameId IS NULL"""
             cursor.execute(query,  {'userId': self.userId})
+        elif gameId == True:
+            query = """SELECT p.permission, arp.gameId FROM users u
+JOIN userRoles ur ON u.userId = ur.userId
+JOIN assignedRoles ar ON ur.assignedRoleId = ar.assignedRoleId
+JOIN assignedRolePermissions arp ON ar.assignedRoleId = arp.assignedRoleId
+JOIN permissions p ON arp.permission = p.permission
+WHERE u.userId = %(userId)s
+UNION
+SELECT p.permission, arp.gameId FROM assignedRolePermissions arp
+JOIN permissions p ON arp.permission = p.permission
+WHERE arp.assignedRoleId IN (
+    SELECT assignedRoleId
+    FROM assignedRoles
+    WHERE roleName IN ('public', 'user')
+)
+UNION
+SELECT generatedRolePermissions.permission AS permission, generatedRolePermissions.gameId AS gameId FROM `registrations`
+JOIN generatedRoles ON generatedRoles.generatedRoleId = registrations.generatedRoleID
+JOIN generatedRolePermissions ON generatedRolePermissions.generatedRoleID =  generatedRoles.generatedRoleId
+JOIN teams ON registrations.teamId = teams.teamId
+WHERE `userId` = %(userId)s AND ((teams.canPlaySince IS NOT NULL and generatedRolePermissions.eligible = 1)
+OR (teams.canPlaySince IS NULL and generatedRolePermissions.eligible = 0))"""
+            cursor.execute(query,  {'userId': self.userId})
         else:
-            query = """SELECT p.permission FROM users u
+            query = """SELECT p.permission, arp.gameId FROM users u
 JOIN userRoles ur ON u.userId = ur.userId
 JOIN assignedRoles ar ON ur.assignedRoleId = ar.assignedRoleId
 JOIN assignedRolePermissions arp ON ar.assignedRoleId = arp.assignedRoleId
 JOIN permissions p ON arp.permission = p.permission
 WHERE u.userId = %(userId)s AND (arp.gameId is NULL OR arp.gameId = %(gameId)s)
 UNION
-SELECT p.permission FROM assignedRolePermissions arp
+SELECT p.permission, arp.gameId FROM assignedRolePermissions arp
 JOIN permissions p ON arp.permission = p.permission
 WHERE arp.assignedRoleId IN (
     SELECT assignedRoleId
@@ -229,15 +260,31 @@ WHERE arp.assignedRoleId IN (
     WHERE roleName IN ('public', 'user')
 ) AND (arp.gameId is NULL OR arp.gameId = %(gameId)s)
 UNION
-SELECT generatedRolePermissions.permission AS permission FROM `registrations`
+SELECT generatedRolePermissions.permission AS permission, generatedRolePermissions.gameId AS gameId FROM `registrations`
 JOIN generatedRoles ON generatedRoles.generatedRoleId = registrations.generatedRoleID
 JOIN generatedRolePermissions ON generatedRolePermissions.generatedRoleID =  generatedRoles.generatedRoleId
 JOIN teams ON registrations.teamId = teams.teamId
 WHERE `userId` = %(userId)s AND ((teams.canPlaySince IS NOT NULL and generatedRolePermissions.eligible = 1)
 OR (teams.canPlaySince IS NULL and generatedRolePermissions.eligible = 0)) AND (generatedRoles.gameId IS NULL OR generatedRoles.gameId = %(gameId)s)"""
             cursor.execute(query, {'userId': self.userId, 'gameId': gameId})
-        rows = cursor.fetchall()
-        result = []
-        for row in rows:
-            result.append(row[0])
-        return result
+        return fetchAllWithNames(cursor)
+
+    @dbConn()
+    def listGeneratedRoles(self, cursor, db):
+        query = """ SELECT r.teamId, g.* FROM users AS u
+                    LEFT JOIN registrations AS r ON u.userId = r.userId
+                    LEFT JOIN generatedRoles AS g ON g.generatedRoleId = r.generatedRoleId
+                    WHERE u.userId = %(userId)s
+        """
+        cursor.execute(query,  {'userId': self.userId})
+        return fetchAllWithNames(cursor)
+
+    @dbConn()
+    def listAssignedRoles(self, cursor, db):
+        query = """
+            SELECT ar.* FROM assignedRoles AS ar
+            LEFT JOIN userRoles as ur ON ur.assignedRoleId = ar.assignedRoleId
+            WHERE ar.roleName IN ("user", "public") OR userId=%(userId)s
+        """
+        cursor.execute(query,  {'userId': self.userId})
+        return fetchAllWithNames(cursor)
