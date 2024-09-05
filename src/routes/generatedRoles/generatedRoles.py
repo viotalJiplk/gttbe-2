@@ -95,6 +95,23 @@ class GeneratedRolesCreate(Resource):
         """
         return GeneratedRoleModel.create(data["roleName"], data["discordRoleId"], data["discordRoleIdEligible"], data["gameId"], data["default"], data["minimal"], data["maximal"]).toDict()
 
+class GeneratedRoleList(Resource):
+    @hasPermissionDecorator([perms.generatedRole.listAll], True)
+    def get(self, authResult: AuthResult, gameId: int, permissions):
+        """lists generatedRoles
+
+        Args:
+            gameId (int): id of game or all
+
+        Returns:
+            dict: list of generated roles
+        """
+        if gameId == "all":
+            return GeneratedRoleModel.getAllDict(gameId=None)
+        else:
+            return GeneratedRoleModel.getAllDict(gameId=gameId)
+
+
 class GeneratedRolePermissions(Resource):
     @handleReturnableError
     @jwsProtected(optional=True)

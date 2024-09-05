@@ -54,6 +54,17 @@ class GeneratedRoleModel(ObjectDbSync):
         else:
             return row["generatedRoleId"]
 
+    @classmethod
+    @dbConn()
+    def getAllDict(self, gameId, cursor, db):
+        if gameId is None:
+            query ="""SELECT * FROM generatedRoles AS gr"""
+            cursor.execute(query)
+        else:
+            query ="""SELECT * FROM generatedRoles AS gr WHERE gr.gameId =%(gameId)s"""
+            cursor.execute(query,  {'gameId': gameId})
+        return fetchAllWithNames(cursor)
+
     @dbConn()
     def listPermissions(self, cursor, db):
         query ="""SELECT grp.* FROM generatedRoles AS gr

@@ -71,6 +71,18 @@ class AssignedRolesCreate(Resource):
         """
         return AssignedRoleModel.create(data["roleName"], data["discordRoleId"]).toDict()
 
+class AssignedRoleList(Resource):
+    @hasPermissionDecorator([perms.assignedRole.listAll], False)
+    def get(self, authResult: AuthResult, permissions):
+        """lists assignedRoles
+
+        Args:
+
+        Returns:
+            dict: list of assigned roles
+        """
+        return AssignedRoleModel.getAllDict()
+
 class AssignedRolePermissions(Resource):
     @hasPermissionDecorator([perms.assignedRole.listPermissions], False)
     def get(self, authResult: AuthResult, assignedRoleId: str, permissions: List[str]):

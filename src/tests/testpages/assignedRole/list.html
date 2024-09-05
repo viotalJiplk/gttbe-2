@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flow testing page</title>
+    <script src="../js/main.js"></script>
+</head>
+<body>
+    <p>list generatedRoles</p>
+    <req-custom id="create" data-options=''></req-custom>
+    <script>
+        let jws = localStorage.getItem("jws");
+        if(jws == ""){
+            alert("Go to login page to get jws");
+        }else{
+            document.getElementById("create").setAttribute("data-options", JSON.stringify({
+                "method":"GET",
+                "url":"/backend/assignedRole/listAll/",
+                "headers":JSON.stringify({
+                    "Authorization": "Bearer " + jws,
+                    "Content-Type": "application/json"
+                })
+            }));
+        }
+    </script>
+</body>
+</html>
