@@ -76,6 +76,7 @@ class AssignedRoles:
     read = "assignedRole.read"
     update = "assignedRole.update"
     delete = "assignedRole.delete"
+    listAll = "generatedRole.listAll"
     listPermissions = "assignedRole.listPermissions"
 class AssignedRolePermissions:
     create = "assignedRolePermission.create"
@@ -87,6 +88,7 @@ class GeneratedRoles:
     read = "generatedRole.read"
     update = "generatedRole.update"
     delete = "generatedRole.delete"
+    listAll = "generatedRole.listAll"
     listPermissions = "generatedRole.listPermissions"
 class GeneratedRolePermissions:
     create = "generatedRolePermission.create"
