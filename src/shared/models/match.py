@@ -39,11 +39,6 @@ class MatchModel (ObjectDbSync):
             return None
         return stage.getEvent()
 
-    @dbConn()
-    def delete(self, cursor, db):
-        query = "DELETE FROM `matches` WHERE `matchId` = %s"
-        cursor.execute(query, (self.matchId,))
-
     @classmethod
     @dbConn()
     def create(cls, stageId:int, firstTeamId:int, secondTeamId:int, firstTeamResult:int, secondTeamResult:int, cursor, db):

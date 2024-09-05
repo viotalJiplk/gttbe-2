@@ -1,15 +1,7 @@
-from ..utils import fetchAllWithNames, fetchOneWithNames, dbConn
+from ..utils import fetchAllWithNames, fetchOneWithNames, dbConn, ObjectDbSync, fromTimeDelta
 from json import dumps
-from datetime import date, time, timedelta
-from ..utils import ObjectDbSync
+from datetime import date, time
 from mysql.connector.errors import IntegrityError
-
-def fromTimeDelta(td: timedelta):
-    totalSeconds = td.total_seconds()
-    hours = int(totalSeconds // 3600)
-    minutes = int((totalSeconds % 3600) // 60)
-    seconds = int(totalSeconds % 60)
-    return time(hour=hours, minute=minutes, second=seconds)
 
 
 class EventModel(ObjectDbSync):
@@ -68,6 +60,12 @@ class EventModel(ObjectDbSync):
             rows[index]["beginTime"] = fromTimeDelta(rows[index]["beginTime"]).strftime("%H:%M")
             rows[index]["endTime"] = fromTimeDelta(rows[index]["endTime"]).strftime("%H:%M")
         return rows
+
+    @dbConn()
+    def listStages(self, cursor, db):
+        query = "SELECT stageId, eventId, stageName, stageIndex FROM stages WHERE eventId = %s"
+        cursor.execute(query, (self.eventId,))
+        return fetchAllWithNames(cursor)
 
     @dbConn()
     def allMatchesDict(self, cursor, db):

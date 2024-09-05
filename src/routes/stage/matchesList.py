@@ -1,13 +1,13 @@
 from flask_restx import Resource
 from shared.models import EventModel, hasPermission
-from helper import getEvent, getUser
+from helper import getEvent, getStage, getUser
 from utils import handleReturnableError, jwsProtected, errorList, AuthResult
 from shared.utils import perms
 
 class MatchesList(Resource):
     @handleReturnableError
     @jwsProtected(optional=True)
-    def get(self, authResult: AuthResult, eventId):
+    def get(self, authResult: AuthResult, stageId):
         """
             Lists all matches of event
         Args:
@@ -17,8 +17,9 @@ class MatchesList(Resource):
             dict: list of matches
         """
         user = getUser(authResult)
-        event = getEvent(eventId)
-        permission = hasPermission(user, event.gameId, perms.event.listMatches)
+        stage = getStage(stageId)
+        event = getEvent(stage.eventId)
+        permission = hasPermission(user, event.gameId, perms.stage.listMatches)
         if len(permission) < 1:
             raise errorList.permission.missingPermission
-        return event.allMatchesDict()
+        return stage.allMatchesDict()

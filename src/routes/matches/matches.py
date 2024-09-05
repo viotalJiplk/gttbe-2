@@ -1,5 +1,5 @@
 from flask_restx import Resource
-from utils import jwsProtected, AuthResult, postJsonParse, postJson, setAttributeFromList, handleReturnableError, errorList
+from utils import jwsProtected, AuthResult, postJsonParse, postJson, setAttributeFromList, handleReturnableError, errorList, hasPermissionDecorator
 from datetime import datetime
 from shared.models import EventModel, MatchModel, hasPermission, StageModel
 from helper import getEvent, getStage, getUser, getMatch
@@ -99,3 +99,15 @@ class MatchCreate(Resource):
         if len(permission) < 1:
             raise errorList.permission.missingPermission
         return MatchModel.create(data["stageId"], data["firstTeamId"], data["secondTeamId"], data["firstTeamResult"], data["secondTeamResult"]).toDict()
+
+class MatchListAll(Resource):
+    @hasPermissionDecorator(perms.match.listAll, False)
+    def get(self, authResult: AuthResult, permissions):
+        """List all matches
+
+        Args:
+
+        Returns:
+            dict: list of all matches
+        """
+        return MatchModel.getAllDict()

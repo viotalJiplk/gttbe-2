@@ -4,7 +4,7 @@ from helper import getEvent, getUser
 from utils import handleReturnableError, jwsProtected, errorList, AuthResult
 from shared.utils import perms
 
-class MatchesList(Resource):
+class StagesList(Resource):
     @handleReturnableError
     @jwsProtected(optional=True)
     def get(self, authResult: AuthResult, eventId):
@@ -18,7 +18,7 @@ class MatchesList(Resource):
         """
         user = getUser(authResult)
         event = getEvent(eventId)
-        permission = hasPermission(user, event.gameId, perms.event.listMatches)
+        permission = hasPermission(user, event.gameId, perms.event.listStages)
         if len(permission) < 1:
             raise errorList.permission.missingPermission
-        return event.allMatchesDict()
+        return event.listStages()

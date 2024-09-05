@@ -1,7 +1,6 @@
-from ..utils import fetchAllWithNames, fetchOneWithNames, dbConn
+from ..utils import fetchAllWithNames, fetchOneWithNames, dbConn, ObjectDbSync, fromTimeDelta
 from json import dumps
 from .event import EventModel
-from ..utils import ObjectDbSync
 
 class StageModel(ObjectDbSync):
     tableName = "stages"
@@ -28,9 +27,15 @@ class StageModel(ObjectDbSync):
         return EventModel.getById(self.eventId)
 
     @dbConn()
-    def delete(self, cursor, db):
-        query = "DELETE FROM `stages` WHERE `stageId` = %s"
+    def allMatchesDict(self, cursor, db):
+        query = "SELECT * FROM matchesAll WHERE stageId=%s"
         cursor.execute(query, (self.stageId,))
+        rows = fetchAllWithNames(cursor)
+        for index in range(0, len(rows)):
+            rows[index]["date"] = rows[index]["date"].isoformat()
+            rows[index]["beginTime"] = fromTimeDelta(rows[index]["beginTime"]).strftime("%H:%M")
+            rows[index]["endTime"] = fromTimeDelta(rows[index]["endTime"]).strftime("%H:%M")
+        return rows
 
     @classmethod
     @dbConn()
