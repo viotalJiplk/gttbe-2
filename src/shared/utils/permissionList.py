@@ -5,6 +5,7 @@ class EventPermissions:
     delete = "event.delete"
     listAll = "event.listAll"
     listMatches = "event.listMatches"
+    listStages = "event.listStages"
 class GamePermissions:
     # create = "game.create"
     read = "game.read"
@@ -21,6 +22,7 @@ class MatchPermissions:
     read = "match.read"
     update = "match.update"
     delete = "match.delete"
+    listAll = "match.listAll"
 class PagePermissions:
     # create = "page.create"
     read = "page.read"
@@ -37,6 +39,8 @@ class StagePermissions:
     read = "stage.read"
     update = "stage.update"
     delete = "stage.delete"
+    listAll = "stage.listAll"
+    listMatches = "stage.listMatches"
 class TeamPermissions:
     create = "team.create"
     read = "team.read"

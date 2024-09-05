@@ -17,7 +17,7 @@
         }else{
             document.getElementById("list").setAttribute("data-options", JSON.stringify({
                 "method":"GET",
-                "url":"/backend/event/<eventId>/matches/",
+                "url":"/backend/stage/<stageId>/matches/",
                 "headers":JSON.stringify({
                     "Authorization": "Bearer " + jws,
                     "Content-Type": "application/json"

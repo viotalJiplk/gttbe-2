@@ -1,7 +1,6 @@
 from flask_restx import Resource
-from shared.models.stage import StageModel
-from utils import jwsProtected, AuthResult, postJsonParse, postJson, setAttributeFromList, handleReturnableError, errorList
-from shared.models import hasPermission
+from shared.models import StageModel, hasPermission
+from utils import jwsProtected, AuthResult, postJsonParse, postJson, setAttributeFromList, handleReturnableError, errorList, hasPermissionDecorator
 from helper import getEvent, getStage, getUser
 from shared.utils import perms
 
@@ -93,3 +92,15 @@ class StageCreate(Resource):
         if len(permission) < 1:
             raise errorList.permission.missingPermission
         return StageModel.create(data["eventId"], data["stageName"], data["stageIndex"]).toDict()
+
+class StageListAll(Resource):
+    @hasPermissionDecorator(perms.stage.listAll, False)
+    def get(self, authResult: AuthResult, permissions):
+        """List all stages
+
+        Args:
+
+        Returns:
+            dict: list of all stages
+        """
+        return StageModel.getAllDict()
