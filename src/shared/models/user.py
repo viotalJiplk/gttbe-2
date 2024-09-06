@@ -22,11 +22,11 @@ class UserModel(ObjectDbSync):
     tableName = "users"
     tableId = "userId"
 
-    def __init__(self, userId: int, refresh_token: Union[str, None] = None, access_token: Union[str, None] = None, expires_in: Union[str, datetime, None] = None, surname: Union[str, None] = None,  name: Union[str, None] = None, adult: Union[bool, None] = None, schoolId: Union[int, None] = None ):
+    def __init__(self, userId: Union[int, None] = None, refresh_token: Union[str, None] = None, access_token: Union[str, None] = None, expires_in: Union[str, datetime, None] = None, surname: Union[str, None] = None,  name: Union[str, None] = None, adult: Union[bool, None] = None, schoolId: Union[int, None] = None ):
         """Initializes user representation
 
         Args:
-            userId (int): id of user
+            userId ( Union[int, None]): id of user. Defaults to None.
             refresh_token (Union[str, None], optional): users refresh token. Defaults to None.
             access_token (Union[str, None], optional): users access token. Defaults to None.
             expires_in (Union[str, datetime, None], optional): time when token expires. Defaults to None.
@@ -72,11 +72,11 @@ class UserModel(ObjectDbSync):
 
     @classmethod
     @dbConn(autocommit=True, buffered=True)
-    def updateOrCreateUser(cls, cursor, db, userId: int,refresh_token: Union[str, None] = None, access_token: Union[str, None] = None, expires_in: Union[str, datetime, None] = None, name: Union[str, None] = None, surname: Union[str, None]  = None, adult: Union[bool, None]  = None, schoolId: Union[int, None]  = None):
+    def updateOrCreateUser(cls, cursor, db, userId: Union[int, None], refresh_token: Union[str, None] = None, access_token: Union[str, None] = None, expires_in: Union[str, datetime, None] = None, name: Union[str, None] = None, surname: Union[str, None]  = None, adult: Union[bool, None]  = None, schoolId: Union[int, None]  = None):
         """Update or create user (useful for logging in/registration)
 
         Args:
-            userId (int): id of user
+            userId ( Union[int, None]): id of user. Defaults to None.
             refresh_token (Union[str, None], optional): users refresh token. Defaults to None.
             access_token (Union[str, None], optional): users access token. Defaults to None.
             expires_in (Union[str, None], optional): time when token expires. Defaults to None.
