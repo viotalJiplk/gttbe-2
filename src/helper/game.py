@@ -9,7 +9,7 @@ def getGame(gameId: str):
         gameId (str): gameId
 
     Raises:
-        ReturnableError: game does not exist
+        errorList.data.doesNotExist: game does not exist
 
     Returns:
         GameModel: game

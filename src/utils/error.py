@@ -1,6 +1,7 @@
 from functools import wraps
 
 def handleReturnableError(func):
+    """Decorator to handle returnableErrors"""
     @wraps(func)
     def wrapReturnableError(*args, **kwargs):
         try:
@@ -10,7 +11,15 @@ def handleReturnableError(func):
     return wrapReturnableError
 
 class ReturnableError(Exception):
+    """Error that can be handled and returned to user"""
     def __init__(self, message: str, kind: str, httpStatusCode: int = 500):
+        """Initializes error that can be handled and returned to user
+
+        Args:
+            message (str): message to return to user
+            kind (str): kind of error
+            httpStatusCode (int, optional): http status code  Defaults to 500.
+        """
         super().__init__(message)
         self.message = message
         self.httpStatusCode = httpStatusCode

@@ -9,7 +9,7 @@ def getTeam(teamId: str):
         teamId (str): teamId
 
     Raises:
-        ReturnableError: team does not exist
+        errorList.data.doesNotExist: team does not exist
 
     Returns:
         TeamModel: team

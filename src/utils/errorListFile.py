@@ -2,10 +2,14 @@ from .error import ReturnableError
 
 class Jws:
     invalidToken = ReturnableError("Invalid JWS token!", "JWS", 401)
+    InvalidSignature = ReturnableError("Invalid JWS signature!", "JWS", 401)
     missingAuthHeader = ReturnableError("Missing Authorization header!", "JWS", 400)
     expired = ReturnableError("Expired!", "JWS", 401)
     untrusted = ReturnableError("Untrusted issuer!", "JWS", 401)
     missingUserId = ReturnableError("Missing userId!", "JWS", 401)
+class Json:
+    notValidJson = ReturnableError("The data you sent is not a valid json.", "JSON", 401)
+
 class Permission:
     missingPermission = ReturnableError("Missing required permissions.", "Perms", 401)
     missingId = ReturnableError("Missing gameId!", "Perms", 400)
@@ -29,11 +33,14 @@ class Team:
 class User:
     couldNotRegister = ReturnableError("You have not filled info required for creating Team.", "User", 400)
 class ErrorList:
+    """List of all errors
+    """
     jws = Jws()
     permission = Permission()
     data = Data()
     request = Request()
     team = Team()
     user = User()
+    json = Json()
 
 errorList = ErrorList()

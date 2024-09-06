@@ -3,19 +3,29 @@ from flask_restful import request
 from .date import dateFromString, timeFromString
 from datetime import date, time
 from .errorListFile import errorList
+from utils import ReturnableError
 from .error import handleReturnableError
 
 def postJson(func):
+    """Decorator that Gets json from request
+    call: func(data=data, *args, **kwargs)"""
     @wraps(func)
+    @handleReturnableError
     def wrapPostJson(*args, **kwargs):
         try:
             data = request.get_json()
         except:
-            return {"kind": "JSON", "msg": "The data you sent is not a valid json."}, 401
+            raise errorList.json.notValidJson
         return func(data=data, *args, **kwargs)
     return wrapPostJson
 
 def postJsonParse(expectedJson:dict={}):
+    """Decorator that gets and validates json from request
+    call: func(data=data, *args, **kwargs)
+
+    Args:
+        expectedJson (dict, optional): expected json. Defaults to {}.
+    """
     def wrapper(func):
         @wraps(func)
         @handleReturnableError
@@ -23,10 +33,10 @@ def postJsonParse(expectedJson:dict={}):
             try:
                 data = request.get_json()
             except:
-                return {"kind": "JSON", "msg": "The data you sent is not a valid json."}, 401
+                raise errorList.json.notValidJson
             for key, value in expectedJson.items():
                 if key not in data:
-                    return {"kind": "JSON", "msg": f"Missing key '{key}' in request."}, 401
+                    raise ReturnableError(f"Missing key '{key}' in request.", "JSON", 401)
                 if type(data[key]) == str and date in value:
                     data[key] = dateFromString(data[key])
                 elif type(data[key]) == str and time in value:
@@ -35,14 +45,25 @@ def postJsonParse(expectedJson:dict={}):
                     try:
                         data[key] = int(data[key])
                     except ValueError:
-                        return {"kind": "JSON", "msg": f"Value of key '{key}' does not have expected type '{str(value)}' type '{str(type(data[key]))}' found instead."}, 401
+                        raise ReturnableError(f"Value of key '{key}' does not have expected type '{str(value)}' type '{str(type(data[key]))}' found instead.", "JSON", 401)
                 elif type(data[key]) not in value:
-                    return {"kind": "JSON", "msg": f"Value of key '{key}' does not have expected type '{str(value)}' type '{str(type(data[key]))}' found instead."}, 401
+                    raise ReturnableError(f"Value of key '{key}' does not have expected type '{str(value)}' type '{str(type(data[key]))}' found instead.", "JSON", 401)
             return func(data=data, *args, **kwargs)
         return wrapPostJson
     return wrapper
 
-def setAttributeFromList(obj, data, accessibleAttributes):
+def setAttributeFromList(obj: object, data: dict, accessibleAttributes: dict):
+    """Sets attributes from dict on object (data["test"]) -> obj.test
+
+    Args:
+        obj (object): object to set attributes on
+        data (dict): dict to set attributes from
+        accessibleAttributes (dict): list accessible attributes on object
+
+    Raises:
+        errorList.data.couldNotConvertInt: unable to convert int from str
+        errorList.data.unableToConvert: unable to convert type
+    """
     for x in data:
         if x in accessibleAttributes:
             if type(data[x]) in accessibleAttributes[x]:

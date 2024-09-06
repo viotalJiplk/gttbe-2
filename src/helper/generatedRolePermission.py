@@ -9,7 +9,7 @@ def getGeneratedRolePermission(generatedRolePermissionId: str):
         generatedRolePermissionId (str): generatedRolePermissionId
 
     Raises:
-        ReturnableError: generatedRolePermission does not exist
+        errorList.data.doesNotExist: generatedRolePermission does not exist
 
     Returns:
         GeneratedRolePermissionModel: generatedRolePermission

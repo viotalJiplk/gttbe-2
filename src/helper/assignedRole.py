@@ -9,7 +9,7 @@ def getAssignedRole(assignedRoleId: str):
         assignedRoleId (str): assignedRoleId
 
     Raises:
-        ReturnableError: assignedRole does not exist
+        errorList.data.doesNotExist: assignedRole does not exist
 
     Returns:
         AssignedRoleModel: assignedRole

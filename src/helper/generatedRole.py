@@ -9,7 +9,7 @@ def getGeneratedRole(generatedRoleId: str):
         generatedRoleId (str): generatedRoleId
 
     Raises:
-        ReturnableError: generatedRole does not exist
+        errorList.data.doesNotExist: generatedRole does not exist
 
     Returns:
         GeneratedRoleModel: generatedRole

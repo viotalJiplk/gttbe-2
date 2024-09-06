@@ -9,7 +9,7 @@ def getAssignedRolePermission(assignedRolePermissionId: str):
         assignedRolePermissionId (str): assignedRolePermissionId
 
     Raises:
-        ReturnableError: assignedRolePermission does not exist
+        errorList.data.doesNotExist: assignedRolePermission does not exist
 
     Returns:
         AssignedRolePermissionModel: assignedRolePermission

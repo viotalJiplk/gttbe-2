@@ -9,7 +9,7 @@ def getUserRole(userRolesId: str):
         userRolesId (str): userRolesId
 
     Raises:
-        ReturnableError: userRoles does not exist
+        errorList.data.doesNotExist: userRole does not exist
 
     Returns:
         UserRolesModel: userRoles

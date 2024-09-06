@@ -9,7 +9,7 @@ def getStage(stageId: str):
         stageId (str): stageId
 
     Raises:
-        ReturnableError: stage does not exist
+        errorList.data.doesNotExist: stage does not exist
 
     Returns:
         stageModel: stage

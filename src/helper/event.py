@@ -9,7 +9,7 @@ def getEvent(eventId: str):
         eventId (str): eventId
 
     Raises:
-        ReturnableError: event does not exist
+        errorList.data.doesNotExist: event does not exist
 
     Returns:
         EventModel: event

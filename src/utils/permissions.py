@@ -8,6 +8,16 @@ from typing import Union, List
 from .nsForDecorators import blankNs
 
 def hasPermissionDecorator(permissions: Union[List[str], str], detectGame=False):
+    """decorator that test if user has required permission\
+
+    Args:
+        permissions (Union[List[str], str]): wanted permissions
+        detectGame (bool, optional): Are this permissions game sensitive. Defaults to False.
+
+    Raises:
+        errorList.permission.missingId: Missing gameId
+        errorList.permission.missingPermission: Missing permission
+    """
     if isinstance(permissions, str):
         tmpPermissions = permissions
         permissions = []

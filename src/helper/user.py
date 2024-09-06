@@ -11,7 +11,7 @@ def getUser(authResult: Union[AuthResult, None]):
         authResult (Union[AuthResult, None]): authResult
 
     Raises:
-        ReturnableError: If user does not exist
+        errorList.data.doesNotExist: user does not exist
 
     Returns:
         Union[UserModel, None]: result

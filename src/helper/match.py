@@ -9,7 +9,7 @@ def getMatch(matchId: str):
         matchId (str): matchId
 
     Raises:
-        ReturnableError: match does not exist
+        errorList.data.doesNotExist: match does not exist
 
     Returns:
         MatchModel: match

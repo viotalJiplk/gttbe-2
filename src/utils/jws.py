@@ -14,6 +14,14 @@ private = key.export_private()
 public = key.export_public()
 
 def generateJWS(claims):
+    """Generates json web token signed
+
+    Args:
+        claims (dict): dict of things to sign
+
+    Returns:
+        str: json web token signed
+    """
     payload = {
         "iss": config.selfref.root_url,
         "exp": int(time.time()) + config.discord.token_ttl
@@ -25,13 +33,30 @@ def generateJWS(claims):
     return jwstoken.serialize(True)
 
 def verifyJWS(jwsin):
+    """Verifies and decodes json web token signed
+
+    Args:
+        jwsin (str): json web token signed
+    Raises:
+        InvalidJWSObject: invalid son web token signed
+        InvalidJWSSignature : invalid signature
+    Returns:
+        dict: payload of token
+    """
     jwstoken = jws.JWS()
     jwstoken.deserialize(jwsin, key)
     # jwstoken.verify(key)
     return jwstoken.payload
 
 class AuthResult:
+    """Auth result representation"""
     def __init__(self, userId, payload):
+        """Initialize auth result representation
+
+        Args:
+            userId (_type_): _description_
+            payload (_type_): _description_
+        """
         self.userId = userId
         self.payload = payload
 
@@ -42,8 +67,11 @@ def getAuth(headers):
         headers (List[str]): httpHeaders
 
     Raises:
-        ReturnableError: When unable to authenticate
-
+        errorList.jws.invalidToken: When token is invalid
+        errorList.jws.InvalidSignature: When signature is invalid
+        errorList.jws.expired: When signature expired
+        errorList.jws.untrusted: When signature is untrusted
+        errorList.jws.missingUserId: When signature is missing userId in payload
     Returns:
         AuthResult: result of authentication attempt
     """
@@ -54,7 +82,7 @@ def getAuth(headers):
     except InvalidJWSObject:
         raise errorList.jws.invalidToken
     except InvalidJWSSignature:
-        raise errorList.jws.missingAuthHeader
+        raise errorList.jws.InvalidSignature
     result = json_decode(result)
     if(result["exp"] <= int(time.time())):
         raise errorList.jws.expired
