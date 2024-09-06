@@ -5,6 +5,7 @@ from .jws import getAuth, AuthResult
 from .errorListFile import errorList
 from shared.models.permission import hasPermission
 from typing import Union, List
+from .nsForDecorators import blankNs
 
 def hasPermissionDecorator(permissions: Union[List[str], str], detectGame=False):
     if isinstance(permissions, str):

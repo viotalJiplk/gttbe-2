@@ -3,12 +3,29 @@ from .game import GameModel
 from .user import UserModel
 from .generatedRole import GeneratedRoleModel
 from mysql import connector
+from typing import Union
 
 class TeamModel(ObjectDbSync):
+    """Representation of Team
+
+    Attributes:
+            teamId (int): id of team
+            name (str): name team
+            gameId (int): id of game team is participating in
+            joinString (Union[str, None]): secret string that users use to join team
+    """
     tableName = "teams"
     tableId = "teamId"
 
-    def __init__(self, name, gameId, teamId, joinString=None):
+    def __init__(self, name: str, gameId: int, teamId: int, joinString: Union[str, None]=None):
+        """Initializes representation of Team
+
+        Args:
+            teamId (int): id of team
+            name (str): team name
+            gameId (int): id of game team is participating in
+            joinString (Union[str, None]): secret string that users use to join team
+        """
         self.name = name
         self.gameId = gameId
         self.teamId = teamId
@@ -16,6 +33,11 @@ class TeamModel(ObjectDbSync):
         super().__init__()
 
     def toDict(self):
+        """Returns dict representation of object.
+
+        Returns:
+            dict: dict representation of object
+        """
         return {
             "teamId": self.teamId,
             "gameId": self.gameId,
@@ -25,7 +47,24 @@ class TeamModel(ObjectDbSync):
 
     @classmethod
     @dbConn(autocommit=False, buffered=True)
-    def create(cls, name, gameId, userId, nick, rank, maxRank, cursor, db):
+    def create(cls, name: str, gameId: int, userId: int, nick: str, rank: int, maxRank: int, cursor, db):
+        """Creates new team
+
+        Args:
+            name (str): team name
+            gameId (int): id of game team is participating in
+            userId (int): id of user who wants to create this team
+            nick (str): nick of user who wants to create this team
+            rank (int): rank of user who wants to create this team
+            maxRank (int): maximal rank of user who wants to create this team
+
+        Raises:
+            DatabaseError: Already registered for game.
+            DatabaseError: No space for this role in this team.
+
+        Returns:
+            Union[TeamModel, None]: new team
+        """
         try:
             query = "INSERT INTO teams (name, gameId) VALUES (%s, %s)"
             values = (name, gameId)
@@ -45,7 +84,15 @@ class TeamModel(ObjectDbSync):
 
     @classmethod
     @dbConn()
-    def getById(cls, teamId, cursor, db):
+    def getById(cls, teamId: int, cursor, db):
+        """Gets team by id
+
+        Args:
+            teamId (int): teamId
+
+        Returns:
+            [TeamModel, None]: team
+        """
         query = "SELECT name, gameId, joinString,teamId FROM teams WHERE teamId=%s"
         cursor.execute(query, (teamId,))
         row = cursor.fetchone()
@@ -56,6 +103,13 @@ class TeamModel(ObjectDbSync):
     @classmethod
     @dbConn()
     def getByName(cls, name, cursor, db):
+        """Gets team by name
+
+        Args:
+            name (str): name of the team
+        Returns:
+            Union[TeamModel, None]: team
+        """
         query = "SELECT name, gameId, joinString, teamId FROM teams WHERE name=%s"
         cursor.execute(query, (name))
         row = cursor.fetchOneWithNames()
@@ -66,6 +120,15 @@ class TeamModel(ObjectDbSync):
     @classmethod
     @dbConn()
     def listUsersTeams(self, userId, withJoinstring, cursor, db):
+        """List teams user is part of
+
+        Args:
+            userId (int): id of user
+            withJoinstring (bool): should JoinString be included
+
+        Returns:
+            list[dict]: list of dict of teams (key = column name)
+        """
         query = ""
         if withJoinstring:
             query = 'SELECT teamId, nick, generatedRoleId, name, gameId, joinString FROM `teamInfo` WHERE userId=%(userId)s'
@@ -77,11 +140,35 @@ class TeamModel(ObjectDbSync):
         return result
 
     @dbConn(autocommit=True, buffered=True)
-    def join(self, userId, nick, rank, maxRank, generatedRoleId, cursor, db):
+    def join(self, userId: int, nick: str, rank: int, maxRank: int, generatedRoleId: int, cursor, db):
+        """Add user to this team
+
+        Args:
+            userId (int): id of user who wants to join this team
+            nick (str): mick of user who wants to join this team
+            rank (int): rank of user who wants to join this team
+            maxRank (int): maximal rank of user who wants to join this team
+            generatedRoleId (int): role that use wants to play in team
+
+        Raises:
+            DatabaseError: Already registered for game.
+            DatabaseError: No space for this role in this team.
+
+        Returns:
+            None: nothing
+        """
         return self.__userJoin(userId, nick, rank, maxRank, generatedRoleId, cursor, db)
 
     @dbConn(autocommit=True, buffered=False)
     def leave(self, userId, cursor, db):
+        """Removes user from this team
+
+        Args:
+            userId (int): id of user to remove
+
+        Returns:
+            bool: was removed
+        """
         query = "DELETE FROM `registrations` WHERE `userId` = %(userId)s AND `teamId` = %(teamId)s LIMIT 1"
         values = {"userId":userId, "teamId":self.teamId}
         cursor.execute(query, values)
@@ -90,10 +177,20 @@ class TeamModel(ObjectDbSync):
         return True
 
     def getGame(self):
+        """Returns game of this team
+
+        Returns:
+            GameModel: game of this team
+        """
         return GameModel.getById(self.gameId)
 
     @dbConn()
     def getPlayers(self, cursor, db):
+        """Gets list of players of this team
+
+        Returns:
+            list[dict]: list of dicts of players (key = column name)
+        """
         query = "SELECT `userid`, `nick`, `generatedRoleId`  FROM `registrations` WHERE teamId=%(teamId)s ORDER BY `generatedRoleId` ASC"
         cursor.execute(query, {"teamId": self.teamId})
         fetched = fetchAllWithNames(cursor)
@@ -108,7 +205,17 @@ class TeamModel(ObjectDbSync):
 
     @classmethod
     @dbConn()
-    def listParticipatingTeams(self, gameId, withDetails, withDiscord, cursor, db):
+    def listParticipatingTeams(self, gameId: int, withDetails: bool, withDiscord: bool, cursor, db):
+        """List teams that are able to participate in tournament in order of completion of requirements
+
+        Args:
+            gameId (int): _description_
+            withDetails (bool): list additional sensitive details
+            withDiscord (bool): get discord user info (slow because has to be fetched from discord api)
+
+        Returns:
+            list[dict]: list of dicts of teams (key = column name)
+        """
         game = GameModel.getById(gameId)
         if game is None:
             return None
@@ -137,6 +244,11 @@ class TeamModel(ObjectDbSync):
 
     @dbConn()
     def generateJoinString(self, cursor, db):
+        """Generate joinString
+
+        Returns:
+            Union[str, None]: new joinString
+        """
         joinString = genState(200)
         try:
             query = "UPDATE `teams` SET `joinString` = %(joinString)s WHERE `teamId` = %(teamId)s;"
@@ -147,7 +259,15 @@ class TeamModel(ObjectDbSync):
             return None
 
     @dbConn()
-    def getUsersRole(self, userId, cursor, db):
+    def getUsersRole(self, userId: int, cursor, db):
+        """Gets role of user in this team
+
+        Args:
+            userId (int): _description_
+
+        Returns:
+            Union[none, int]: role of user in this team
+        """
         query = 'SELECT generatedRoleId FROM `registrations` WHERE `teamId`=%(teamId)s AND `userId`=%(userId)s'
         cursor.execute(query, {"teamId": self.teamId, "userId": userId})
         result = fetchOneWithNames(cursor)
@@ -156,7 +276,20 @@ class TeamModel(ObjectDbSync):
         else:
             return None
 
-    def __userJoin(self, userId, nick, rank, maxRank, generatedRoleId, cursor, db):
+    def __userJoin(self, userId: int, nick: str, rank: int, maxRank: int, generatedRoleId: int, cursor, db):
+        """Tries to join user to team
+
+        Args:
+            userId (int): id of user who wants to join this team
+            nick (str): mick of user who wants to join this team
+            rank (int): rank of user who wants to join this team
+            maxRank (int): maximal rank of user who wants to join this team
+            generatedRoleId (int): role that use wants to play in team
+
+        Raises:
+            DatabaseError: Already registered for game.
+            DatabaseError: No space for this role in this team.
+        """
         try:
             game = self.getGame()
             query = "INSERT INTO registrations (userId, teamId, nick, generatedRoleId, rank, maxRank) VALUES (%(userId)s, %(teamId)s, %(nick)s, %(generatedRoleId)s, %(rank)s, %(maxRank)s)"
@@ -164,7 +297,7 @@ class TeamModel(ObjectDbSync):
             cursor.execute(query, values)
         except connector.DatabaseError as e:
             if e.sqlstate == "45000" and e.msg == 'Already registered for game':
-                raise DatabaseError("Already registered for game")
-            elif e.sqlstate == "45000" and e.msg == 'Already registered for game':
-                raise DatabaseError("No space for this role in this team")
+                raise DatabaseError("Already registered for game.")
+            elif e.sqlstate == "45000" and e.msg == 'No space for this role in this team':
+                raise DatabaseError("No space for this role in this team.")
             raise

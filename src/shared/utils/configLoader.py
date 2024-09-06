@@ -14,13 +14,27 @@ def checkEnvVariable(varName, defaultVAlue) -> str:
         return defaultVAlue
 
 class Db:
-    def  __init__(self, defaultsList):
+    """Database config
+
+    Attributes:
+            host (str): database host
+            user (str): database username
+            password (str): database password
+            database (str): database name
+    """
+    def  __init__(self, defaultsList: dict):
+        """ Initializes Database config.
+
+        Args:
+            defaultsList (dict): dict with default values
+        """
         self.host = checkEnvVariable("DBhost", defaultsList["host"])
         self.user = checkEnvVariable("DBuser", defaultsList["user"])
         self.password = checkEnvVariable("DBpass", defaultsList["password"])
         self.database = checkEnvVariable("DBdb", defaultsList["database"])
 
     def toDict(self):
+        """returns dict representation of object"""
         return{
             "host": self.host,
             "user": self.user,
@@ -31,10 +45,20 @@ class Db:
         return json.dumps(self.toDict(), indent=4)
 
 class Selfref:
-    def  __init__(self, defaultsList):
+    """Self reference config
+
+    Attributes:
+            root_url (str): root url of server
+    """
+    def  __init__(self, defaultsList: dict):
+        """ Initializes reference config.
+        Args:
+            defaultsList (dict): dict with default values
+        """
         self.root_url = checkEnvVariable("root_url", defaultsList["root_url"])
 
     def toDict(self):
+        """returns dict representation of object"""
         return{
             "root_url": self.root_url
         }
@@ -43,7 +67,18 @@ class Selfref:
         return json.dumps(self.toDict(), indent=4)
 
 class Discord:
-    def  __init__(self, defaultsList, selfref: Selfref):
+    """Discord config
+
+    Attributes:
+            redir_url (str): discord redirect url
+            client_id (str): discord client id
+            client_secret (str): discord client secret
+            api_endpoint (str): discord api endpoint url
+            state_ttl (str): unique state time to live
+            token_ttl (str): json web token time to live
+            userid_claim (str): user claim name in json web token
+    """
+    def  __init__(self, defaultsList: dict, selfref: Selfref):
         self.redir_url = selfref.root_url + checkEnvVariable("redir_url", defaultsList["redir_url"])
         self.client_id = checkEnvVariable("client_id", defaultsList["client_id"])
         self.client_secret = checkEnvVariable("client_secret", defaultsList["client_secret"])
@@ -53,6 +88,7 @@ class Discord:
         self.userid_claim = selfref.root_url + checkEnvVariable("userid_claim", defaultsList["userid_claim"])
 
     def toDict(self):
+        """returns dict representation of object"""
         return{
             "redir_url": self.redir_url,
             "client_id": self.client_id,
@@ -67,6 +103,14 @@ class Discord:
         return json.dumps(self.toDict(), indent=4)
 
 class Config(object):
+    """Config of the application
+
+    Attributes:
+            db (Db): Database config
+            selfref (Selfref): self reference config
+            discord (Discord): discord config
+            production (bool): is instance production
+    """
     _instance = None
 
     def __new__(cls):
@@ -82,6 +126,11 @@ class Config(object):
         return cls._instance
 
     def toDict(self):
+        """Returns dict representation of object.
+
+        Returns:
+            dict: dict representation of object
+        """
         return {
             "db": self.db.toDict(),
             "selfref": self.selfref.toDict(),

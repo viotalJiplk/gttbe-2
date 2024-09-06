@@ -1,9 +1,19 @@
 from .configLoader import config
-import mysql.connector
+from mysql.connector import connect
+from mysql.connector.abstracts import MySQLConnectionAbstract
+from mysql.connector.cursor import MySQLCursor
 from functools import wraps
 
 def getConnection(autocommit = True):
-    db = mysql.connector.connect(
+    """Returns database connection
+
+    Args:
+        autocommit (bool, optional): Is autocommit set? Defaults to True.
+
+    Returns:
+        MySQLConnectionAbstract: connection
+    """
+    db = connect(
         host=config.db.host,
         user=config.db.user,
         password=config.db.password,
@@ -16,6 +26,14 @@ def getConnection(autocommit = True):
     return db
 
 def fetchOneWithNames(cursor):
+    """Returns first row as dict (key = column names)
+
+    Args:
+        cursor (MySQLCursor): cursor with results of previous action
+
+    Returns:
+        dict: row
+    """
     row = cursor.fetchone()
     columns = cursor.description
     result = {}
@@ -27,10 +45,24 @@ def fetchOneWithNames(cursor):
     return result
 
 def fetchAllWithNames(cursor):
+    """Returns list of rows as dict (key = column names)
+
+    Args:
+        cursor (MySQLCursor): cursor with results of previous action
+
+    Returns:
+        list[dict]: rows
+    """
     columns = cursor.description
     return [{columns[index][0]:column for index, column in enumerate(value)} for value in cursor.fetchall()]
 
 def dbConn(autocommit: bool = True, buffered: bool = True):
+    """ Wrapper that establishes connection to database
+        function will be called like func(cursor=cursor, db=db, *args, **kwargs)
+    Args:
+        autocommit (bool, optional): Is autocommit set? Defaults to True.
+        buffered (bool, optional): Is the connection buffered? Defaults to True.
+    """
     def wrapper(func):
         @wraps(func)
         def connection(*args, **kwargs):
@@ -46,6 +78,7 @@ def dbConn(autocommit: bool = True, buffered: bool = True):
     return wrapper
 
 class DatabaseError(Exception):
+    """Error after working with database."""
     def __init__(self, message: str):
         super().__init__(message)
         self.message = message

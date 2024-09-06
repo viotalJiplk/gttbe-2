@@ -6,14 +6,30 @@ from ..utils import config
 
 
 class StateModel:
+    """Representation of state in discord login
 
-    def __init__(self, state: str, date):
+    Attributes:
+            state (str): random string representing unique state
+            date (datetime.datetime): time of state expiration
+    """
+    def __init__(self, state: str, date:datetime.datetime):
+        """Initializes representation of state in discord login
+
+        Args:
+            state (str): random string representing unique state
+            date (datetime.datetime): time of state expiration
+        """
         self.state = state
         self.date = date
 
     @classmethod
     @dbConn(autocommit =True, buffered=True)
     def create(cls, cursor, db):
+        """Creates new state
+
+        Returns:
+            StateModel: new state
+        """
         state = genState(200)
         date = datetime.datetime.now() + datetime.timedelta(0, config.discord.state_ttl)
         query = "INSERT INTO `states` (`state`, `date`) VALUES (%(state)s, %(date)s);"
@@ -23,6 +39,14 @@ class StateModel:
     @classmethod
     @dbConn(autocommit=True, buffered=True)
     def testAndDelete(cls, state: str, cursor, db):
+        """Tests and deletes if state exists
+
+        Args:
+            state (str): state to test
+
+        Returns:
+            bool: does state exist
+        """
         query = "DELETE FROM states WHERE `state` = %(state)s;"
         cursor.execute(query, {'state': state})
 

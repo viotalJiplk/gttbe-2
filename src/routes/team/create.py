@@ -32,9 +32,9 @@ class createTeam(Resource):
         try:
             team = TeamModel.create(name=data["name"], gameId=data["game_id"], userId=authResult.userId, nick=data["nick"], rank=data["rank"], maxRank=data["max_rank"])
         except DatabaseError as e:
-            if e.message == "Already registered for game":
+            if e.message == "Already registered for game.":
                 raise errorList.team.alreadyRegistered
-            elif e.message == "No space for this role in this team":
+            elif e.message == "No space for this role in this team.":
                 raise errorList.team.noSpaceLeft
             raise
         return team.toDict(), 200

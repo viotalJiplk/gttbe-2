@@ -104,6 +104,7 @@ class Permissions:
     listAll = "permission.listAll"
 
 class PermissionList:
+    """Permission name translation layer"""
     event = EventPermissions()
     game = GamePermissions()
     gamePage = GamePagePermissions()

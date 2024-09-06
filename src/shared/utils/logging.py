@@ -2,6 +2,14 @@ import logging
 import colorlog
 
 def getLogger(name:str):
+    """Creates new logger with specified name
+
+    Args:
+        name (str): name of logger
+
+    Returns:
+        logging.Logger: logger
+    """
     logger = logging.getLogger(name)
     logger.setLevel(logging.DEBUG)
     handler = logging.StreamHandler()

@@ -9,11 +9,33 @@ from ..utils import ObjectDbSync
 from typing import Union
 
 class UserModel(ObjectDbSync):
+    """Represents user
+
+    Attributes:
+        userId (int): id of user
+        name (Union[str, None]): name of the user
+        surname (Union[str, None]): surname of user
+        adult (Union[bool, None]): is user adult
+        schoolId (Union[int, None]): id of school user belongs to
+
+    """
     tableName = "users"
     tableId = "userId"
 
-    def __init__(self, userId = '', refresh_token = '', access_token = '', expires_in = '', name='', surname='', adult='', schoolId=''):
-        if(not isinstance(expires_in, datetime) and expires_in != ''):
+    def __init__(self, userId: int, refresh_token: Union[str, None] = None, access_token: Union[str, None] = None, expires_in: Union[str, datetime, None] = None, surname: Union[str, None] = None,  name: Union[str, None] = None, adult: Union[bool, None] = None, schoolId: Union[int, None] = None ):
+        """Initializes user representation
+
+        Args:
+            userId (int): id of user
+            refresh_token (Union[str, None], optional): users refresh token. Defaults to None.
+            access_token (Union[str, None], optional): users access token. Defaults to None.
+            expires_in (Union[str, datetime, None], optional): time when token expires. Defaults to None.
+            name (Union[str, None], optional): name of the user. Defaults to None.
+            surname (Union[str, None], optional): surname of user. Defaults to None.
+            adult (Union[bool, None], optional): is user adult. Defaults to None.
+            schoolId (Union[int, None], optional): id of school user belongs to. Defaults to None.
+        """
+        if(not isinstance(expires_in, datetime) and expires_in is not None):
             expires_in = datetime.utcfromtimestamp(expires_in)
         self.userId = userId
         self.surname = surname
@@ -29,6 +51,11 @@ class UserModel(ObjectDbSync):
         return json.dumps(self.toDict())
 
     def toDict(self):
+        """Returns dict representation of object.
+
+        Returns:
+            dict: dict representation of object
+        """
         discordUserObject = None
         try:
             discordUserObject = self.getDiscordUserObject()
@@ -45,9 +72,29 @@ class UserModel(ObjectDbSync):
 
     @classmethod
     @dbConn(autocommit=True, buffered=True)
-    def updateOrCreateUser(cls, cursor, db, userId = '', refresh_token = '', access_token = '', expires_in = '', name='', surname='', adult='', schoolId=''):
-        if(userId == ''):
-                raise Exception("Missing userid.")
+    def updateOrCreateUser(cls, cursor, db, userId: int,refresh_token: Union[str, None] = None, access_token: Union[str, None] = None, expires_in: Union[str, datetime, None] = None, name: Union[str, None] = None, surname: Union[str, None]  = None, adult: Union[bool, None]  = None, schoolId: Union[int, None]  = None):
+        """Update or create user (useful for logging in/registration)
+
+        Args:
+            userId (int): id of user
+            refresh_token (Union[str, None], optional): users refresh token. Defaults to None.
+            access_token (Union[str, None], optional): users access token. Defaults to None.
+            expires_in (Union[str, None], optional): time when token expires. Defaults to None.
+            name (Union[str, None], optional): name of the user. Defaults to None.
+            surname (Union[str, None], optional): surname of user. Defaults to None.
+            adult (Union[bool, None], optional): is user adult. Defaults to None.
+            schoolId (Union[int, None], optional): id of school user belongs to. Defaults to None.
+
+        Raises:
+            Exception: Missing userId.
+            Exception: Missing something in request or there is nothing to update.
+
+        Returns:
+            UserModel: new or updated userModel
+        """
+
+        if(userId is None):
+                raise Exception("Missing userId.")
 
         values = {
             'userId': userId,
@@ -56,19 +103,19 @@ class UserModel(ObjectDbSync):
         # try if user already exists
         query = "UPDATE users SET"
 
-        if(refresh_token != ''):
+        if(refresh_token is not None):
             values["refresh_token"] = refresh_token
-        if(access_token != ''):
+        if(access_token is not None):
             values["access_token"] = access_token
-        if(expires_in != ''):
+        if(expires_in is not None):
             values["expires_in"] = expires_in
-        if(name != ''):
+        if(name is not None):
             values["name"] = name
-        if(surname != ''):
+        if(surname is not None):
             values["surname"] = surname
-        if(adult != ''):
+        if(adult is not None):
             values["adult"] = adult
-        if(schoolId != ''):
+        if(schoolId is not None):
             values["schoolId"] = schoolId
 
         first = True
@@ -102,8 +149,20 @@ class UserModel(ObjectDbSync):
         return cls(userId=userId, refresh_token=refresh_token, access_token=access_token, expires_in=expires_in, name=name, surname=surname, adult=adult, schoolId=schoolId)
 
     @classmethod
-    def getByCode(cls, code, redirect_uri, name, surname, adult, schoolId):
-        '''exchange code for access and refresh tokens'''
+    def getByCode(cls, code: str, redirect_uri: str, name: Union[str, None], surname: Union[str, None], adult: Union[bool, None], schoolId: Union[int, None]):
+        """Exchange code for access and refresh tokens
+
+        Args:
+            code (str): Oauth authorization code
+            redirect_uri (str): uri that te user was redirected to
+            name (Union[str, None]): name of the user
+            surname (Union[str, None]): surname of the user
+            adult (Union[bool, None]): is user adult
+            schoolId (Union[int, None]): id of users shool
+
+        Returns:
+            UserModel: user
+        """
         data = {
             'client_id': config.discord.client_id,
             'client_secret': config.discord.client_secret,
@@ -120,6 +179,15 @@ class UserModel(ObjectDbSync):
         return (UserModel.updateOrCreateUser(userId = userObject["id"], refresh_token = tokenReq["refresh_token"], access_token = tokenReq["access_token"], expires_in = tokenReq["expires_in"], name=name, surname=surname, adult=adult, schoolId=schoolId), userObject)
 
     def getDiscordUserObject(self):
+        """Returns this user discord info
+
+        Raises:
+            Exception: discord /oauth2/@me error:
+            Exception: discord /oauth2/@me responded:
+
+        Returns:
+            dict: user discord info
+        """
         today = datetime.today()
         if(self.__expires_in < today):
             self.__refresh_token_refresh()
@@ -138,8 +206,24 @@ class UserModel(ObjectDbSync):
         return userObjectReq['user']
 
     @classmethod
-    def tokenEndpoint(cls, data):
+    def tokenEndpoint(cls, data: dict):
+        """Post data to token endpoint
 
+        Args:
+            data (dict): data to send
+
+        Raises:
+            Exception: discord token endpoint error:
+            Exception: discord token endpoint responded:
+            Exception: discord token endpoint response missing token type
+            Exception: discord token endpoint response unknown token type
+            Exception: discord token endpoint response missing access_token
+            Exception: discord token endpoint response missing refresh_token
+            Exception: discord token endpoint response missing expires_in
+
+        Returns:
+            dict: response
+        """
         headers = {
             'Content-Type': 'application/x-www-form-urlencoded'
         }
@@ -186,6 +270,11 @@ class UserModel(ObjectDbSync):
         return self
 
     def canRegister(self):
+        """Test if user can register
+
+        Returns:
+            boolean: can user register
+        """
         return ((self.userId != "") and (self.surname != "") and (self.name != "") and (self.adult != None) and (self.schoolId != None ))
 
     @dbConn()
@@ -196,7 +285,7 @@ class UserModel(ObjectDbSync):
             gameId (Union[str, None]): str with gameId (specific game), None (only for all games), True for all games
 
         Returns:
-            dict: list of teams
+            list[dict]: list of teams
         """
         if gameId is None:
             query = """SELECT p.permission, arp.gameId FROM users u
@@ -271,6 +360,11 @@ OR (teams.canPlaySince IS NULL and generatedRolePermissions.eligible = 0)) AND (
 
     @dbConn()
     def listGeneratedRoles(self, cursor, db):
+        """List users generatedRoles
+
+        Returns:
+            list[dict]: list of generatedRoles
+        """
         query = """ SELECT r.teamId, g.* FROM users AS u
                     LEFT JOIN registrations AS r ON u.userId = r.userId
                     LEFT JOIN generatedRoles AS g ON g.generatedRoleId = r.generatedRoleId
@@ -281,6 +375,11 @@ OR (teams.canPlaySince IS NULL and generatedRolePermissions.eligible = 0)) AND (
 
     @dbConn()
     def listAssignedRoles(self, cursor, db):
+        """List users assignedRoles
+
+        Returns:
+            list[dict]: list of assignedRoles
+        """
         query = """
             SELECT ar.* FROM assignedRoles AS ar
             LEFT JOIN userRoles as ur ON ur.assignedRoleId = ar.assignedRoleId

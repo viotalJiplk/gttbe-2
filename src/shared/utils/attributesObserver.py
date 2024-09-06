@@ -1,4 +1,5 @@
 class AttributesObserver(dict):
+    """Class for observing attributes of object """
     def __init__(self):
         self["__observerDict"] = {
             "init": {},
@@ -73,11 +74,23 @@ class AttributesObserver(dict):
 
 
     def register(self, function, attrName, observerType):
+        """Registers function that will be called when something happens with attribute
+
+        Args:
+            function (function): class that will be called function(key: str, value)
+            attrName (str): name of attribute to observe
+            observerType (str): init - when attribute is created, read - when attribute is read, update - when attribute is updated, delete - when attribute is deleted, all - when attribute is for all above
+        """
         if observerType == "init" or observerType == "all":
             if attrName != None:
                 self.__observerDict["init"][attrName].append(function)
             else:
                 self.__observerDict["initAll"].append(function)
+        if observerType == "read" or observerType == "all":
+            if attrName != None:
+                self.__observerDict["read"][attrName].append(function)
+            else:
+                self.__observerDict["readAll"].append(function)
         if observerType == "update" or observerType == "all":
             if attrName != None:
                 self.__observerDict["update"][attrName].append(function)
