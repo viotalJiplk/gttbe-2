@@ -72,7 +72,7 @@ class Join(Resource):
 
     @handleReturnableError
     @jwsProtected(optional=True)
-    @postJson
+    @postJson({"nick":[str], "rank": [int], "max_rank": [int], "generatedRoleId": [int]})
     def post(self, authResult: AuthResult, teamId: str, data, joinString: str):
         """Joins team
 

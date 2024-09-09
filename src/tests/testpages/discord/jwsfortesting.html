@@ -14,7 +14,7 @@
 <script>
     document.getElementById("getjws").addConnection(function(text) {
         const input = JSON.parse(text);
-        localStorage.setItem("jws", input.jws)
+        localStorage.setItem("jws", input.split(" ")[1])
     });
 </script>
 </html>

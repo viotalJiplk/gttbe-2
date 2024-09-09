@@ -8,6 +8,7 @@ from .errorListFile import errorList
 import time
 import json
 from .error import ReturnableError, handleReturnableError
+from .nsForDecorators import blankNs
 
 key = jwk.JWK.generate(kty='RSA', size=2048)
 private = key.export_private()
@@ -107,6 +108,7 @@ def jwsProtected(optional: bool = False):
     """
     def wrapper(func):
         @wraps(func)
+        @blankNs.doc(security="jws")
         @handleReturnableError
         def wrappedGetAuth(*args, **kwargs):
             result = None

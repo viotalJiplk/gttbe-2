@@ -42,7 +42,7 @@ class Games(Resource):
             else:
                 raise errorList.permission.missingPermission
 
-    @postJson
+    @postJson(accessibleAttributes)
     @hasPermissionDecorator(perms.game.update, True)
     def put(self, gameId, data, authResult: AuthResult, permissions: List[str]):
         """Updates game
@@ -74,7 +74,7 @@ class GamePage(Resource):
         gamePage = game.getGamePage()
         return {"game_id": gameId, "gamePage": gamePage}
 
-    @postJson
+    @postJson({"gamePage": [str]})
     @hasPermissionDecorator(perms.gamePage.update, True)
     def put(self, data, authResult: AuthResult, permissions: List[str], gameId):
         """Updates gamepage

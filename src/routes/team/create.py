@@ -7,7 +7,7 @@ from typing import List
 
 class createTeam(Resource):
 
-    @postJson
+    @postJson({"game_id": [int], "name":[str]})
     @hasPermissionDecorator(perms.team.create, True)
     def post(self, data, authResult: AuthResult, permissions: List[str]):
         """Creates team

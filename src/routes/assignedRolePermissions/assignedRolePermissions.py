@@ -1,8 +1,8 @@
-from flask_restx import Resource
+from flask_restx import Resource, fields
 from shared.models import AssignedRolePermissionModel, hasPermission
 from shared.utils import perms, DatabaseError
 from helper import getAssignedRolePermission, getUser
-from utils import hasPermissionDecorator, AuthResult, postJsonParse, postJson, setAttributeFromList, errorList, handleReturnableError, jwsProtected
+from utils import hasPermissionDecorator, AuthResult, postJsonParse, postJson, setAttributeFromList, errorList, handleReturnableError, jwsProtected, expectsJson
 from typing import List
 
 accessibleAttributes = {
@@ -56,7 +56,7 @@ class AssignedRolePermissions(Resource):
 
     @handleReturnableError
     @jwsProtected(optional=True)
-    @postJson
+    @postJson(accessibleAttributes)
     def put(self, data, authResult: AuthResult, assignedRolePermissionId: str):
         """Updates assignedRolePermission
 

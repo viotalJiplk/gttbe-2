@@ -44,7 +44,7 @@ class AssignedRoles(Resource):
                 raise
 
     @hasPermissionDecorator([perms.assignedRole.update], False)
-    @postJson
+    @postJson(accessibleAttributes)
     def put(self, data, authResult: AuthResult, assignedRoleId: str, permissions: List[str]):
         """Updates assignedRole
 

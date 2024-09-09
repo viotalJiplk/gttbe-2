@@ -60,7 +60,7 @@ class Matches(Resource):
 
     @handleReturnableError
     @jwsProtected(optional=True)
-    @postJson
+    @postJson(accessibleAttributes)
     def put(self, data, authResult: AuthResult, matchId:str):
         """Updates match
 

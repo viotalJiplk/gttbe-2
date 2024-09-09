@@ -24,6 +24,7 @@ def hasPermissionDecorator(permissions: Union[List[str], str], detectGame=False)
         permissions.append(tmpPermissions)
     def wrapper(func):
         @wraps(func)
+        @blankNs.doc(security="jws")
         @handleReturnableError
         def wrappedGetPerms(*args, **kwargs):
             result = {}

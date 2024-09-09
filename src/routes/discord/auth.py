@@ -1,4 +1,5 @@
 from flask_restx import Resource
+from flask import Response
 from shared.models import StateModel
 from shared.utils import config
 from utils import generateJWS
@@ -27,7 +28,11 @@ class Auth(Resource):
 
 class TokenEndpoint(Resource):
 
-    @postJson
+    @postJson({
+        "code": [str],
+        "state": [str],
+        "redirect_uri": [str]
+    })
     def post(self, data):
         """
             Exchange OAuth code for jws.
@@ -64,4 +69,4 @@ class TestGetJWS(Resource):
         claims[config.discord.userid_claim] = userId
         jws = generateJWS(claims)
 
-        return {"jws":jws}
+        return Response(f'Bearer {jws}', status=200, mimetype="text/plain")

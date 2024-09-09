@@ -34,13 +34,27 @@ app = Flask(import_name=__name__)
 #CORS(app)
 docs = False
 if not config.production:
-    docs = '/docs'
+    docs = '/'
+
+authorizations = {
+    "jws": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization"
+    }
+}
 
 api = Api(app, version='2.0', title='gtt-be',
           description='Gt tournament information system API',
           doc=docs,
-          prefix='/backend'
+          prefix='/backend',
+          authorizations=authorizations
           )
+
+if not config.production:
+    registerRoutes(api.namespace('test', description='for backend development'), testRoutes)
+    registerRoutes(api.namespace('jwsfortestingonly', description='for testing'), jwsForTesting)
+    defaultLogger.warning("Test build NEVER EVER USE THIS IN PRODUCTION!")
 
 registerRoutes(api.namespace('discord', description="login"), discordRoutes)
 registerRoutes(api.namespace('schools', description='schools'), schoolsRoutes)
@@ -57,11 +71,6 @@ registerRoutes(api.namespace('generatedRole', description='generatedRole'), gene
 registerRoutes(api.namespace('generatedRolePermission', description='generatedRolePermission'), generatedRolePermissionRoutes)
 registerRoutes(api.namespace('userRole', description='userRole'), userRolesRoutes)
 registerRoutes(api.namespace('permission', description='permissions'), permissionsRoutes)
-
-if not config.production:
-    registerRoutes(api.namespace('test', description='for backend development'), testRoutes)
-    registerRoutes(api.namespace('jwsfortestingonly', description='for testing'), jwsForTesting)
-    defaultLogger.warning("Test build NEVER EVER USE THIS IN PRODUCTION!")
 
 defaultLogger.info("Server started")
 if __name__ == "__main__":

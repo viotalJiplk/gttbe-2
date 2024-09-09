@@ -37,7 +37,7 @@ class UserEndpoint(Resource):
             user = getUser(AuthResult(userId, None))
         return user.toDict()
 
-    @postJson
+    @postJson(accessibleAttributes)
     @hasPermissionDecorator([perms.user.updateMe, perms.user.update], False)
     def put(self, data, authResult:AuthResult, userId: str, permissions: List[str]):
         """Updates info about user

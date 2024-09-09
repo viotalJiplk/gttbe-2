@@ -60,7 +60,7 @@ class GeneratedRoles(Resource):
 
     @handleReturnableError
     @jwsProtected(optional=True)
-    @postJson
+    @postJson(accessibleAttributes)
     def put(self, data, authResult: AuthResult, generatedRoleId: str):
         """Updates generatedRole
 

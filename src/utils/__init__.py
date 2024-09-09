@@ -5,5 +5,5 @@ from .jws import generateJWS, AuthResult, jwsProtected
 from .objectTesterFile import objectTester
 from .others import postJson, postJsonParse, setAttributeFromList
 from .permissions import hasPermissionDecorator
-from .register import registerRoutes
+from .register import registerRoutes, expectsJson
 from .nsForDecorators import blankNs

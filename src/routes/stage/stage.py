@@ -55,7 +55,7 @@ class Stages(Resource):
 
     @handleReturnableError
     @jwsProtected(optional=True)
-    @postJson
+    @postJson(accessibleAttributes)
     def put(self, data, authResult: AuthResult, stageId: str):
         """Updates stage
 
