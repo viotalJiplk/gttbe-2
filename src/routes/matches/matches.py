@@ -1,9 +1,10 @@
 from flask_restx import Resource
-from utils import jwsProtected, AuthResult, postJsonParse, postJson, setAttributeFromList, handleReturnableError, errorList, hasPermissionDecorator
+from utils import jwsProtected, AuthResult, postJsonParse, postJson, setAttributeFromList, handleReturnableError, errorList, hasPermissionDecorator, returnParser
 from datetime import datetime
 from shared.models import EventModel, MatchModel, hasPermission, StageModel
 from helper import getEvent, getStage, getUser, getMatch
 from shared.utils import perms
+from copy import deepcopy
 
 accessibleAttributes = {
     "stageId": [int],
@@ -12,8 +13,11 @@ accessibleAttributes = {
     "firstTeamResult": [int],
     "secondTeamResult": [int],
 }
+returnableAttributes = deepcopy(accessibleAttributes)
+returnableAttributes["matchId"] = [int]
 
 class Matches(Resource):
+    @returnParser(returnableAttributes, 200, False, False)
     @handleReturnableError
     @jwsProtected(optional=True)
     def get(self, authResult: AuthResult, matchId:str):
@@ -58,6 +62,7 @@ class Matches(Resource):
             return {"kind": "DATA", "msg": "There are still data, that is dependent on this."}, 401
         return
 
+    @returnParser(returnableAttributes, 200, False, False)
     @handleReturnableError
     @jwsProtected(optional=True)
     @postJson(accessibleAttributes)
@@ -81,6 +86,7 @@ class Matches(Resource):
         return match.toDict()
 
 class MatchCreate(Resource):
+    @returnParser(returnableAttributes, 200, False, False)
     @handleReturnableError
     @jwsProtected(optional=True)
     @postJsonParse(expectedJson=accessibleAttributes)
@@ -101,6 +107,7 @@ class MatchCreate(Resource):
         return MatchModel.create(data["stageId"], data["firstTeamId"], data["secondTeamId"], data["firstTeamResult"], data["secondTeamResult"]).toDict()
 
 class MatchListAll(Resource):
+    @returnParser(returnableAttributes, 200, True, False)
     @hasPermissionDecorator(perms.match.listAll, False)
     def get(self, authResult: AuthResult, permissions):
         """List all matches

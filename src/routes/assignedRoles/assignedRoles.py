@@ -2,15 +2,20 @@ from flask_restx import Resource
 from shared.models import AssignedRoleModel
 from shared.utils import perms, DatabaseError
 from helper import getAssignedRole
-from utils import hasPermissionDecorator, AuthResult, postJsonParse, postJson, setAttributeFromList, errorList
+from utils import hasPermissionDecorator, AuthResult, postJsonParse, postJson, setAttributeFromList, errorList, returnParser
 from typing import List
+from copy import deepcopy
 
 accessibleAttributes = {
     "roleName": [str],
     "discordRoleId": [int, type(None)],
 }
 
+returnableAttributes = deepcopy(accessibleAttributes)
+returnableAttributes["assignedRoleId"] = [int]
+
 class AssignedRoles(Resource):
+    @returnParser(returnableAttributes, 200, False, False)
     @hasPermissionDecorator([perms.assignedRole.read], False)
     def get(self, authResult: AuthResult, assignedRoleId: str, permissions: List[str]):
         """Gets assignedRole
@@ -43,6 +48,7 @@ class AssignedRoles(Resource):
             else:
                 raise
 
+    @returnParser(returnableAttributes, 200, False, False)
     @hasPermissionDecorator([perms.assignedRole.update], False)
     @postJson(accessibleAttributes)
     def put(self, data, authResult: AuthResult, assignedRoleId: str, permissions: List[str]):
@@ -59,6 +65,7 @@ class AssignedRoles(Resource):
         return assignedRole.toDict()
 
 class AssignedRolesCreate(Resource):
+    @returnParser(returnableAttributes, 200, False, False)
     @hasPermissionDecorator([perms.assignedRole.create], False)
     @postJsonParse(expectedJson=accessibleAttributes)
     def post(self, data, authResult: AuthResult, permissions: List[str]):
@@ -72,6 +79,7 @@ class AssignedRolesCreate(Resource):
         return AssignedRoleModel.create(data["roleName"], data["discordRoleId"]).toDict()
 
 class AssignedRoleList(Resource):
+    @returnParser(returnableAttributes, 200, True, False)
     @hasPermissionDecorator([perms.assignedRole.listAll], False)
     def get(self, authResult: AuthResult, permissions):
         """lists assignedRoles
@@ -84,6 +92,11 @@ class AssignedRoleList(Resource):
         return AssignedRoleModel.getAllDict()
 
 class AssignedRolePermissions(Resource):
+    @returnParser({
+        "permission": [str],
+        "gameId": [int, type(None)],
+        "assignedRoleId": [int],
+    }, 200, True, False)
     @hasPermissionDecorator([perms.assignedRole.listPermissions], False)
     def get(self, authResult: AuthResult, assignedRoleId: str, permissions: List[str]):
         """Gets assignedRole permissions

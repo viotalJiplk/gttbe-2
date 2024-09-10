@@ -2,8 +2,9 @@ from flask_restx import Resource, fields
 from shared.models import AssignedRolePermissionModel, hasPermission
 from shared.utils import perms, DatabaseError
 from helper import getAssignedRolePermission, getUser
-from utils import hasPermissionDecorator, AuthResult, postJsonParse, postJson, setAttributeFromList, errorList, handleReturnableError, jwsProtected, expectsJson
+from utils import hasPermissionDecorator, AuthResult, postJsonParse, postJson, setAttributeFromList, errorList, handleReturnableError, jwsProtected, returnParser
 from typing import List
+from copy import deepcopy
 
 accessibleAttributes = {
     "permission": [str],
@@ -11,7 +12,11 @@ accessibleAttributes = {
     "assignedRoleId": [int],
 }
 
+returnableAttributes = deepcopy(accessibleAttributes)
+returnableAttributes["assignedRolePermissionsId"] = [int]
+
 class AssignedRolePermissions(Resource):
+    @returnParser(returnableAttributes, 200, False, False)
     @handleReturnableError
     @jwsProtected(optional=True)
     def get(self, authResult: AuthResult, assignedRolePermissionId: str):
@@ -56,6 +61,7 @@ class AssignedRolePermissions(Resource):
 
     @handleReturnableError
     @jwsProtected(optional=True)
+    @returnParser(returnableAttributes, 200, False, False)
     @postJson(accessibleAttributes)
     def put(self, data, authResult: AuthResult, assignedRolePermissionId: str):
         """Updates assignedRolePermission
@@ -79,6 +85,7 @@ class AssignedRolePermissions(Resource):
         return assignedRolePermission.toDict()
 
 class AssignedRolePermissionsCreate(Resource):
+    @returnParser(returnableAttributes, 200, False, False)
     @postJsonParse(expectedJson=accessibleAttributes)
     @hasPermissionDecorator([perms.assignedRolePermission.create], True)
     def post(self, data, authResult: AuthResult, permissions: List[str]):

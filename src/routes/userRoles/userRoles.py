@@ -2,15 +2,19 @@ from flask_restx import Resource
 from shared.models import UserRoleModel
 from shared.utils import perms, DatabaseError
 from helper import getUserRole
-from utils import hasPermissionDecorator, AuthResult, postJsonParse, postJson, setAttributeFromList, errorList
+from utils import hasPermissionDecorator, AuthResult, postJsonParse, postJson, setAttributeFromList, errorList, returnParser
 from typing import List
+from copy import deepcopy
 
 accessibleAttributes = {
     "assignedRoleId": [int],
     "userId": [int],
 }
+returnableAttributes = deepcopy(accessibleAttributes)
+returnableAttributes["userRoleId"] = [int]
 
 class UserRoles(Resource):
+    @returnParser(returnableAttributes, 200, False, False)
     @hasPermissionDecorator([perms.userRole.read], False)
     def get(self, authResult: AuthResult, userRoleId: str, permissions: List[str]):
         """Gets userRole
@@ -43,6 +47,7 @@ class UserRoles(Resource):
             else:
                 raise
 
+    @returnParser(returnableAttributes, 200, False, False)
     @hasPermissionDecorator([perms.userRole.update], False)
     @postJson(accessibleAttributes)
     def put(self, data, authResult: AuthResult, userRoleId: str, permissions: List[str]):
@@ -59,6 +64,7 @@ class UserRoles(Resource):
         return userRole.toDict()
 
 class UserRolesCreate(Resource):
+    @returnParser(returnableAttributes, 200, False, False)
     @hasPermissionDecorator([perms.userRole.create], False)
     @postJsonParse(expectedJson=accessibleAttributes)
     def post(self, data, authResult: AuthResult, permissions: List[str]):

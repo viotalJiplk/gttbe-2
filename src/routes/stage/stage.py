@@ -1,16 +1,20 @@
 from flask_restx import Resource
 from shared.models import StageModel, hasPermission
-from utils import jwsProtected, AuthResult, postJsonParse, postJson, setAttributeFromList, handleReturnableError, errorList, hasPermissionDecorator
+from utils import jwsProtected, AuthResult, postJsonParse, postJson, setAttributeFromList, handleReturnableError, errorList, hasPermissionDecorator, returnParser
 from helper import getEvent, getStage, getUser
 from shared.utils import perms
+from copy import deepcopy
 
 accessibleAttributes = {
     "eventId": [int],
     "stageName": [str],
     "stageIndex": [int],
 }
+returnableAttributes = deepcopy(accessibleAttributes)
+returnableAttributes["stageId"] = [int]
 
 class Stages(Resource):
+    @returnParser(returnableAttributes, 200, False, False)
     @handleReturnableError
     @jwsProtected(optional=True)
     def get(self, authResult: AuthResult, stageId: str):
@@ -53,6 +57,7 @@ class Stages(Resource):
             raise errorList.data.stillDepends
         return
 
+    @returnParser(returnableAttributes, 200, False, False)
     @handleReturnableError
     @jwsProtected(optional=True)
     @postJson(accessibleAttributes)
@@ -75,6 +80,7 @@ class Stages(Resource):
         return stage.toDict()
 
 class StageCreate(Resource):
+    @returnParser(returnableAttributes, 200, False, False)
     @handleReturnableError
     @jwsProtected(optional=True)
     @postJsonParse(expectedJson=accessibleAttributes)
@@ -94,6 +100,7 @@ class StageCreate(Resource):
         return StageModel.create(data["eventId"], data["stageName"], data["stageIndex"]).toDict()
 
 class StageListAll(Resource):
+    @returnParser(returnableAttributes, 200, True, False)
     @hasPermissionDecorator(perms.stage.listAll, False)
     def get(self, authResult: AuthResult, permissions):
         """List all stages

@@ -2,8 +2,9 @@ from flask_restx import Resource
 from shared.models import GeneratedRolePermissionModel, hasPermission
 from shared.utils import perms, DatabaseError
 from helper import getGeneratedRolePermission, getUser
-from utils import hasPermissionDecorator, AuthResult, postJsonParse, postJson, setAttributeFromList, errorList, handleReturnableError, jwsProtected
+from utils import hasPermissionDecorator, AuthResult, postJsonParse, postJson, setAttributeFromList, errorList, handleReturnableError, jwsProtected, returnParser
 from typing import List
+from copy import deepcopy
 
 accessibleAttributes = {
     "permission": [str],
@@ -12,7 +13,11 @@ accessibleAttributes = {
     "eligible": [bool],
 }
 
+returnableAttributes = deepcopy(accessibleAttributes)
+returnableAttributes["generatedRolePermissionId"] = [int]
+
 class GeneratedRolePermissions(Resource):
+    @returnParser(returnableAttributes, 200, False, False)
     @handleReturnableError
     @jwsProtected(optional=True)
     def get(self, authResult: AuthResult, generatedRolePermissionId: str):
@@ -55,6 +60,7 @@ class GeneratedRolePermissions(Resource):
             else:
                 raise
 
+    @returnParser(returnableAttributes, 200, False, False)
     @handleReturnableError
     @jwsProtected(optional=True)
     @postJson(accessibleAttributes)
@@ -80,6 +86,7 @@ class GeneratedRolePermissions(Resource):
         return generatedRolePermission.toDict()
 
 class GeneratedRolePermissionsCreate(Resource):
+    @returnParser(returnableAttributes, 200, False, False)
     @postJsonParse(expectedJson=accessibleAttributes)
     @hasPermissionDecorator([perms.generatedRolePermission.create], True)
     def post(self, data, authResult: AuthResult, permissions: List[str]):

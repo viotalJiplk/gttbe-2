@@ -135,6 +135,6 @@ class EventModel(ObjectDbSync):
         rows = fetchAllWithNames(cursor)
         for index in range(0, len(rows)):
             rows[index]["date"] = rows[index]["date"].isoformat()
-            rows[index]["beginTime"] = fromTimeDelta(rows[index]["beginTime"]).strftime("%H:%M")
-            rows[index]["endTime"] = fromTimeDelta(rows[index]["endTime"]).strftime("%H:%M")
+            rows[index]["beginTime"] = fromTimeDelta(rows[index]["beginTime"]).strftime("%H:%M:%S")
+            rows[index]["endTime"] = fromTimeDelta(rows[index]["endTime"]).strftime("%H:%M:%S")
         return rows

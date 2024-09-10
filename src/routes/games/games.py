@@ -1,13 +1,10 @@
 from flask_restx import Resource
-from utils import postJson, setAttributeFromList
+from utils import postJson, setAttributeFromList, AuthResult, errorList, jwsProtected, hasPermissionDecorator, returnParser
 from shared.models import GameModel
 from datetime import datetime, date, time
-from utils import jwsProtected
 from shared.utils import perms
-from utils import hasPermissionDecorator
 from typing import List
-from utils import AuthResult
-from utils import errorList
+from copy import deepcopy
 
 accessibleAttributes = {
     "name": [str],
@@ -16,7 +13,11 @@ accessibleAttributes = {
     "maxTeams": [int],
 }
 
+returnableAttributes = deepcopy(accessibleAttributes)
+returnableAttributes["gameId"] = [int]
+
 class Games(Resource):
+    @returnParser(returnableAttributes, 200, False, False)
     @hasPermissionDecorator([perms.game.read, perms.game.listAll], True)
     def get(self, gameId, authResult: AuthResult, permissions: List[str]):
         """Gets game
@@ -57,7 +58,15 @@ class Games(Resource):
         setAttributeFromList(game, data, accessibleAttributes)
         return game.toDict()
 
+gamePageAccessibleAttributes = {
+    "gamePage": [str]
+}
+
+gamePageReturnableAttributes = deepcopy(accessibleAttributes)
+gamePageReturnableAttributes["gameId"] = [int]
+
 class GamePage(Resource):
+    @returnParser(gamePageReturnableAttributes, 200, False, False)
     @hasPermissionDecorator(perms.gamePage.read, True)
     def get(self, gameId, authResult: AuthResult, permissions: List[str]):
         """Gets gamepage
@@ -74,7 +83,8 @@ class GamePage(Resource):
         gamePage = game.getGamePage()
         return {"game_id": gameId, "gamePage": gamePage}
 
-    @postJson({"gamePage": [str]})
+    @returnParser(gamePageReturnableAttributes, 200, False)
+    @postJson(gamePageAccessibleAttributes)
     @hasPermissionDecorator(perms.gamePage.update, True)
     def put(self, data, authResult: AuthResult, permissions: List[str], gameId):
         """Updates gamepage
@@ -90,4 +100,4 @@ class GamePage(Resource):
             raise errorList.data.doesNotExist
         if "gamePage" in data and isinstance(data["gamePage"], str):
             game.gamePage = data["gamePage"]
-        return
+        return {"game_id": game.gameId, "gamePage": game.getGamePage()}

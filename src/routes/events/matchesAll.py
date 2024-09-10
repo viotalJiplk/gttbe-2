@@ -1,10 +1,30 @@
 from flask_restx import Resource
 from shared.models import EventModel, hasPermission
 from helper import getEvent, getUser
-from utils import handleReturnableError, jwsProtected, errorList, AuthResult
+from utils import handleReturnableError, jwsProtected, errorList, AuthResult, returnParser
 from shared.utils import perms
+from datetime import time, date
+
+returnableAttributes = {
+    "matchId": [int],
+    "stageId": [int],
+    "firstTeamId": [int],
+    "secondTeamId": [int],
+    "firstTeamResult": [int, type(None)],
+    "secondTeamResult": [int, type(None)],
+    "eventId": [int],
+    "stageName": [str],
+    "stageIndex": [int],
+    "date": [date],
+    "beginTime": [time],
+    "endTime": [time],
+    "gameId": [int],
+    "description": [str],
+    "eventType": [str]
+  }
 
 class MatchesList(Resource):
+    @returnParser(returnableAttributes, 200, True, False)
     @handleReturnableError
     @jwsProtected(optional=True)
     def get(self, authResult: AuthResult, eventId):

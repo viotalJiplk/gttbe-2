@@ -1,3 +1,3 @@
 from .schools import Schools
 
-schoolsRoutes = [(Schools, '')]
+schoolsRoutes = [(Schools, '/listAll/')]

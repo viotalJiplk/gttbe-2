@@ -2,8 +2,9 @@ from flask_restx import Resource
 from shared.models import GeneratedRoleModel, hasPermission
 from shared.utils import perms, DatabaseError
 from helper import getGeneratedRole, getUser
-from utils import hasPermissionDecorator, AuthResult, postJsonParse, postJson, setAttributeFromList, errorList, handleReturnableError, jwsProtected
+from utils import hasPermissionDecorator, AuthResult, postJsonParse, postJson, setAttributeFromList, errorList, handleReturnableError, jwsProtected, returnParser
 from typing import List
+from copy import deepcopy
 
 accessibleAttributes = {
     "roleName": [str],
@@ -14,8 +15,11 @@ accessibleAttributes = {
     "minimal": [int],
     "maximal": [int]
 }
+returnableAttributes = deepcopy(accessibleAttributes)
+returnableAttributes["generatedRoleId"] = [int]
 
 class GeneratedRoles(Resource):
+    @returnParser(returnableAttributes, 200, False, False)
     @handleReturnableError
     @jwsProtected(optional=True)
     def get(self, authResult: AuthResult, generatedRoleId: str):
@@ -58,6 +62,7 @@ class GeneratedRoles(Resource):
             else:
                 raise
 
+    @returnParser(returnableAttributes, 200, False, False)
     @handleReturnableError
     @jwsProtected(optional=True)
     @postJson(accessibleAttributes)
@@ -83,6 +88,7 @@ class GeneratedRoles(Resource):
         return generatedRole.toDict()
 
 class GeneratedRolesCreate(Resource):
+    @returnParser(returnableAttributes, 200, False, False)
     @postJsonParse(expectedJson=accessibleAttributes)
     @hasPermissionDecorator([perms.generatedRole.create], True)
     def post(self, data, authResult: AuthResult, permissions: List[str]):
@@ -96,6 +102,7 @@ class GeneratedRolesCreate(Resource):
         return GeneratedRoleModel.create(data["roleName"], data["discordRoleId"], data["discordRoleIdEligible"], data["gameId"], data["default"], data["minimal"], data["maximal"]).toDict()
 
 class GeneratedRoleList(Resource):
+    @returnParser(returnableAttributes, 200, True, False)
     @hasPermissionDecorator([perms.generatedRole.listAll], True)
     def get(self, authResult: AuthResult, gameId: int, permissions):
         """lists generatedRoles
@@ -113,6 +120,13 @@ class GeneratedRoleList(Resource):
 
 
 class GeneratedRolePermissions(Resource):
+    @returnParser({
+        "generatedRolePermissionId": [int],
+        "permission": [str],
+        "generatedRoleId": [int],
+        "gameId": [int],
+        "eligible": [int]
+    }, 200, True, False)
     @handleReturnableError
     @jwsProtected(optional=True)
     def get(self, authResult: AuthResult, generatedRoleId: str):

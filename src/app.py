@@ -57,7 +57,7 @@ if not config.production:
     defaultLogger.warning("Test build NEVER EVER USE THIS IN PRODUCTION!")
 
 registerRoutes(api.namespace('discord', description="login"), discordRoutes)
-registerRoutes(api.namespace('schools', description='schools'), schoolsRoutes)
+registerRoutes(api.namespace('school', description='schools'), schoolsRoutes)
 registerRoutes(api.namespace('user', description='user'), userRoutes)
 registerRoutes(api.namespace('team', description='team'), teamRoutes)
 registerRoutes(api.namespace('game', description='game'), gameRoutes)

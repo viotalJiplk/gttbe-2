@@ -4,6 +4,7 @@ from utils import AuthResult, postJson, setAttributeFromList, errorList, hasPerm
 from shared.utils import perms, DatabaseError
 from helper import getUser
 from typing import List, Union
+from copy import deepcopy
 
 accessibleAttributes = {
     "surname": [str],
@@ -11,6 +12,8 @@ accessibleAttributes = {
     "adult": [bool],
     "schoolId": [int],
 }
+returnableAttributes = deepcopy(accessibleAttributes)
+returnableAttributes["userId"] = [int]
 
 class UserEndpoint(Resource):
     @hasPermissionDecorator([perms.user.readMe, perms.user.read], False)

@@ -7,7 +7,7 @@ from .errorListFile import errorList
 from utils import ReturnableError
 from .error import handleReturnableError
 import datetime
-from .register import expectsJson
+from .register import expectsJson, returnsJson
 from shared.utils import genState
 from typing import Callable
 
@@ -23,34 +23,48 @@ class NullableString(fields.String):
     __schema_type__ = ['string', 'null']
     __schema_example__ = 0
 
-def toSwaggerDict(expectedJson: dict = {}, required: bool = True):
-    swaggerDict = {}
-    for key, value in expectedJson.items():
+def toSwaggerDict(expectedJson: dict|list = {}, required: bool = True):
+    def __resolveKey(value):
         if len(value) == 1:
             if value[0] is int:
-                swaggerDict[key] = fields.Integer(required=required)
+                return fields.Integer(required=required)
             elif value[0] is str:
-                swaggerDict[key] = fields.String(required=required)
+                return fields.String(required=required)
             elif value[0] is bool:
-                swaggerDict[key] = fields.Boolean(required=required)
+                return fields.Boolean(required=required)
             elif value[0] is type(None):
-                swaggerDict[key] = Null(required=required)
+                return Null(required=required)
             elif value[0] is datetime.date:
-                swaggerDict[key] = fields.Date(required=required)
+                return fields.Date(required=required)
             elif value[0] is datetime.time:
-                swaggerDict[key] = fields.String(required=required, pattern=r"((0?\d)|(1[0-2])):[0-5]?\d:[0-5]?\d")
+                return fields.String(required=required, pattern=r"((0?\d)|(1[0-2])):[0-5]?\d:[0-5]?\d")
             else:
                 raise Exception(f"Unknown type {value[0]}")
         elif len(value) == 2:
             if int in value and type(None) in value:
-                swaggerDict[key] = NullableInt
+                return NullableInt
             elif str in value and type(None) in value:
-                swaggerDict[key] = NullableString
+                return NullableString
             else:
                 raise Exception(f"Unknown type {value[0]}, {value[1]}")
         else:
             raise Exception(f"Unknown type {value}")
-    return swaggerDict
+    if isinstance(expectedJson, dict):
+        swaggerDict = {}
+        for key, value in expectedJson.items():
+            swaggerDict[key] = __resolveKey(value)
+        return swaggerDict
+    elif isinstance(expectedJson, list):
+        return __resolveKey(expectedJson)
+    else:
+        raise ValueError("Unsupported type!")
+
+def returnParser(returnJson: dict = {}, code: int = 200, asList: bool = False, strict: bool = False):
+    swaggerDict = toSwaggerDict(returnJson, False)
+    def wrapper(func: Callable):
+        returnsJson(f"{str(func.__module__)}.{str(func.__qualname__)}.return", swaggerDict, code, asList, strict)(func)
+        return func
+    return wrapper
 
 def postJson(jsonParams:dict={}):
     """Decorator that Gets json from request
@@ -62,7 +76,7 @@ def postJson(jsonParams:dict={}):
 
     swaggerDict = toSwaggerDict(jsonParams, False)
     def wrapper(func: Callable):
-        @expectsJson(f"{str(func.__module__)}.{str(func.__name__)}", swaggerDict)
+        @expectsJson(f"{str(func.__module__)}.{str(func.__qualname__)}.input", swaggerDict)
         @wraps(func)
         @handleReturnableError
         def wrapPostJson(*args, **kwargs):
