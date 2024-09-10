@@ -1,6 +1,6 @@
 from flask_restx import Resource
 from shared.models import UserModel, TeamModel
-from utils import AuthResult, postJson, setAttributeFromList, errorList, hasPermissionDecorator
+from utils import AuthResult, postJson, setAttributeFromList, errorList, hasPermissionDecorator, returnParser
 from shared.utils import perms, DatabaseError
 from helper import getUser
 from typing import List, Union
@@ -13,9 +13,10 @@ accessibleAttributes = {
     "schoolId": [int],
 }
 returnableAttributes = deepcopy(accessibleAttributes)
-returnableAttributes["userId"] = [int]
+returnableAttributes["userId"] = [str]
 
 class UserEndpoint(Resource):
+    @returnParser(returnableAttributes, 200, False, False)
     @hasPermissionDecorator([perms.user.readMe, perms.user.read], False)
     def get(self, authResult:AuthResult, userId: str, permissions: List[str]):
         """Gets info about user
@@ -40,6 +41,7 @@ class UserEndpoint(Resource):
             user = getUser(AuthResult(userId, None))
         return user.toDict()
 
+    @returnParser(returnableAttributes, 200, False, False)
     @postJson(accessibleAttributes)
     @hasPermissionDecorator([perms.user.updateMe, perms.user.update], False)
     def put(self, data, authResult:AuthResult, userId: str, permissions: List[str]):
@@ -97,6 +99,7 @@ class UserEndpoint(Resource):
         return {}, 200
 
 class UserExistsEndpoint(Resource):
+    @returnParser({"exists": [bool]}, 200, False, False)
     @hasPermissionDecorator(perms.user.exists, False)
     def get(self, authResult:AuthResult, userId: str, permissions: List[str]):
         """Tests if user exists in db
@@ -110,6 +113,7 @@ class UserExistsEndpoint(Resource):
         return {"exists": UserModel.getById(userId) is not None}
 
 class UserPermissions(Resource):
+    @returnParser({"permission": [str], "gameId": [int, type(None)]}, 200, True, False)
     @hasPermissionDecorator([perms.user.permissionList, perms.user.permissionListMe], True)
     def get(self, authResult:AuthResult, userId: str, gameId:  Union[str], permissions: List[str]):
         """Returns users permissions for specific game
@@ -139,6 +143,17 @@ class UserPermissions(Resource):
         return user.listPermissions(gameId)
 
 class UserGeneratedRoles(Resource):
+    @returnParser({
+        "teamId": [int],
+        "generatedRoleId": [int],
+        "roleName": [str],
+        "discordRoleId": [int, type(None)],
+        "discordRoleIdEligible": [int, type(None)],
+        "gameId": [int],
+        "default": [bool],
+        "minimal": [int],
+        "maximal": [int]
+    }, 200, True, False)
     @hasPermissionDecorator([perms.user.generatedRolesList, perms.user.generatedRolesListMe], False)
     def get(self, authResult:AuthResult, userId: str, permissions: List[str]):
         """Returns list of users generatedRoles
@@ -163,6 +178,11 @@ class UserGeneratedRoles(Resource):
         return user.listGeneratedRoles()
 
 class UserAssignedRoles(Resource):
+    @returnParser({
+        "assignedRoleId": [int],
+        "roleName": [str],
+        "discordRoleId": [int, type(None)]
+    }, 200, True, False)
     @hasPermissionDecorator([perms.user.assignedRolesList, perms.user.assignedRolesListMe], False)
     def get(self, authResult:AuthResult, userId: str, permissions: List[str]):
         """Returns list of users AssignedRoles
@@ -187,6 +207,13 @@ class UserAssignedRoles(Resource):
         return user.listAssignedRoles()
 
 class ListTeam(Resource):
+    @returnParser({
+        "teamId": [int],
+        "nick": [str],
+        "generatedRoleId": [int],
+        "name": [str],
+        "gameId": [int]
+    }, 200, True, False)
     @hasPermissionDecorator([perms.user.listTeamsMe, perms.user.listTeams], False)
     def get(self, authResult:AuthResult, userId: str, permissions: List[str]):
         """List teams user is currently in

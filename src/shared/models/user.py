@@ -366,8 +366,8 @@ OR (teams.canPlaySince IS NULL and generatedRolePermissions.eligible = 0)) AND (
             list[dict]: list of generatedRoles
         """
         query = """ SELECT r.teamId, g.* FROM users AS u
-                    LEFT JOIN registrations AS r ON u.userId = r.userId
-                    LEFT JOIN generatedRoles AS g ON g.generatedRoleId = r.generatedRoleId
+                    RIGHT JOIN registrations AS r ON u.userId = r.userId
+                    RIGHT JOIN generatedRoles AS g ON g.generatedRoleId = r.generatedRoleId
                     WHERE u.userId = %(userId)s
         """
         cursor.execute(query,  {'userId': self.userId})
@@ -382,7 +382,7 @@ OR (teams.canPlaySince IS NULL and generatedRolePermissions.eligible = 0)) AND (
         """
         query = """
             SELECT ar.* FROM assignedRoles AS ar
-            LEFT JOIN userRoles as ur ON ur.assignedRoleId = ar.assignedRoleId
+            RIGHT JOIN userRoles as ur ON ur.assignedRoleId = ar.assignedRoleId
             WHERE ar.roleName IN ("user", "public") OR userId=%(userId)s
         """
         cursor.execute(query,  {'userId': self.userId})

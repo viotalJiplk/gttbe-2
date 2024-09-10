@@ -25,7 +25,7 @@ def getConnection(autocommit = True):
     )
     return db
 
-def fetchOneWithNames(cursor):
+def fetchOneWithNames(cursor: MySQLCursor):
     """Returns first row as dict (key = column names)
 
     Args:
@@ -44,7 +44,7 @@ def fetchOneWithNames(cursor):
 
     return result
 
-def fetchAllWithNames(cursor):
+def fetchAllWithNames(cursor: MySQLCursor):
     """Returns list of rows as dict (key = column names)
 
     Args:
@@ -54,7 +54,10 @@ def fetchAllWithNames(cursor):
         list[dict]: rows
     """
     columns = cursor.description
-    return [{columns[index][0]:column for index, column in enumerate(value)} for value in cursor.fetchall()]
+    if cursor.rowcount == 0:
+        return []
+    else:
+        return [{columns[index][0]:column for index, column in enumerate(value)} for value in cursor.fetchall()]
 
 def dbConn(autocommit: bool = True, buffered: bool = True):
     """ Wrapper that establishes connection to database
