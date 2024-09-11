@@ -1,7 +1,6 @@
-from flask_restx import Resource
-
+from flask_restx import Resource, fields
 from shared.models import TeamModel
-from utils import jwsProtected, AuthResult, postJson, handleReturnableError, errorList
+from utils import jwsProtected, AuthResult, postJsonParse, handleReturnableError, errorList, returnParser
 from shared.models import hasPermission
 from helper import getTeam, getUser, getGame
 from shared.utils import perms, DatabaseError
@@ -13,6 +12,15 @@ accessibleAttributes = {
 }
 
 class Team(Resource):
+    # @returnParser("_team.get",{
+    #         "name": [str],
+    #         "teamId": [int],
+    #         "gameId": [int],
+    #         "Players": {
+    #             'userId': [str],
+    #             'nick': [str],
+    #             'generatedRoleId': [int]
+    #     }}, 200, False, False)
     @handleReturnableError
     @jwsProtected(optional=True)
     def get(self, authResult: AuthResult, teamId: str):
@@ -39,6 +47,7 @@ class Team(Resource):
 
 
 class TeamJoinstring(Resource):
+    @returnParser({"joinString": [str]}, 200, False, False)
     @handleReturnableError
     @jwsProtected(optional=True)
     def get(self, authResult: AuthResult, teamId: str):
@@ -56,13 +65,7 @@ class TeamJoinstring(Resource):
         permission = hasPermission(user, team.gameId, [perms.team.generateJoinString, perms.team.generateJoinStringMyTeam])
         if len(permission) < 1:
             raise errorList.permission.missingPermission
-        joinString = None
-        if perms.team.generateJoinString in permission:
-            joinString = team.generateJoinString()
-        elif perms.team.generateJoinStringMyTeam in permission:
-            if team.getUsersRole(authResult.userId) != "Captain":
-                raise errorList.team.notCaptain
-            joinString = team.generateJoinString()
+        joinString = team.generateJoinString()
         if joinString is None:
             raise errorList.data.doesNotExist
         return {"joinString": joinString}, 200
@@ -72,7 +75,8 @@ class Join(Resource):
 
     @handleReturnableError
     @jwsProtected(optional=True)
-    @postJson({"nick":[str], "rank": [int], "max_rank": [int], "generatedRoleId": [int]})
+    @returnParser({"teamId": [int]}, 200, False, False)
+    @postJsonParse({"nick":[str], "rank": [int], "max_rank": [int], "generatedRoleId": [int]})
     def post(self, authResult: AuthResult, teamId: str, data, joinString: str):
         """Joins team
 
@@ -83,9 +87,6 @@ class Join(Resource):
         Returns:
             dict: teamId
         """
-        if("nick" not in data or "rank" not in data or "max_rank" not in data or "generatedRoleId" not in data):
-           raise errorList.team.invalidPayload
-
         team = getTeam(teamId)
         user = getUser(authResult)
         game = getGame(team.gameId)
@@ -116,7 +117,7 @@ class Join(Resource):
 
 
 class Kick(Resource):
-
+    @returnParser({"teamId": [int]}, 200, False, False)
     @handleReturnableError
     @jwsProtected(optional=True)
     def delete(self, authResult: AuthResult, teamId: str, userId: str):

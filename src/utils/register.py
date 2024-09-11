@@ -1,5 +1,6 @@
-from flask_restx import Api, Resource, fields
+from flask_restx import Namespace, Resource, fields
 from typing import List, Tuple
+from .objectTesterFile import objectTester
 
 class ExpectParams:
     def __init__(self, name, expect, validate, strict):
@@ -29,7 +30,7 @@ def returnsJson(name, returns, code=200, asList=False, strict=False, description
         return func
     return wrapper
 
-def registerRoutes(api: Api, routes: list[Tuple[Resource, str]]):
+def registerRoutes(api: Namespace, routes: list[Tuple[Resource, str]]):
     """Registers new endpoints
 
     Args:
@@ -53,6 +54,7 @@ def registerRoutes(api: Api, routes: list[Tuple[Resource, str]]):
             else:
                 method = api.response(code=method.__returns.code, description=method.__returns.description,  model=model)(method)
         return method
+
     for route in routes:
         if  hasattr(route[0], "get"):
             route[0].get = __expect(route[0].get)

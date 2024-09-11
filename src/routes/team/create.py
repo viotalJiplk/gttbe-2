@@ -1,13 +1,27 @@
 from flask_restx import Resource
 from shared.models import TeamModel
-from utils import AuthResult, postJson, errorList, hasPermissionDecorator
+from utils import AuthResult, postJsonParse, errorList, hasPermissionDecorator, returnParser
 from shared.utils import perms, DatabaseError
 from helper import getGame, getUser
 from typing import List
 
-class createTeam(Resource):
+createAttributes = {
+    "gameId": [int],
+    "name": [str],
+    "nick": [str],
+    "rank": [int],
+    "maxRank": [int],
+}
+returnableAttributes =  {
+    "teamId": [int],
+    "gameId": [int],
+    "name": [str],
+    "joinString": [str, type(None)]
+}
 
-    @postJson({"game_id": [int], "name":[str]})
+class createTeam(Resource):
+    @returnParser(returnableAttributes, 200, False, False)
+    @postJsonParse(createAttributes)
     @hasPermissionDecorator(perms.team.create, True)
     def post(self, data, authResult: AuthResult, permissions: List[str]):
         """Creates team
@@ -17,13 +31,9 @@ class createTeam(Resource):
         Returns:
             dict: teamId
         """
-        if("game_id" not in data or "name" not in data):
-            raise errorList.team.missingGameIdOrName
         game = getGame(data["game_id"])
         if not game.canBeRegistered():
            raise errorList.team.registrationNotOpened
-        if("nick" not in data or "rank" not in data or "max_rank" not in data):
-            raise errorList.team.invalidPayload
         user = getUser(authResult)
         if user is None:
             raise errorList.data.doesNotExist

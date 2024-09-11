@@ -1,6 +1,6 @@
 from flask_restx import Resource
 from shared.models import TeamModel
-from utils import jwsProtected, hasPermissionDecorator
+from utils import jwsProtected, hasPermissionDecorator, returnParser
 from shared.utils import perms
 from helper import getGame
 

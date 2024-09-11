@@ -2,7 +2,7 @@ from flask_restx import Resource
 from flask import Response
 from shared.models import StateModel
 from shared.utils import config
-from utils import generateJWS
+from utils import generateJWS, returnParser
 from shared.models import UserModel
 from utils import postJson
 import urllib
@@ -14,6 +14,9 @@ class Auth(Resource):
         state = urllib.parse.quote(state, safe='')
         # redir_url_urlencoded = urllib.parse.quote(discord["redir_url"], safe='')
         return "https://discord.com/oauth2/authorize?response_type=code&client_id="+str(config.discord.client_id)+"&scope="+ scope +"&state="+ state +"&prompt=" + prompt
+    @returnParser({
+        "redirectUrl": [str]
+    }, 200, False, False)
     def get(self):
         """
             Generates discord api uri.
@@ -22,7 +25,7 @@ class Auth(Resource):
             dict: redirect url
         """
         state = StateModel.create()
-        return {"redirect_url": self.__endpoint_url(state.state, "none")}, 200
+        return {"redirectUrl": self.__endpoint_url(state.state, "none")}, 200
         # could technically throw error if state is not unique
 
 
@@ -47,13 +50,13 @@ class TokenEndpoint(Resource):
             return {"state": 1, "msg": "Invalid state."}, 401
 
         if("name" not in data):
-            data["name"] = ''
+            data["name"] = None
         if("surname" not in data):
-            data["surname"] = ''
+            data["surname"] = None
         if("adult" not in data):
-            data["adult"] = ''
+            data["adult"] = None
         if("school_id" not in data):
-            data["school_id"] = ''
+            data["school_id"] = None
 
         user = UserModel.getByCode(data["code"], data["redirect_uri"], data["name"], data["surname"], data["adult"], data["school_id"])
 

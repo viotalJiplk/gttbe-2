@@ -197,9 +197,9 @@ class TeamModel(ObjectDbSync):
         result = []
         for player in fetched:
             result.append({
-                'userid': str(player['userid']),
+                'userId': str(player['userId']),
                 'nick': str(player['nick']),
-                'generatedRoleId': str(player['generatedRoleId'])
+                'generatedRoleId': player['generatedRoleId']
             })
         return result
 

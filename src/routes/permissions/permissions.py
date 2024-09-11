@@ -9,9 +9,9 @@ class Permissions(Resource):
     @returnParser([str], 200, True, False)
     @hasPermissionDecorator([perms.permission.listAll], False)
     def get(self, authResult: AuthResult, permissions: List[str]):
-        """Lists all schools
+        """Lists all Permissions
 
         Returns:
-            dict: List of schools
+            dict: List of Permissions
         """
         return PermissionModel.listAll()
