@@ -31,7 +31,7 @@ class createTeam(Resource):
         Returns:
             dict: teamId
         """
-        game = getGame(data["game_id"])
+        game = getGame(data["gameId"])
         if not game.canBeRegistered():
            raise errorList.team.registrationNotOpened
         user = getUser(authResult)
@@ -40,7 +40,7 @@ class createTeam(Resource):
         if not user.canRegister():
            raise errorList.user.couldNotRegister
         try:
-            team = TeamModel.create(name=data["name"], gameId=data["game_id"], userId=authResult.userId, nick=data["nick"], rank=data["rank"], maxRank=data["max_rank"])
+            team = TeamModel.create(name=data["name"], gameId=data["gameId"], userId=authResult.userId, nick=data["nick"], rank=data["rank"], maxRank=data["maxRank"])
         except DatabaseError as e:
             if e.message == "Already registered for game.":
                 raise errorList.team.alreadyRegistered

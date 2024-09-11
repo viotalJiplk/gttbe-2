@@ -6,24 +6,24 @@ result = {
     "gameId": 6,
     "Players": [
         {
-            "userid": "315241566832246282",
+            "userId": "315241566832246282",
             "nick": "tKncBSwU",
-            "generatedRoleId": "11"
+            "generatedRoleId": 11
         },
         {
-            "userid": "817942517970237079",
+            "userId": "817942517970237079",
             "nick": "NXHQvsww",
-            "generatedRoleId": "12"
+            "generatedRoleId": 12
         },
         {
-            "userid": "859505747524140731",
+            "userId": "859505747524140731",
             "nick": "AJwpGdDq",
-            "generatedRoleId": "12"
+            "generatedRoleId": 12
         },
         {
-            "userid": "944849240707485390",
+            "userId": "944849240707485390",
             "nick": "JtnDmQKK",
-            "generatedRoleId": "12"
+            "generatedRoleId": 12
         }
     ]
 }
@@ -34,19 +34,19 @@ after = {
     "gameId": 6,
     "Players": [
         {
-            "userid": "315241566832246282",
+            "userId": "315241566832246282",
             "nick": "tKncBSwU",
-            "generatedRoleId": "11"
+            "generatedRoleId": 11
         },
         {
-            "userid": "817942517970237079",
+            "userId": "817942517970237079",
             "nick": "NXHQvsww",
-            "generatedRoleId": "12"
+            "generatedRoleId": 12
         },
         {
-            "userid": "859505747524140731",
+            "userId": "859505747524140731",
             "nick": "AJwpGdDq",
-            "generatedRoleId": "12"
+            "generatedRoleId": 12
         }
     ]
 }

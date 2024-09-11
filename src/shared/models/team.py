@@ -191,7 +191,7 @@ class TeamModel(ObjectDbSync):
         Returns:
             list[dict]: list of dicts of players (key = column name)
         """
-        query = "SELECT `userid`, `nick`, `generatedRoleId`  FROM `registrations` WHERE teamId=%(teamId)s ORDER BY `generatedRoleId` ASC"
+        query = "SELECT `userId`, `nick`, `generatedRoleId`  FROM `registrations` WHERE teamId=%(teamId)s ORDER BY `generatedRoleId` ASC"
         cursor.execute(query, {"teamId": self.teamId})
         fetched = fetchAllWithNames(cursor)
         result = []

@@ -14,34 +14,34 @@ result = {
     "gameId": 4,
     "Players": [
         {
-            "userid": "122891840080562664",
+            "userId": "122891840080562664",
             "nick": "CmgYaDjZ",
-            "generatedRoleId": "7"
+            "generatedRoleId": 7
         },
         {
-            "userid": "135346983583891046",
+            "userId": "135346983583891046",
             "nick": "aSGCENNA",
-            "generatedRoleId": "8"
+            "generatedRoleId": 8
         },
         {
-            "userid": "210568825432375324",
+            "userId": "210568825432375324",
             "nick": "EvNdqWrq",
-            "generatedRoleId": "8"
+            "generatedRoleId": 8
         },
         {
-            "userid": "774007414509236186",
+            "userId": "774007414509236186",
             "nick": "sBXYANzZ",
-            "generatedRoleId": "8"
+            "generatedRoleId": 8
         },
         {
-            "userid": "798209625306537808",
+            "userId": "798209625306537808",
             "nick": "VCYfccLv",
-            "generatedRoleId": "8"
+            "generatedRoleId": 8
         },
         {
-            "userid": "114316488057882015",
+            "userId": "114316488057882015",
             "nick": "winner",
-            "generatedRoleId": "8"
+            "generatedRoleId": 8
         }
     ]
 }

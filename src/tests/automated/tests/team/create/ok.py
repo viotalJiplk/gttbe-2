@@ -4,10 +4,10 @@ from datetime import datetime, timedelta
 
 create = {
     "name":"testTeam",
-    "game_id": 2,
+    "gameId": 2,
     "nick":"winner",
     "rank": 4,
-    "max_rank": 6
+    "maxRank": 6
 }
 result = {
     "teamId": int,
