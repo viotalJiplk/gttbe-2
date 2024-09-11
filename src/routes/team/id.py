@@ -12,15 +12,15 @@ accessibleAttributes = {
 }
 
 class Team(Resource):
-    # @returnParser("_team.get",{
-    #         "name": [str],
-    #         "teamId": [int],
-    #         "gameId": [int],
-    #         "Players": {
-    #             'userId': [str],
-    #             'nick': [str],
-    #             'generatedRoleId': [int]
-    #     }}, 200, False, False)
+    @returnParser({
+            "name": [str],
+            "teamId": [int],
+            "gameId": [int],
+            "Players": {
+                'userId': [str],
+                'nick': [str],
+                'generatedRoleId': [int]
+        }}, 200, False, False)
     @handleReturnableError
     @jwsProtected(optional=True)
     def get(self, authResult: AuthResult, teamId: str):

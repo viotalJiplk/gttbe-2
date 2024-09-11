@@ -2,74 +2,23 @@ from functools import wraps
 from flask_restful import request
 from flask_restx import fields
 from .date import dateFromString, timeFromString
-from datetime import date, time
 from .errorListFile import errorList
 from utils import ReturnableError
 from .error import handleReturnableError
-import datetime
+from datetime import date, time
 from .register import expectsJson, returnsJson
-from shared.utils import genState
 from typing import Callable
 
-class Null(fields.Raw):
-    __schema_type__ = ['null']
-    __schema_example__ = None
-
-class NullableInt(fields.Integer):
-    __schema_type__ = ['integer', 'null']
-    __schema_example__ = 0
-
-class NullableString(fields.String):
-    __schema_type__ = ['string', 'null']
-    __schema_example__ = 0
-
-def toSwaggerDict(expectedJson: dict|list = {}, required: bool = True):
-    def __resolveKey(value):
-        if len(value) == 1:
-            if value[0] is int:
-                return fields.Integer(required=required)
-            elif value[0] is str:
-                return fields.String(required=required)
-            elif value[0] is bool:
-                return fields.Boolean(required=required)
-            elif value[0] is type(None):
-                return Null(required=required)
-            elif value[0] is datetime.date:
-                return fields.Date(required=required)
-            elif value[0] is datetime.time:
-                return fields.String(required=required, pattern=r"((0?\d)|(1[0-2])):[0-5]?\d:[0-5]?\d")
-            else:
-                raise Exception(f"Unknown type {value[0]}")
-        elif len(value) == 2:
-            if int in value and type(None) in value:
-                return NullableInt
-            elif str in value and type(None) in value:
-                return NullableString
-            else:
-                raise Exception(f"Unknown type {value[0]}, {value[1]}")
-        else:
-            raise Exception(f"Unknown type {value}")
-    if isinstance(expectedJson, dict):
-        swaggerDict = {}
-        for key, value in expectedJson.items():
-            swaggerDict[key] = __resolveKey(value)
-        return swaggerDict
-    elif isinstance(expectedJson, list):
-        return __resolveKey(expectedJson)
-    else:
-        raise ValueError("Unsupported type!")
-
 def returnParser(returnJson: dict = {}, code: int = 200, asList: bool = False, strict: bool = False):
-    swaggerDict = toSwaggerDict(returnJson, False)
     def wrapper(func: Callable):
-        returnsJson(f"{str(func.__module__)}.{str(func.__qualname__)}.return", swaggerDict, code, asList, strict)(func)
+        returnsJson(f"{str(func.__module__)}.{str(func.__qualname__)}.return", returnJson, code, asList, strict, '', False)(func)
         return func
     return wrapper
 
 def returnError(errors: list[ReturnableError]):
     def wrapper(func: Callable):
         for error in errors:
-            returnsJson(f"{str(func.__module__)}.{str(func.__qualname__)}.returnError.{error.message}", error.returnModel(), error.httpStatusCode, False, False, 'Error')(func)
+            returnsJson(f"{str(func.__module__)}.{str(func.__qualname__)}.returnError.{error.message}", error.returnModel(), error.httpStatusCode, False, False, 'Error', False)(func)
         return func
     return wrapper
 
@@ -81,9 +30,8 @@ def postJson(jsonParams:dict={}):
         jsonParams (dict, optional): expected json. Defaults to {} continues on missing.
     """
 
-    swaggerDict = toSwaggerDict(jsonParams, False)
     def wrapper(func: Callable):
-        @expectsJson(f"{str(func.__module__)}.{str(func.__qualname__)}.input", swaggerDict)
+        @expectsJson(f"{str(func.__module__)}.{str(func.__qualname__)}.input", jsonParams, False, False, False)
         @wraps(func)
         @handleReturnableError
         def wrapPostJson(*args, **kwargs):
@@ -102,10 +50,9 @@ def postJsonParse(expectedJson:dict={}):
     Args:
         expectedJson (dict, optional): expected json. Defaults to {} throws on missing.
     """
-    swaggerDict = toSwaggerDict(expectedJson, True)
 
     def wrapper(func: Callable):
-        @expectsJson(f"{str(func.__module__)}.{str(func.__name__)}", swaggerDict)
+        @expectsJson(f"{str(func.__module__)}.{str(func.__name__)}", expectedJson, False, False, True)
         @wraps(func)
         @handleReturnableError
         def wrapPostJson(*args, **kwargs):

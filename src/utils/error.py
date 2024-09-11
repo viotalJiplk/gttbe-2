@@ -1,5 +1,4 @@
 from functools import wraps
-from flask_restx import fields
 def handleReturnableError(func):
     """Decorator to handle returnableErrors"""
     @wraps(func)
@@ -28,4 +27,4 @@ class ReturnableError(Exception):
     def returnDict(self):
         return {"kind": self.kind, "msg": self.message}
     def returnModel(self):
-        return {"kind": fields.String, "msg": fields.String}
+        return {"kind": [str], "msg": [str]}

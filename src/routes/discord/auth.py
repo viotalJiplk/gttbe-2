@@ -8,6 +8,19 @@ from utils import postJson
 import urllib
 import json
 
+discordUserObject = {
+        "id": [str],
+        "username": [str],
+        "avatar": [str],
+        "discriminator": [str],
+        "public_flags": [int],
+        "flags": [int],
+        "banner": [str, type(None)],
+        "accent_color": [int, type(None)],
+        "global_name": [str, type(None)],
+        "banner_color": [int, type(None)]
+    }
+
 class Auth(Resource):
     def __endpoint_url(self, state, prompt="consent"):
         scope = "identify"
@@ -30,11 +43,15 @@ class Auth(Resource):
 
 
 class TokenEndpoint(Resource):
+    @returnParser({
+        "jws": [str],
+        "userObject": discordUserObject
+    })
     @returnError([errorList.auth.invalidState])
     @postJsonParse({
         "code": [str],
         "state": [str],
-        "redirect_uri": [str]
+        "redirectUri": [str]
     })
     def post(self, data):
         """
@@ -53,10 +70,10 @@ class TokenEndpoint(Resource):
             data["surname"] = None
         if("adult" not in data):
             data["adult"] = None
-        if("school_id" not in data):
-            data["school_id"] = None
+        if("schoolId" not in data):
+            data["schoolId"] = None
 
-        user = UserModel.getByCode(data["code"], data["redirect_uri"], data["name"], data["surname"], data["adult"], data["school_id"])
+        user = UserModel.getByCode(data["code"], data["redirectUri"], data["name"], data["surname"], data["adult"], data["schoolId"])
 
         claims = {}
         claims[config.discord.userid_claim] = user[0].userId
