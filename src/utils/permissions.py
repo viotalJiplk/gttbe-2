@@ -6,6 +6,7 @@ from .errorListFile import errorList
 from shared.models.permission import hasPermission
 from typing import Union, List
 from .nsForDecorators import blankNs
+from .others import returnError
 
 def hasPermissionDecorator(permissions: Union[List[str], str], detectGame=False):
     """decorator that test if user has required permission\
@@ -18,6 +19,9 @@ def hasPermissionDecorator(permissions: Union[List[str], str], detectGame=False)
         errorList.permission.missingId: Missing gameId
         errorList.permission.missingPermission: Missing permission
     """
+    errors = [errorList.jws.invalidToken, errorList.jws.InvalidSignature, errorList.jws.expired, errorList.jws.untrusted, errorList.jws.missingUserId, errorList.permission.missingPermission]
+    if detectGame:
+        errors.append(errorList.permission.missingId)
     if isinstance(permissions, str):
         tmpPermissions = permissions
         permissions = []
@@ -25,6 +29,7 @@ def hasPermissionDecorator(permissions: Union[List[str], str], detectGame=False)
     def wrapper(func):
         @wraps(func)
         @blankNs.doc(security="jws")
+        @returnError(errors)
         @handleReturnableError
         def wrappedGetPerms(*args, **kwargs):
             result = {}

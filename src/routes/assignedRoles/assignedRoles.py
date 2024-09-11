@@ -2,7 +2,7 @@ from flask_restx import Resource
 from shared.models import AssignedRoleModel
 from shared.utils import perms, DatabaseError
 from helper import getAssignedRole
-from utils import hasPermissionDecorator, AuthResult, postJsonParse, postJson, setAttributeFromList, errorList, returnParser
+from utils import hasPermissionDecorator, AuthResult, postJsonParse, postJson, setAttributeFromList, errorList, returnParser, returnError
 from typing import List
 from copy import deepcopy
 
@@ -16,6 +16,7 @@ returnableAttributes["assignedRoleId"] = [int]
 
 class AssignedRoles(Resource):
     @returnParser(returnableAttributes, 200, False, False)
+    @returnError([errorList.data.doesNotExist])
     @hasPermissionDecorator([perms.assignedRole.read], False)
     def get(self, authResult: AuthResult, assignedRoleId: str, permissions: List[str]):
         """Gets assignedRole
@@ -30,6 +31,8 @@ class AssignedRoles(Resource):
         return assignedRole.toDict()
 
     @hasPermissionDecorator([perms.assignedRole.delete], False)
+    @returnParser({"assignedRoleId": [int]}, 201, False, False)
+    @returnError([errorList.data.doesNotExist, errorList.data.stillDepends])
     def delete(self, authResult: AuthResult, assignedRoleId: str, permissions: List[str]):
         """Deletes assignedRole
 
@@ -41,7 +44,8 @@ class AssignedRoles(Resource):
         """
         assignedRole = getAssignedRole(assignedRoleId)
         try:
-            return assignedRole.delete()
+            assignedRole.delete()
+            return {"assignedRoleId": assignedRole.assignedRoleId}
         except DatabaseError as e:
             if e.message == "Still depends":
                 raise errorList.data.stillDepends
@@ -50,6 +54,7 @@ class AssignedRoles(Resource):
 
     @returnParser(returnableAttributes, 200, False, False)
     @hasPermissionDecorator([perms.assignedRole.update], False)
+    @returnError([errorList.data.doesNotExist, errorList.data.couldNotConvertInt, errorList.data.unableToConvert])
     @postJson(accessibleAttributes)
     def put(self, data, authResult: AuthResult, assignedRoleId: str, permissions: List[str]):
         """Updates assignedRole
@@ -76,7 +81,14 @@ class AssignedRolesCreate(Resource):
         Returns:
             dict: info about assignedRole
         """
-        return AssignedRoleModel.create(data["roleName"], data["discordRoleId"]).toDict()
+        try:
+            newAssignedRoleModel = AssignedRoleModel.create(data["roleName"], data["discordRoleId"]).toDict()
+        except ValueError as e:
+            if e.msg == "AssignedRole with this name already exists.":
+                errorList.data.alreadyExists
+            else:
+                raise
+        return newAssignedRoleModel, 201
 
 class AssignedRoleList(Resource):
     @returnParser(returnableAttributes, 200, True, False)
@@ -97,6 +109,7 @@ class AssignedRolePermissions(Resource):
         "gameId": [int, type(None)],
         "assignedRoleId": [int],
     }, 200, True, False)
+    @returnError([errorList.data.doesNotExist])
     @hasPermissionDecorator([perms.assignedRole.listPermissions], False)
     def get(self, authResult: AuthResult, assignedRoleId: str, permissions: List[str]):
         """Gets assignedRole permissions

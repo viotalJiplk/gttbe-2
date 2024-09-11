@@ -3,7 +3,7 @@ from shared.models import EventModel, hasPermission
 from utils import jwsProtected, AuthResult
 from datetime import datetime, date, time
 from shared.utils import perms
-from utils import hasPermissionDecorator, postJsonParse, postJson, setAttributeFromList, handleReturnableError, errorList, returnParser
+from utils import hasPermissionDecorator, postJsonParse, postJson, setAttributeFromList, handleReturnableError, errorList, returnParser, returnError
 from helper import getEvent, getUser
 from typing import List
 from copy import deepcopy
@@ -21,6 +21,7 @@ returnableAttributes["eventId"] = [int]
 
 class Events(Resource):
     @returnParser(returnableAttributes, 200, False, False)
+    @returnError([errorList.data.doesNotExist, errorList.permission.missingPermission])
     @handleReturnableError
     @jwsProtected(optional=True)
     def get(self, authResult: AuthResult, eventId: str):
@@ -40,6 +41,8 @@ class Events(Resource):
         return event.toDict()
 
     @handleReturnableError
+    @returnParser({"eventId": [int]}, 200, False, False)
+    @returnError([errorList.data.doesNotExist, errorList.permission.missingPermission, errorList.data.stillDepends])
     @jwsProtected(optional=True)
     def delete(self, authResult: AuthResult, eventId: str):
         """Deletes event
@@ -59,9 +62,11 @@ class Events(Resource):
             event.delete()
         except e:
             raise errorList.data.stillDepends
-        return
+        return {"eventId": event.eventId}
+
 
     @returnParser(returnableAttributes, 200, False, False)
+    @returnError([errorList.data.doesNotExist, errorList.permission.missingPermission, errorList.data.couldNotConvertInt, errorList.data.unableToConvert])
     @handleReturnableError
     @jwsProtected(optional=True)
     @postJson(accessibleAttributes)
@@ -82,7 +87,7 @@ class Events(Resource):
         return event.toDict()
 
 class EventCreate(Resource):
-    @returnParser(returnableAttributes, 200, False, False)
+    @returnParser(returnableAttributes, 201, False, False)
     @postJsonParse(expectedJson=accessibleAttributes)
     @hasPermissionDecorator(perms.event.create, True)
     def post(self, data, authResult: AuthResult, permissions: List[str]):
@@ -93,7 +98,7 @@ class EventCreate(Resource):
         Returns:
             dict: info about event
         """
-        return EventModel.create(data["date"], data["beginTime"], data["endTime"], data["gameId"], data["description"], data["eventType"]).toDict()
+        return EventModel.create(data["date"], data["beginTime"], data["endTime"], data["gameId"], data["description"], data["eventType"]).toDict(), 201
 
 class EventList(Resource):
     @returnParser(returnableAttributes, 200, True, False)

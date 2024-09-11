@@ -1,7 +1,7 @@
 from flask_restx import Resource
 from shared.models import EventModel, hasPermission
 from helper import getEvent, getUser
-from utils import handleReturnableError, jwsProtected, errorList, AuthResult, returnParser
+from utils import handleReturnableError, jwsProtected, errorList, AuthResult, returnParser, returnError
 from shared.utils import perms
 
 returnableAttributes = {
@@ -13,6 +13,7 @@ returnableAttributes = {
 
 class StagesList(Resource):
     @returnParser(returnableAttributes, 200, True, False)
+    @returnError([errorList.data.doesNotExist, errorList.permission.missingPermission])
     @handleReturnableError
     @jwsProtected(optional=True)
     def get(self, authResult: AuthResult, eventId):

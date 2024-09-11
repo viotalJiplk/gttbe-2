@@ -9,7 +9,8 @@ class Jws:
     missingUserId = ReturnableError("Missing userId!", "JWS", 401)
 class Json:
     notValidJson = ReturnableError("The data you sent is not a valid json.", "JSON", 401)
-
+class Auth:
+    invalidState = ReturnableError("Invalid state.", 401)
 class Permission:
     missingPermission = ReturnableError("Missing required permissions.", "Perms", 401)
     missingId = ReturnableError("Missing gameId!", "Perms", 400)
@@ -19,6 +20,7 @@ class Data:
     couldNotConvertDate = ReturnableError("Unable to convert date or time.", "DATA", 400)
     couldNotConvertInt = ReturnableError("Unable to convert string to int.", "DATA", 400)
     unableToConvert = ReturnableError("Unable to convert string to int.", "DATA", 400)
+    alreadyExists = ReturnableError("Resource you are trying to create already exists.", "DATA", 424)
 class Request:
     missingHeaderForMe = ReturnableError("Missing authentication from jws for @me.", "Request", 400)
 class Team:
@@ -42,5 +44,6 @@ class ErrorList:
     team = Team()
     user = User()
     json = Json()
+    auth = Auth()
 
 errorList = ErrorList()

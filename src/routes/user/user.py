@@ -1,6 +1,6 @@
 from flask_restx import Resource
 from shared.models import UserModel, TeamModel
-from utils import AuthResult, postJson, setAttributeFromList, errorList, hasPermissionDecorator, returnParser
+from utils import AuthResult, postJson, setAttributeFromList, errorList, hasPermissionDecorator, returnParser, returnError
 from shared.utils import perms, DatabaseError
 from helper import getUser
 from typing import List, Union
@@ -17,6 +17,7 @@ returnableAttributes["userId"] = [str]
 
 class UserEndpoint(Resource):
     @returnParser(returnableAttributes, 200, False, False)
+    @returnError([errorList.data.doesNotExist, errorList.permission.missingPermission, errorList.request.missingHeaderForMe])
     @hasPermissionDecorator([perms.user.readMe, perms.user.read], False)
     def get(self, authResult:AuthResult, userId: str, permissions: List[str]):
         """Gets info about user
@@ -42,6 +43,7 @@ class UserEndpoint(Resource):
         return user.toDict()
 
     @returnParser(returnableAttributes, 200, False, False)
+    @returnError([errorList.permission.missingPermission, errorList.request.missingHeaderForMe, errorList.data.doesNotExist, errorList.data.couldNotConvertInt, errorList.data.unableToConvert])
     @postJson(accessibleAttributes)
     @hasPermissionDecorator([perms.user.updateMe, perms.user.update], False)
     def put(self, data, authResult:AuthResult, userId: str, permissions: List[str]):
@@ -67,6 +69,8 @@ class UserEndpoint(Resource):
         setAttributeFromList(user, data, accessibleAttributes)
         return user.toDict()
 
+    @returnParser({"userId": [str]})
+    @returnError([errorList.permission.missingPermission, errorList.request.missingHeaderForMe, errorList.data.doesNotExist, errorList.data.stillDepends])
     @hasPermissionDecorator([perms.user.deleteMe, perms.user.delete], False)
     def delete(self, authResult:AuthResult, userId: str, permissions: List[str]):
         """Deletes user
@@ -96,7 +100,7 @@ class UserEndpoint(Resource):
                 raise errorList.data.stillDepends
             else:
                 raise
-        return {}, 200
+        return {"userId": str(user.userId)}, 200
 
 class UserExistsEndpoint(Resource):
     @returnParser({"exists": [bool]}, 200, False, False)
@@ -114,6 +118,7 @@ class UserExistsEndpoint(Resource):
 
 class UserPermissions(Resource):
     @returnParser({"permission": [str], "gameId": [int, type(None)]}, 200, True, False)
+    @returnError([errorList.permission.missingPermission, errorList.request.missingHeaderForMe, errorList.data.doesNotExist])
     @hasPermissionDecorator([perms.user.permissionList, perms.user.permissionListMe], True)
     def get(self, authResult:AuthResult, userId: str, gameId:  Union[str], permissions: List[str]):
         """Returns users permissions for specific game
@@ -154,6 +159,7 @@ class UserGeneratedRoles(Resource):
         "minimal": [int],
         "maximal": [int]
     }, 200, True, False)
+    @returnError([errorList.permission.missingPermission, errorList.request.missingHeaderForMe, errorList.data.doesNotExist])
     @hasPermissionDecorator([perms.user.generatedRolesList, perms.user.generatedRolesListMe], False)
     def get(self, authResult:AuthResult, userId: str, permissions: List[str]):
         """Returns list of users generatedRoles
@@ -183,6 +189,7 @@ class UserAssignedRoles(Resource):
         "roleName": [str],
         "discordRoleId": [int, type(None)]
     }, 200, True, False)
+    @returnError([errorList.permission.missingPermission, errorList.request.missingHeaderForMe, errorList.data.doesNotExist])
     @hasPermissionDecorator([perms.user.assignedRolesList, perms.user.assignedRolesListMe], False)
     def get(self, authResult:AuthResult, userId: str, permissions: List[str]):
         """Returns list of users AssignedRoles
@@ -214,6 +221,7 @@ class ListTeam(Resource):
         "name": [str],
         "gameId": [int]
     }, 200, True, False)
+    @returnError([errorList.permission.missingPermission, errorList.request.missingHeaderForMe, errorList.data.doesNotExist])
     @hasPermissionDecorator([perms.user.listTeamsMe, perms.user.listTeams], False)
     def get(self, authResult:AuthResult, userId: str, permissions: List[str]):
         """List teams user is currently in

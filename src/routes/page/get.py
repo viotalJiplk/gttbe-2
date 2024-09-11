@@ -1,12 +1,13 @@
 from flask_restx import Resource
 from shared.models.page import PageModel
-from utils import AuthResult, hasPermissionDecorator, ReturnableError, errorList, returnParser
+from utils import AuthResult, hasPermissionDecorator, ReturnableError, errorList, returnParser, returnError
 from shared.utils import perms
 from typing import List
 from copy import deepcopy
 
 class Page(Resource):
     @returnParser({"name": [str], "value": [str]}, 200, False, False)
+    @returnError([errorList.data.doesNotExist])
     @hasPermissionDecorator([perms.page.read], False)
     def get(self, name, authResult: AuthResult, permissions: List[str]):
         """Gets a page

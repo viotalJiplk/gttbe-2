@@ -29,7 +29,7 @@ class Test:
                 "Authorization":f"Bearer {self.jws}",
             }
         )
-        res = requestExpect.post("/backend/team/create", create, 200,
+        res = requestExpect.post("/backend/team/create", create, 201,
             {
                 "Authorization":f"Bearer {self.jws}",
             }, result

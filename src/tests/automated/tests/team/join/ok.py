@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 join = {
     "nick":"winner",
     "rank": 4,
-    "max_rank": 6,
+    "maxRank": 6,
     "generatedRoleId": 8
 }
 result = {

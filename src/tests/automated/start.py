@@ -95,4 +95,10 @@ for module in modules:
         break
 
     if not testFailed:
+        passed += 1
         defaultLogger.info(f"Test `{name}` succeed")
+
+if failed > 0:
+    defaultLogger.error(f"\nfailed: {failed}\npassed: {passed}\nskipped: {skipped}")
+else:
+    defaultLogger.info(f"\nfailed: {failed}\npassed: {passed}\nskipped: {skipped}")

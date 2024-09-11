@@ -1,6 +1,6 @@
 from flask_restx import Resource
 from shared.models import TeamModel
-from utils import AuthResult, postJsonParse, errorList, hasPermissionDecorator, returnParser
+from utils import AuthResult, postJsonParse, errorList, hasPermissionDecorator, returnParser, returnError
 from shared.utils import perms, DatabaseError
 from helper import getGame, getUser
 from typing import List
@@ -20,8 +20,9 @@ returnableAttributes =  {
 }
 
 class createTeam(Resource):
-    @returnParser(returnableAttributes, 200, False, False)
+    @returnParser(returnableAttributes, 201, False, False)
     @postJsonParse(createAttributes)
+    @returnError([errorList.data.doesNotExist, errorList.team.registrationNotOpened, errorList.user.couldNotRegister, errorList.team.alreadyRegistered, errorList.team.noSpaceLeft])
     @hasPermissionDecorator(perms.team.create, True)
     def post(self, data, authResult: AuthResult, permissions: List[str]):
         """Creates team
@@ -47,4 +48,4 @@ class createTeam(Resource):
             elif e.message == "No space for this role in this team.":
                 raise errorList.team.noSpaceLeft
             raise
-        return team.toDict(), 200
+        return team.toDict(), 201

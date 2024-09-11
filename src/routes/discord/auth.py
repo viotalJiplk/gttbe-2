@@ -2,7 +2,7 @@ from flask_restx import Resource
 from flask import Response
 from shared.models import StateModel
 from shared.utils import config
-from utils import generateJWS, returnParser
+from utils import generateJWS, returnParser, errorList, returnError, handleReturnableError, postJsonParse
 from shared.models import UserModel
 from utils import postJson
 import urllib
@@ -30,8 +30,8 @@ class Auth(Resource):
 
 
 class TokenEndpoint(Resource):
-
-    @postJson({
+    @returnError([errorList.auth.invalidState])
+    @postJsonParse({
         "code": [str],
         "state": [str],
         "redirect_uri": [str]
@@ -44,10 +44,8 @@ class TokenEndpoint(Resource):
         Returns:
             dict: jws and user info
         """
-        if("code" not in data or "state" not in data or "redirect_uri" not in data):
-            return {"state": 1, "msg": "Missing something in request."}, 401
         if(StateModel.testAndDelete(data["state"]) == False):
-            return {"state": 1, "msg": "Invalid state."}, 401
+            raise errorList.auth.invalidState
 
         if("name" not in data):
             data["name"] = None

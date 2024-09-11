@@ -9,6 +9,7 @@ import time
 import json
 from .error import ReturnableError, handleReturnableError
 from .nsForDecorators import blankNs
+from .others import returnError
 
 key = jwk.JWK.generate(kty='RSA', size=2048)
 private = key.export_private()
@@ -68,6 +69,7 @@ def getAuth(headers):
         headers (List[str]): httpHeaders
 
     Raises:
+        errorList.jws.missingAuthHeader: When missing auth header
         errorList.jws.invalidToken: When token is invalid
         errorList.jws.InvalidSignature: When signature is invalid
         errorList.jws.expired: When signature expired
@@ -106,10 +108,14 @@ def jwsProtected(optional: bool = False):
             #your logic
             pass
     """
+    errors = [errorList.jws.invalidToken, errorList.jws.InvalidSignature, errorList.jws.expired, errorList.jws.untrusted, errorList.jws.missingUserId]
+    if not optional:
+        errors.append(errorList.jws.missingAuthHeader)
     def wrapper(func):
         @wraps(func)
         @blankNs.doc(security="jws")
         @handleReturnableError
+        @returnError(errors)
         def wrappedGetAuth(*args, **kwargs):
             result = None
             try:

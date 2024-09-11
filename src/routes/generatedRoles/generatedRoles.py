@@ -2,7 +2,7 @@ from flask_restx import Resource
 from shared.models import GeneratedRoleModel, hasPermission
 from shared.utils import perms, DatabaseError
 from helper import getGeneratedRole, getUser
-from utils import hasPermissionDecorator, AuthResult, postJsonParse, postJson, setAttributeFromList, errorList, handleReturnableError, jwsProtected, returnParser
+from utils import hasPermissionDecorator, AuthResult, postJsonParse, postJson, setAttributeFromList, errorList, handleReturnableError, jwsProtected, returnParser, returnError
 from typing import List
 from copy import deepcopy
 
@@ -20,6 +20,7 @@ returnableAttributes["generatedRoleId"] = [int]
 
 class GeneratedRoles(Resource):
     @returnParser(returnableAttributes, 200, False, False)
+    @returnError([errorList.data.doesNotExist, errorList.permission.missingPermission])
     @handleReturnableError
     @jwsProtected(optional=True)
     def get(self, authResult: AuthResult, generatedRoleId: str):
@@ -40,6 +41,8 @@ class GeneratedRoles(Resource):
 
     @handleReturnableError
     @jwsProtected(optional=True)
+    @returnParser({"generatedRoleId": [int]}, 200, False, False)
+    @returnError([errorList.data.doesNotExist, errorList.permission.missingPermission, errorList.data.stillDepends])
     def delete(self, authResult: AuthResult, generatedRoleId: str):
         """Deletes generatedRole
 
@@ -55,14 +58,16 @@ class GeneratedRoles(Resource):
         if len(permission) < 1:
             raise errorList.permission.missingPermission
         try:
-            return generatedRole.delete()
+            generatedRole.delete()
         except DatabaseError as e:
             if e.message == "Still depends":
                 raise errorList.data.stillDepends
             else:
                 raise
+        return {"generatedRoleId": generatedRole.generatedRoleId}
 
     @returnParser(returnableAttributes, 200, False, False)
+    @returnError([errorList.data.doesNotExist, errorList.permission.missingPermission, errorList.data.couldNotConvertInt, errorList.data.unableToConvert])
     @handleReturnableError
     @jwsProtected(optional=True)
     @postJson(accessibleAttributes)
@@ -88,7 +93,7 @@ class GeneratedRoles(Resource):
         return generatedRole.toDict()
 
 class GeneratedRolesCreate(Resource):
-    @returnParser(returnableAttributes, 200, False, False)
+    @returnParser(returnableAttributes, 201, False, False)
     @postJsonParse(expectedJson=accessibleAttributes)
     @hasPermissionDecorator([perms.generatedRole.create], True)
     def post(self, data, authResult: AuthResult, permissions: List[str]):
@@ -99,7 +104,14 @@ class GeneratedRolesCreate(Resource):
         Returns:
             dict: info about generatedRole
         """
-        return GeneratedRoleModel.create(data["roleName"], data["discordRoleId"], data["discordRoleIdEligible"], data["gameId"], data["default"], data["minimal"], data["maximal"]).toDict()
+        try:
+            newGeneratedRoleModel = GeneratedRoleModel.create(data["roleName"], data["discordRoleId"], data["discordRoleIdEligible"], data["gameId"], data["default"], data["minimal"], data["maximal"]).toDict()
+        except ValueError as e:
+            if e.msg == "Role with this name already exists":
+                errorList.data.alreadyExists
+            else:
+                raise
+        return newGeneratedRoleModel, 201
 
 class GeneratedRoleList(Resource):
     @returnParser(returnableAttributes, 200, True, False)
@@ -127,6 +139,7 @@ class GeneratedRolePermissions(Resource):
         "gameId": [int],
         "eligible": [int]
     }, 200, True, False)
+    @returnError([errorList.data.doesNotExist, errorList.permission.missingPermission])
     @handleReturnableError
     @jwsProtected(optional=True)
     def get(self, authResult: AuthResult, generatedRoleId: str):

@@ -1,5 +1,5 @@
 from functools import wraps
-
+from flask_restx import fields
 def handleReturnableError(func):
     """Decorator to handle returnableErrors"""
     @wraps(func)
@@ -7,7 +7,7 @@ def handleReturnableError(func):
         try:
             return func(*args, **kwargs)
         except ReturnableError as e:
-            return {"kind": e.kind, "msg": str(e)}, e.httpStatusCode
+            return e.returnDict(), e.httpStatusCode
     return wrapReturnableError
 
 class ReturnableError(Exception):
@@ -24,3 +24,8 @@ class ReturnableError(Exception):
         self.message = message
         self.httpStatusCode = httpStatusCode
         self.kind = kind
+
+    def returnDict(self):
+        return {"kind": self.kind, "msg": self.message}
+    def returnModel(self):
+        return {"kind": fields.String, "msg": fields.String}

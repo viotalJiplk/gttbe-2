@@ -1,6 +1,6 @@
 from flask_restx import Resource, fields
 from shared.models import TeamModel
-from utils import jwsProtected, AuthResult, postJsonParse, handleReturnableError, errorList, returnParser
+from utils import jwsProtected, AuthResult, postJsonParse, handleReturnableError, errorList, returnParser, returnError
 from shared.models import hasPermission
 from helper import getTeam, getUser, getGame
 from shared.utils import perms, DatabaseError
@@ -48,6 +48,7 @@ class Team(Resource):
 
 class TeamJoinstring(Resource):
     @returnParser({"joinString": [str]}, 200, False, False)
+    @returnError([errorList.data.doesNotExist, errorList.permission.missingPermission])
     @handleReturnableError
     @jwsProtected(optional=True)
     def get(self, authResult: AuthResult, teamId: str):
@@ -76,7 +77,8 @@ class Join(Resource):
     @handleReturnableError
     @jwsProtected(optional=True)
     @returnParser({"teamId": [int]}, 200, False, False)
-    @postJsonParse({"nick":[str], "rank": [int], "max_rank": [int], "generatedRoleId": [int]})
+    @returnError([errorList.data.doesNotExist, errorList.team.registrationNotOpened, errorList.permission.missingPermission, errorList.team.wrongJoinString, errorList.user.couldNotRegister, errorList.team.alreadyRegistered, errorList.team.noSpaceLeft])
+    @postJsonParse({"nick":[str], "rank": [int], "maxRank": [int], "generatedRoleId": [int]})
     def post(self, authResult: AuthResult, teamId: str, data, joinString: str):
         """Joins team
 
@@ -106,7 +108,7 @@ class Join(Resource):
         if not user.canRegister():
             raise errorList.user.couldNotRegister
         try:
-            team.join(userId=authResult.userId, nick=data["nick"], rank=data["rank"], maxRank=data["max_rank"], generatedRoleId=data["generatedRoleId"])
+            team.join(userId=authResult.userId, nick=data["nick"], rank=data["rank"], maxRank=data["maxRank"], generatedRoleId=data["generatedRoleId"])
         except DatabaseError as e:
             if e.message == "Already registered for game.":
                 raise errorList.team.alreadyRegistered
@@ -118,6 +120,7 @@ class Join(Resource):
 
 class Kick(Resource):
     @returnParser({"teamId": [int]}, 200, False, False)
+    @returnError([errorList.data.doesNotExist, errorList.permission.missingPermission, errorList.team.userNotPartOfTeam, errorList.request.missingHeaderForMe])
     @handleReturnableError
     @jwsProtected(optional=True)
     def delete(self, authResult: AuthResult, teamId: str, userId: str):
@@ -136,14 +139,19 @@ class Kick(Resource):
         if len(permission) < 1:
             raise errorList.permission.missingPermission
 
+        if userId == '@me':
+            if user is None:
+                raise errorList.request.missingHeaderForMe
+            userId = user.userId
+
         if perms.team.kick in permission:
             if not team.leave(userId):
                 raise errorList.team.userNotPartOfTeam
-        elif perms.team.kickTeam in permission and team.getUsersRole(authResult.userId) == "Captain":
+        elif perms.team.kickTeam in permission and team.getUsersRole(authResult.userId) is not None:
             if not team.leave(userId):
                 raise errorList.team.userNotPartOfTeam
-        elif perms.team.leave in permission and userId == "@me":
-            if not team.leave(userId=authResult.userId):
+        elif perms.team.leave in permission and userId == '@me':
+            if not team.leave(userId=userId):
                 raise errorList.team.userNotPartOfTeam
         else:
             raise errorList.permission.missingPermission

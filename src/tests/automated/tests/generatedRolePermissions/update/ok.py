@@ -25,7 +25,7 @@ class Test:
         self.jws = getJws("114316488057882015")
 
     def run(self):
-        res = requestExpect.post("/backend/generatedRolePermission/create", create, 200,
+        res = requestExpect.post("/backend/generatedRolePermission/create", create, 201,
             {
                 "Authorization":f"Bearer {self.jws}",
             }, result

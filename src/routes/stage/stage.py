@@ -1,6 +1,7 @@
 from flask_restx import Resource
 from shared.models import StageModel, hasPermission
-from utils import jwsProtected, AuthResult, postJsonParse, postJson, setAttributeFromList, handleReturnableError, errorList, hasPermissionDecorator, returnParser
+from utils import jwsProtected, AuthResult, postJsonParse, postJson, setAttributeFromList, handleReturnableError, errorList, hasPermissionDecorator, returnParser, returnError
+from shared.utils import DatabaseError
 from helper import getEvent, getStage, getUser
 from shared.utils import perms
 from copy import deepcopy
@@ -15,6 +16,7 @@ returnableAttributes["stageId"] = [int]
 
 class Stages(Resource):
     @returnParser(returnableAttributes, 200, False, False)
+    @returnError([errorList.data.doesNotExist, errorList.permission.missingPermission])
     @handleReturnableError
     @jwsProtected(optional=True)
     def get(self, authResult: AuthResult, stageId: str):
@@ -35,6 +37,8 @@ class Stages(Resource):
         return stage.toDict()
 
     @handleReturnableError
+    @returnParser({"stageId": [int]}, 200, False, False)
+    @returnError([errorList.data.doesNotExist, errorList.permission.missingPermission, errorList.permission.missingPermission])
     @jwsProtected(optional=True)
     def delete(self, authResult: AuthResult, stageId: str):
         """Deletes stage
@@ -53,11 +57,12 @@ class Stages(Resource):
             raise errorList.permission.missingPermission
         try:
             stage.delete()
-        except e:
+        except DatabaseError as e:
             raise errorList.data.stillDepends
-        return
+        return {"stageId": stage.stageId}
 
     @returnParser(returnableAttributes, 200, False, False)
+    @returnError([errorList.data.doesNotExist, errorList.permission.missingPermission, errorList.data.couldNotConvertInt, errorList.data.unableToConvert])
     @handleReturnableError
     @jwsProtected(optional=True)
     @postJson(accessibleAttributes)
@@ -80,7 +85,8 @@ class Stages(Resource):
         return stage.toDict()
 
 class StageCreate(Resource):
-    @returnParser(returnableAttributes, 200, False, False)
+    @returnParser(returnableAttributes, 201, False, False)
+    @returnError([errorList.data.doesNotExist, errorList.permission.missingPermission])
     @handleReturnableError
     @jwsProtected(optional=True)
     @postJsonParse(expectedJson=accessibleAttributes)
@@ -97,7 +103,7 @@ class StageCreate(Resource):
         permission = hasPermission(user, event.gameId, perms.stage.create)
         if len(permission) < 1:
             raise errorList.permission.missingPermission
-        return StageModel.create(data["eventId"], data["stageName"], data["stageIndex"]).toDict()
+        return StageModel.create(data["eventId"], data["stageName"], data["stageIndex"]).toDict(), 201
 
 class StageListAll(Resource):
     @returnParser(returnableAttributes, 200, True, False)

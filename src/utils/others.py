@@ -66,6 +66,13 @@ def returnParser(returnJson: dict = {}, code: int = 200, asList: bool = False, s
         return func
     return wrapper
 
+def returnError(errors: list[ReturnableError]):
+    def wrapper(func: Callable):
+        for error in errors:
+            returnsJson(f"{str(func.__module__)}.{str(func.__qualname__)}.returnError.{error.message}", error.returnModel(), error.httpStatusCode, False, False, 'Error')(func)
+        return func
+    return wrapper
+
 def postJson(jsonParams:dict={}):
     """Decorator that Gets json from request
     call: func(data=data, *args, **kwargs)

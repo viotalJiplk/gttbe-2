@@ -26,7 +26,9 @@ def expectsJson(name, expect, validate=False, strict=False):
 
 def returnsJson(name, returns, code=200, asList=False, strict=False, description=''):
     def wrapper(func):
-        func.__returns = ReturnParams(name, returns, code, asList, strict, description)
+        if not hasattr(func, "__returns"):
+            func.__returns = []
+        func.__returns.append(ReturnParams(name, returns, code, asList, strict, description))
         return func
     return wrapper
 
@@ -43,17 +45,20 @@ def registerRoutes(api: Namespace, routes: list[Tuple[Resource, str]]):
             method = api.expect(model, validate=method.__expect.validate)(method)
         return method
     def __return(method):
-        if hasattr(method, "__returns") and isinstance(method.__returns, ReturnParams):
-            model = None
-            if isinstance(method.__returns.returns, dict):
-                model = api.model(name=method.__returns.name, model=method.__returns.returns, strict=method.__returns.strict)
-            else:
-                model = method.__returns.returns
-            if method.__returns.asList:
-                method = api.response(code=method.__returns.code, description=method.__returns.description,  model=[model])(method)
-            else:
-                method = api.response(code=method.__returns.code, description=method.__returns.description,  model=model)(method)
-        return method
+        methodCopy = method
+        if hasattr(method, "__returns"):
+            for ret in method.__returns:
+                if isinstance(ret, ReturnParams):
+                    model = None
+                    if isinstance(ret.returns, dict):
+                        model = api.model(name=ret.name, model=ret.returns, strict=ret.strict)
+                    else:
+                        model = ret.returns
+                    if ret.asList:
+                        methodCopy = api.response(code=ret.code, description=ret.description,  model=[model])(methodCopy)
+                    else:
+                        methodCopy = api.response(code=ret.code, description=ret.description,  model=model)(methodCopy)
+        return methodCopy
 
     for route in routes:
         if  hasattr(route[0], "get"):
