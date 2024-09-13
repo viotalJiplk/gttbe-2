@@ -1,3 +1,3 @@
-from .assignedRoles import AssignedRoles, AssignedRolesCreate, AssignedRolePermissions, AssignedRoleList
+from .assignedRoles import AssignedRoles, AssignedRolesCreate, AssignedRolePermissionList, AssignedRoleList
 
-assignedRoleRoutes = [(AssignedRolesCreate, '/create'), (AssignedRoles, '/<assignedRoleId>/'), (AssignedRolePermissions, '/<assignedRoleId>/permissions/'), (AssignedRoleList, '/listAll/')]
+assignedRoleRoutes = [(AssignedRolesCreate, '/create'), (AssignedRoles, '/<assignedRoleId>/'), (AssignedRolePermissionList, '/<assignedRoleId>/permissions/'), (AssignedRoleList, '/listAll/')]

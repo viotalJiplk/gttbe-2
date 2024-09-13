@@ -3,7 +3,7 @@ import os
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 from flask import Flask, request, abort, Response
-#from flask_cors import CORS
+from flask_cors import CORS
 #from flask_restful import Resource, Api
 from flask_restx import Api, Resource, fields
 from utils import registerRoutes
@@ -31,7 +31,7 @@ from tests import testRoutes
 
 app = Flask(import_name=__name__)
 
-#CORS(app)
+CORS(app)
 docs = False
 if not config.production:
     docs = '/'

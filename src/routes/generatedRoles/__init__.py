@@ -1,3 +1,3 @@
-from .generatedRoles import GeneratedRoles, GeneratedRolesCreate, GeneratedRolePermissions, GeneratedRoleList
+from .generatedRoles import GeneratedRoles, GeneratedRolesCreate, GeneratedRolePermissionList, GeneratedRoleList
 
-generatedRoleRoutes = [(GeneratedRolesCreate, '/create/'), (GeneratedRoles, '/<generatedRoleId>/'), (GeneratedRoleList, '/list/<gameId>/'), (GeneratedRolePermissions, '/<generatedRoleId>/permissions/')]
+generatedRoleRoutes = [(GeneratedRolesCreate, '/create/'), (GeneratedRoles, '/<generatedRoleId>/'), (GeneratedRoleList, '/list/<gameId>/'), (GeneratedRolePermissionList, '/<generatedRoleId>/permissions/')]

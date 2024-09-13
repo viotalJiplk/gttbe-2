@@ -103,7 +103,7 @@ class AssignedRoleList(Resource):
         """
         return AssignedRoleModel.getAllDict()
 
-class AssignedRolePermissions(Resource):
+class AssignedRolePermissionList(Resource):
     @returnParser({
         "permission": [str],
         "gameId": [int, type(None)],

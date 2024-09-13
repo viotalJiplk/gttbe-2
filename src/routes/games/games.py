@@ -33,7 +33,7 @@ class Games(Resource):
         """
         if(gameId == "all"):
             if perms.game.listAll in permissions:
-                return {"games": GameModel.getAllDict()}
+                return GameModel.getAllDict(), 200
             else:
                 raise errorList.permission.missingPermission
         else:

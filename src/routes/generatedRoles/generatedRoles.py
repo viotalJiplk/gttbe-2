@@ -131,7 +131,7 @@ class GeneratedRoleList(Resource):
             return GeneratedRoleModel.getAllDict(gameId=gameId)
 
 
-class GeneratedRolePermissions(Resource):
+class GeneratedRolePermissionList(Resource):
     @returnParser({
         "generatedRolePermissionId": [int],
         "permission": [str],

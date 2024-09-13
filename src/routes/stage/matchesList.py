@@ -23,7 +23,7 @@ returnableAttributes = {
     "eventType": [str]
   }
 
-class MatchesList(Resource):
+class MatchesListFromStage(Resource):
     @returnParser(returnableAttributes, 200, True, False)
     @returnError([errorList.data.doesNotExist, errorList.permission.missingPermission])
     @handleReturnableError
