@@ -9,16 +9,19 @@ from datetime import date, time
 from .register import expectsJson, returnsJson
 from typing import Callable
 
+def formatUnique(func, suffix):
+    return f"{str(func.__module__)}.{str(func.__qualname__)}.{suffix}".replace("<", "").replace(">", "").replace(" ", "_").replace(",", "")
+
 def returnParser(returnJson: dict = {}, code: int = 200, asList: bool = False, strict: bool = False):
     def wrapper(func: Callable):
-        returnsJson(f"{str(func.__module__)}.{str(func.__qualname__)}.return", returnJson, code, asList, strict, '', False)(func)
+        returnsJson(formatUnique(func, "return"), returnJson, code, asList, strict, '', False)(func)
         return func
     return wrapper
 
 def returnError(errors: list[ReturnableError]):
     def wrapper(func: Callable):
         for error in errors:
-            returnsJson(f"{str(func.__module__)}.{str(func.__qualname__)}.returnError.{error.message}", error.returnModel(), error.httpStatusCode, False, False, 'Error', False)(func)
+            returnsJson(formatUnique(func, "returnError"), error.returnModel(), error.httpStatusCode, False, False, 'Error', False)(func)
         return func
     return wrapper
 
