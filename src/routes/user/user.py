@@ -10,7 +10,7 @@ accessibleAttributes = {
     "surname": [str],
     "name": [str],
     "adult": [bool],
-    "schoolId": [int],
+    "schoolId": [int]
 }
 returnableAttributes = deepcopy(accessibleAttributes)
 returnableAttributes["userId"] = [str]

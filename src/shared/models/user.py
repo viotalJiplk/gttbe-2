@@ -40,7 +40,10 @@ class UserModel(ObjectDbSync):
         self.userId = userId
         self.surname = surname
         self.name = name
-        self.adult = adult
+        if adult is not None:
+            self.adult = bool(adult)
+        else:
+            self.adult = None
         self.schoolId = schoolId
         self.__access_token = access_token
         self.__refresh_token = refresh_token
