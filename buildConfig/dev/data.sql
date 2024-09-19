@@ -45,6 +45,18 @@ INSERT INTO `generatedRoles` (`generatedRoleId`, `roleName`, `discordRoleId`, `d
 (11,	'Kapitán',	NULL,	NULL,	6,	CONV('1', 2, 10) + 0,   1,	1),
 (12,	'Hráč',	    NULL,	NULL,	6,	CONV('0', 2, 10) + 0,   5,	5);
 
+INSERT INTO `generatedRolePermissions` (`generatedRolePermissionId`, `permission`, `generatedRoleId`, `gameId`, `eligible`) VALUES
+(1,	    'team.kickTeam',	            1,	1,	CONV('1', 2, 10) + 0),
+(3,	    'team.kickTeam',	            1,	2,	CONV('1', 2, 10) + 0),
+(5,	    'team.kickTeam',	            1,	3,	CONV('1', 2, 10) + 0),
+(7,	    'team.kickTeam',	            1,	4,	CONV('1', 2, 10) + 0),
+(9,	    'team.kickTeam',	            1,	5,	CONV('1', 2, 10) + 0),
+(11,	'team.generateJoinStringMy',	1,	1,	CONV('1', 2, 10) + 0),
+(12,	'team.generateJoinStringMy',	1,	2,	CONV('1', 2, 10) + 0),
+(13,	'team.generateJoinStringMy',	1,	3,	CONV('1', 2, 10) + 0),
+(14,	'team.generateJoinStringMy',	1,	4,	CONV('1', 2, 10) + 0),
+(15,	'team.generateJoinStringMy',	1,	5,	CONV('1', 2, 10) + 0);
+
 INSERT INTO `registrations` (`userId`, `teamId`, `generatedRoleId`,  `nick`, `rank`, `maxRank`) VALUES
 (114316488057882015, 23, 9, 'dZGgAVQF', 71, 80),
 (115423241599600111, 9, 7, 'bshGMULN', 64, 73),
@@ -1302,8 +1314,6 @@ INSERT INTO `users` (`userId`, `surname`, `name`, `adult`, `schoolId`, `access_t
 INSERT INTO `userRoles` (`userRoleId`, `assignedRoleId`, `userId`) VALUES
 (1,	1,	114316488057882015),
 (2,	2,	115423241599600111);
-INSERT INTO `generatedRolePermissions` (`generatedRolePermissionId`, `permission`, `generatedRoleId`, `gameId`, `eligible`) VALUES
-(1,	'school.listAll',	1,	1,	CONV('1', 2, 10) + 0);
 
 INSERT INTO `assignedRolePermissions` (`permission`, `gameId`, `assignedRoleId`)
 VALUES ('school.listAll', '4', '2');
