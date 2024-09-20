@@ -57,8 +57,8 @@ INSERT INTO `generatedRolePermissions` (`generatedRolePermissionId`, `permission
 (8,	    'team.generateJoinStringMy',	3,	2,	CONV('1', 2, 10) + 0),
 (9,	    'team.generateJoinStringMy',	5,	3,	CONV('1', 2, 10) + 0),
 (10,	'team.generateJoinStringMy',	7,	4,	CONV('1', 2, 10) + 0),
-(11,	'team.generateJoinStringMy',	9,	5,	CONV('1', 2, 10) + 0);
-(11,	'team.generateJoinStringMy',	11,	5,	CONV('1', 2, 10) + 0);
+(11,	'team.generateJoinStringMy',	9,	5,	CONV('1', 2, 10) + 0),
+(12,	'team.generateJoinStringMy',	11,	5,	CONV('1', 2, 10) + 0);
 
 INSERT INTO `registrations` (`userId`, `teamId`, `generatedRoleId`,  `nick`, `rank`, `maxRank`) VALUES
 (114316488057882015, 23, 9, 'dZGgAVQF', 71, 80),
