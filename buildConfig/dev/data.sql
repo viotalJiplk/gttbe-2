@@ -47,15 +47,17 @@ INSERT INTO `generatedRoles` (`generatedRoleId`, `roleName`, `discordRoleId`, `d
 
 INSERT INTO `generatedRolePermissions` (`generatedRolePermissionId`, `permission`, `generatedRoleId`, `gameId`, `eligible`) VALUES
 (1,	    'team.kickTeam',	            1,	1,	CONV('1', 2, 10) + 0),
-(3,	    'team.kickTeam',	            1,	2,	CONV('1', 2, 10) + 0),
-(5,	    'team.kickTeam',	            1,	3,	CONV('1', 2, 10) + 0),
-(7,	    'team.kickTeam',	            1,	4,	CONV('1', 2, 10) + 0),
-(9,	    'team.kickTeam',	            1,	5,	CONV('1', 2, 10) + 0),
-(11,	'team.generateJoinStringMy',	1,	1,	CONV('1', 2, 10) + 0),
-(12,	'team.generateJoinStringMy',	1,	2,	CONV('1', 2, 10) + 0),
-(13,	'team.generateJoinStringMy',	1,	3,	CONV('1', 2, 10) + 0),
-(14,	'team.generateJoinStringMy',	1,	4,	CONV('1', 2, 10) + 0),
-(15,	'team.generateJoinStringMy',	1,	5,	CONV('1', 2, 10) + 0);
+(2,	    'team.kickTeam',	            3,	2,	CONV('1', 2, 10) + 0),
+(3,	    'team.kickTeam',	            5,	3,	CONV('1', 2, 10) + 0),
+(4,	    'team.kickTeam',	            7,	4,	CONV('1', 2, 10) + 0),
+(5,	    'team.kickTeam',	            9,	5,	CONV('1', 2, 10) + 0),
+(6,	    'team.kickTeam',	            11,	5,	CONV('1', 2, 10) + 0),
+(7,	    'team.generateJoinStringMy',	1,	1,	CONV('1', 2, 10) + 0),
+(8,	    'team.generateJoinStringMy',	3,	2,	CONV('1', 2, 10) + 0),
+(9,	    'team.generateJoinStringMy',	5,	3,	CONV('1', 2, 10) + 0),
+(10,	'team.generateJoinStringMy',	7,	4,	CONV('1', 2, 10) + 0),
+(11,	'team.generateJoinStringMy',	9,	5,	CONV('1', 2, 10) + 0);
+(11,	'team.generateJoinStringMy',	11,	5,	CONV('1', 2, 10) + 0);
 
 INSERT INTO `registrations` (`userId`, `teamId`, `generatedRoleId`,  `nick`, `rank`, `maxRank`) VALUES
 (114316488057882015, 23, 9, 'dZGgAVQF', 71, 80),
