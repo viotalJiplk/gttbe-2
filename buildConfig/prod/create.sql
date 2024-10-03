@@ -372,6 +372,7 @@ CREATE TABLE `users` (
   `name` varchar(200) NOT NULL DEFAULT '',
   `adult` bit(1) DEFAULT b'0',
   `schoolId` int(10) unsigned DEFAULT NULL,
+  `camera` bit(1) NOT NULL DEFAULT b'0',
   `access_token` varchar(100) NOT NULL,
   `refresh_token` varchar(100) NOT NULL,
   `expires_in` datetime NOT NULL,

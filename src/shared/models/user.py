@@ -22,7 +22,7 @@ class UserModel(ObjectDbSync):
     tableName = "users"
     tableId = "userId"
 
-    def __init__(self, userId: Union[int, None] = None, refresh_token: Union[str, None] = None, access_token: Union[str, None] = None, expires_in: Union[str, datetime, None] = None, surname: Union[str, None] = None,  name: Union[str, None] = None, adult: Union[bool, None] = None, schoolId: Union[int, None] = None ):
+    def __init__(self, userId: Union[int, None] = None, refresh_token: Union[str, None] = None, access_token: Union[str, None] = None, expires_in: Union[str, datetime, None] = None, surname: Union[str, None] = None,  name: Union[str, None] = None, adult: Union[bool, None] = None, schoolId: Union[int, None] = None, camera: bool = False):
         """Initializes user representation
 
         Args:
@@ -45,6 +45,7 @@ class UserModel(ObjectDbSync):
         else:
             self.adult = None
         self.schoolId = schoolId
+        self.camera = bool(camera)
         self.__access_token = access_token
         self.__refresh_token = refresh_token
         self.__expires_in = expires_in
@@ -69,13 +70,14 @@ class UserModel(ObjectDbSync):
             "surname": self.surname,
             "name": self.name,
             "adult": self.adult,
+            "camera": self.camera,
             "schoolId": self.schoolId,
             "discord_user_object": discordUserObject
         }
 
     @classmethod
     @dbConn(autocommit=True, buffered=True)
-    def updateOrCreateUser(cls, cursor, db, userId: Union[int, None], refresh_token: Union[str, None] = None, access_token: Union[str, None] = None, expires_in: Union[str, datetime, None] = None, name: Union[str, None] = None, surname: Union[str, None]  = None, adult: Union[bool, None]  = None, schoolId: Union[int, None]  = None):
+    def updateOrCreateUser(cls, cursor, db, userId: Union[int, None], refresh_token: Union[str, None] = None, access_token: Union[str, None] = None, expires_in: Union[str, datetime, None] = None, name: Union[str, None] = None, surname: Union[str, None]  = None, adult: Union[bool, None]  = None, schoolId: Union[int, None]  = None, camera: bool = False):
         """Update or create user (useful for logging in/registration)
 
         Args:
@@ -149,10 +151,10 @@ class UserModel(ObjectDbSync):
                 query_end += "%(" + toSet + ")s"
             cursor.execute(query_start + query_end + ");", values)
 
-        return cls(userId=userId, refresh_token=refresh_token, access_token=access_token, expires_in=expires_in, name=name, surname=surname, adult=adult, schoolId=schoolId)
+        return cls(userId=userId, refresh_token=refresh_token, access_token=access_token, expires_in=expires_in, name=name, surname=surname, adult=adult, schoolId=schoolId, camera=camera)
 
     @classmethod
-    def getByCode(cls, code: str, redirect_uri: str, name: Union[str, None], surname: Union[str, None], adult: Union[bool, None], schoolId: Union[int, None]):
+    def getByCode(cls, code: str, redirect_uri: str, name: Union[str, None], surname: Union[str, None], adult: Union[bool, None], schoolId: Union[int, None], camera: bool = False):
         """Exchange code for access and refresh tokens
 
         Args:
@@ -179,7 +181,7 @@ class UserModel(ObjectDbSync):
         user = UserModel(access_token = tokenReq["access_token"], expires_in = tokenReq["expires_in"])
         userObject = user.getDiscordUserObject()
 
-        return (UserModel.updateOrCreateUser(userId = userObject["id"], refresh_token = tokenReq["refresh_token"], access_token = tokenReq["access_token"], expires_in = tokenReq["expires_in"], name=name, surname=surname, adult=adult, schoolId=schoolId), userObject)
+        return (UserModel.updateOrCreateUser(userId = userObject["id"], refresh_token = tokenReq["refresh_token"], access_token = tokenReq["access_token"], expires_in = tokenReq["expires_in"], name=name, surname=surname, adult=adult, schoolId=schoolId, camera=camera), userObject)
 
     def getDiscordUserObject(self):
         """Returns this user discord info
