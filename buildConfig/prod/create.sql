@@ -142,6 +142,8 @@ CREATE TABLE `games` (
   `registrationEnd` date NOT NULL,
   `gamePage` mediumtext NOT NULL,
   `maxTeams` int(10) unsigned NOT NULL,
+  `backdrop` varchar(40) DEFAULT NULL,
+  `icon` varchar(40) DEFAULT NULL,
   PRIMARY KEY (`gameId`),
   KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

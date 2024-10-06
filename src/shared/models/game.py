@@ -13,11 +13,13 @@ class GameModel(ObjectDbSync):
             registrationEnd (date): date of end of registration for this game
             gamePage (str): page for this game
             maxTeams (int): maximum teams for this game
+            backdrop (str|None): backdrop url for this game
+            icon (str|None): icon url for this game
     """
     tableName = "games"
     tableId = "gameId"
 
-    def __init__(self, name=None, registrationStart=date.fromisocalendar(1,1,1), registrationEnd=date.fromisocalendar(9999,1,1), gameId=None, gamePage=None, maxTeams=None):
+    def __init__(self, name=None, registrationStart=date.fromisocalendar(1,1,1), registrationEnd=date.fromisocalendar(9999,1,1), gameId=None, gamePage=None, maxTeams=None, backdrop=None, icon=None):
         """Initializes representation of game
 
         Args:
@@ -27,6 +29,8 @@ class GameModel(ObjectDbSync):
             registrationEnd (date): date of end of registration for this game
             gamePage (str): page for this game
             maxTeams (int): maximum teams for this game
+            backdrop (str|None): backdrop url for this game
+            icon (str|None): icon url for this game
         """
         self.gameId = gameId
         self.name = name
@@ -34,6 +38,8 @@ class GameModel(ObjectDbSync):
         self.registrationEnd = registrationEnd
         self.gamePage = gamePage
         self.maxTeams = maxTeams
+        self.backdrop = backdrop
+        self.icon = icon
         super().__init__()
 
     def canBeRegistered(self):
@@ -63,7 +69,9 @@ class GameModel(ObjectDbSync):
             "name": self.name,
             "registrationStart": self.registrationStart.isoformat(),
             "registrationEnd": self.registrationEnd.isoformat(),
-            "maxTeams": self.maxTeams
+            "maxTeams": self.maxTeams,
+            "backdrop": self.backdrop,
+            "icon": self.icon
         }
 
     def __str__(self):
@@ -71,7 +79,7 @@ class GameModel(ObjectDbSync):
 
     @classmethod
     @dbConn()
-    def create(cls, name: str, registrationStart: date, registrationEnd: date, maxTeams: int, cursor, db):
+    def create(cls, name: str, registrationStart: date, registrationEnd: date, maxTeams: int, backdrop: str, icon: str, cursor, db):
         """Initializes representation of game
 
         Args:
@@ -83,9 +91,9 @@ class GameModel(ObjectDbSync):
         Returns:
             GameModel: representation of game
         """
-        query = "INSERT INTO games (name, registrationStart, registrationEnd, maxTeams) VALUES (%s, %s, %s, %s)"
-        cursor.execute(query, (name, registrationStart, registrationEnd, maxTeams))
-        return cls(gameId=cursor.lastrowid, name=name, registrationStart=registrationStart, registrationEnd=registrationEnd, maxTeams=maxTeams)
+        query = "INSERT INTO games (name, registrationStart, registrationEnd, maxTeams, backdrop, icon) VALUES (%s, %s, %s, %s, %s, %s)"
+        cursor.execute(query, (name, registrationStart, registrationEnd, maxTeams, backdrop, icon))
+        return cls(gameId=cursor.lastrowid, name=name, registrationStart=registrationStart, registrationEnd=registrationEnd, maxTeams=maxTeams, backdrop=backdrop, icon=icon)
 
     @classmethod
     @dbConn()

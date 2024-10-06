@@ -12,6 +12,8 @@ accessibleAttributes = {
     "registrationStart": [date],
     "registrationEnd": [date],
     "maxTeams": [int],
+    "backdrop": [str, type(None)],
+    "icon": [str, type(None)]
 }
 
 returnableAttributes = deepcopy(accessibleAttributes)
