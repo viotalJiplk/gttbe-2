@@ -17,5 +17,6 @@
         "token_ttl": 900,
         "userid_claim": "/discord/userid"
     },
-    "production": false
+    "production": false,
+    "dynamicFileFolder": "../dyn/"
 }

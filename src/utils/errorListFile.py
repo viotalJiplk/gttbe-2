@@ -34,6 +34,11 @@ class Team:
     userNotPartOfTeam = ReturnableError("User is not part of the team", "TEAM", 404)
 class User:
     couldNotRegister = ReturnableError("You have not filled info required for creating Team.", "User", 400)
+class File:
+    wrongFileName = ReturnableError("The filename you provided is not a valid filename.", "File", 400)
+    noFileUploaded = ReturnableError("There was no file provided in request", "File", 400)
+    missingPermission = ReturnableError("Filesystem denied access to this file.", "File", 400)
+    fileDoesNotExist = ReturnableError("File does not exist.", "File", 404)
 class ErrorList:
     """List of all errors
     """
@@ -45,5 +50,6 @@ class ErrorList:
     user = User()
     json = Json()
     auth = Auth()
+    file = File()
 
 errorList = ErrorList()

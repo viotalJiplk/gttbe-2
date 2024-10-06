@@ -103,6 +103,12 @@ class UserRoles:
 class Permissions:
     listAll = "permission.listAll"
 
+class File:
+    read = "file.read"
+    upload = "file.upload"
+    delete = "file.delete"
+    listFiles = "file.listFiles"
+
 class PermissionList:
     """Permission name translation layer"""
     event = EventPermissions()
@@ -120,5 +126,6 @@ class PermissionList:
     generatedRolePermission = GeneratedRolePermissions()
     userRole = UserRoles()
     permission = Permissions()
+    file = File()
 
 perms = PermissionList()

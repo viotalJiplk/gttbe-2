@@ -98,7 +98,12 @@ INSERT INTO `assignedRolePermissions` (`assignedRolePermissionId`, `permission`,
 (71,    'user.generatedRolesListMe',    NULL, 4),
 (72,    'user.assignedRolesList',    NULL, 4),
 (73,    'user.assignedRolesListMe', NULL, 1),
-(74,    'permission.listAll', NULL, 1);
+(74,    'permission.listAll', NULL, 1),
+(75,    'file.read', NULL, 4),
+(76,    'file.upload', NULL, 1),
+(77,    'file.delete', NULL, 1),
+(78,    'file.listFiles', NULL, 1);
+
 
 DROP TABLE IF EXISTS `assignedRoles`;
 CREATE TABLE `assignedRoles` (
@@ -285,7 +290,11 @@ INSERT INTO `permissions` (`permission`) VALUES
 ('userRole.read'),
 ('userRole.update'),
 ('userRole.delete'),
-('permission.listAll');
+('permission.listAll'),
+('file.read'),
+('file.upload'),
+('file.delete'),
+('file.listFiles');
 
 DROP TABLE IF EXISTS `registrations`;
 CREATE TABLE `registrations` (

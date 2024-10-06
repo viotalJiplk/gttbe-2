@@ -27,6 +27,7 @@ from routes.generatedRolePermissions import generatedRolePermissionRoutes
 from routes.userRoles import userRolesRoutes
 from routes.permissions import permissionsRoutes
 from tests import testRoutes
+from routes.file import fileRoutes
 
 
 app = Flask(import_name=__name__)
@@ -71,6 +72,7 @@ registerRoutes(api.namespace('generatedRole', description='generatedRole'), gene
 registerRoutes(api.namespace('generatedRolePermission', description='generatedRolePermission'), generatedRolePermissionRoutes)
 registerRoutes(api.namespace('userRole', description='userRole'), userRolesRoutes)
 registerRoutes(api.namespace('permission', description='permissions'), permissionsRoutes)
+registerRoutes(api.namespace('file', description='files'), fileRoutes)
 
 defaultLogger.info("Server started")
 if __name__ == "__main__":

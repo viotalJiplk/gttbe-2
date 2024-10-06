@@ -123,6 +123,7 @@ class Config(object):
                 cls.selfref = Selfref(defaults["selfref"])
                 cls.discord = Discord(defaults["discord"], cls.selfref)
                 cls.production = toBool(checkEnvVariable("PROD", defaults["production"]))
+                cls.dynamicFileFolder = str(checkEnvVariable("DYNFOLDER", defaults["dynamicFileFolder"]))
         return cls._instance
 
     def toDict(self):
