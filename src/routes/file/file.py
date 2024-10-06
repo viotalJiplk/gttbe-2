@@ -10,11 +10,14 @@ def filenameParser(fileName: str):
 
 class File(Resource):
     @hasPermissionDecorator([perms.file.read], False)
-    @returnError([errorList.file.wrongFileName])
+    @returnError([errorList.file.wrongFileName, errorList.file.missingPermission])
     def get(self, fileName, authResult, permissions):
         if not filenameParser(fileName):
             raise errorList.file.wrongFileName
-        return send_file(path.join(config.dynamicFileFolder, fileName))
+        try:
+            return send_file(path.join(config.dynamicFileFolder, fileName))
+        except FileNotFoundError:
+            raise errorList.file.fileDoesNotExist
 
     @hasPermissionDecorator([perms.file.upload], False)
     @returnError([errorList.file.wrongFileName])
@@ -29,7 +32,7 @@ class File(Resource):
                 "address": f"/backend/file/{fileName}"
             }
     @hasPermissionDecorator([perms.file.delete], False)
-    @returnError([errorList.file.wrongFileName])
+    @returnError([errorList.file.wrongFileName, errorList.file.missingPermission])
     def delete(self, fileName, authResult, permissions):
         if not filenameParser(fileName):
             raise errorList.file.wrongFileName
