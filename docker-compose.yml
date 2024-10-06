@@ -2,7 +2,7 @@ version: "2.2"
 
 services:
   gtt-backend:
-    image: ghcr.io/viotaljiplk/gttbe-2:latest
+    image: ghcr.io/viotaljiplk/gttbe-2:$build
     restart: $restart
     container_name: gtt-backend-standalone
     networks:
