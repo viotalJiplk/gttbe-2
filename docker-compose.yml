@@ -20,8 +20,11 @@ services:
       token_ttl: "$token_ttl"
       userid_claim: "$userid_claim"
       PROD: "$production"
+      DYNFOLDER: "/files"
     ports:
       - "$Port:80"
+    volumes:
+        - files:/files
 
   gtt-mariadb:
     image: mariadb
@@ -49,3 +52,4 @@ networks:
 
 volumes:
   db-data:
+  files:
