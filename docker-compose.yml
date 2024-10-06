@@ -4,7 +4,7 @@ services:
   gtt-backend:
     image: ghcr.io/viotaljiplk/gttbe-2:latest
     restart: $restart
-    container_name: gtt-backend
+    container_name: gtt-backend-standalone
     networks:
       - gtt-internal
     environment:
