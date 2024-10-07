@@ -102,7 +102,12 @@ INSERT INTO `assignedRolePermissions` (`assignedRolePermissionId`, `permission`,
 (75,    'file.read', NULL, 4),
 (76,    'file.upload', NULL, 1),
 (77,    'file.delete', NULL, 1),
-(78,    'file.listFiles', NULL, 1);
+(78,    'file.listFiles', NULL, 1),
+(79,    'rank.create', NULL, 1),
+(80,    'rank.read', NULL, 4),
+(81,    'rank.update', NULL, 1),
+(82,    'rank.delete', NULL, 1),
+(83,    'rank.list', NULL, 4);
 
 
 DROP TABLE IF EXISTS `assignedRoles`;
@@ -296,7 +301,12 @@ INSERT INTO `permissions` (`permission`) VALUES
 ('file.read'),
 ('file.upload'),
 ('file.delete'),
-('file.listFiles');
+('file.listFiles'),
+('rank.create'),
+('rank.read'),
+('rank.update'),
+('rank.delete'),
+('rank.list');
 
 DROP TABLE IF EXISTS `registrations`;
 CREATE TABLE `registrations` (
@@ -309,9 +319,13 @@ CREATE TABLE `registrations` (
   KEY `teamId` (`teamId`),
   KEY `userId` (`userId`),
   KEY `generatedRoleId` (`generatedRoleId`),
+  KEY `rank` (`rank`),
+  KEY `maxRank` (`maxRank`),
   CONSTRAINT `registrations_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `users` (`userId`),
   CONSTRAINT `registrations_ibfk_2` FOREIGN KEY (`teamId`) REFERENCES `teams` (`teamId`),
-  CONSTRAINT `registrations_ibfk_3` FOREIGN KEY (`generatedRoleId`) REFERENCES `generatedRoles` (`generatedRoleId`)
+  CONSTRAINT `registrations_ibfk_3` FOREIGN KEY (`generatedRoleId`) REFERENCES `generatedRoles` (`generatedRoleId`),
+  CONSTRAINT `registrations_ibfk_4` FOREIGN KEY (`rank`) REFERENCES `ranks` (`rankId`),
+  CONSTRAINT `registrations_ibfk_5` FOREIGN KEY (`maxRank`) REFERENCES `ranks` (`rankId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 
@@ -375,6 +389,15 @@ CREATE TABLE `userRoles` (
   CONSTRAINT `userRoles_ibfk_4` FOREIGN KEY (`assignedRoleId`) REFERENCES `assignedRoles` (`assignedRoleId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+DROP TABLE IF EXISTS `ranks`;
+CREATE TABLE `ranks` (
+  `rankId` int(11) NOT NULL AUTO_INCREMENT,
+  `rankName` tinytext NOT NULL,
+  `gameId` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`rankId`),
+  KEY `gameId` (`gameId`),
+  CONSTRAINT `ranks_ibfk_1` FOREIGN KEY (`gameId`) REFERENCES `games` (`gameId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
@@ -418,16 +441,30 @@ BEGIN
     END IF;
 END;;
 
+DROP PROCEDURE IF EXISTS `registrations_restrict_rank`;
+DELIMITER ;;
+CREATE PROCEDURE `registrations_restrict_rank`(teamIdIN INT, rankIdIN INT)
+BEGIN
+    IF ((SELECT gameId FROM teams WHERE teamId=teamIdIN) != (SELECT gameId FROM ranks WHERE rankId=rankIdIN)) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Wrong role';
+    END IF;
+END;;
+
 DROP TRIGGER IF EXISTS registrations_restrict_user_insert;
 DELIMITER ;;
 CREATE TRIGGER `registrations_restrict_user_insert` BEFORE INSERT ON `registrations` FOR EACH ROW BEGIN
     CALL registrations_restrict_user(NEW.userId, NEW.teamId);
+    CALL registrations_restrict_rank(NEW.teamId, NEW.rank);
+    CALL registrations_restrict_rank(NEW.teamId, NEW.maxRank);
 END;;
 
 DROP TRIGGER IF EXISTS registrations_restrict_user_update;
 DELIMITER ;;
 CREATE TRIGGER `registrations_restrict_user_update` BEFORE UPDATE ON `registrations` FOR EACH ROW BEGIN
     CALL registrations_restrict_user(NEW.userId, NEW.teamId);
+    CALL registrations_restrict_rank(NEW.teamId, NEW.rank);
+    CALL registrations_restrict_rank(NEW.teamId, NEW.maxRank);
 END;;
 
 

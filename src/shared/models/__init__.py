@@ -13,3 +13,4 @@ from .state import StateModel
 from .team import TeamModel
 from .user import UserModel
 from .userRoles import UserRoleModel
+from .rank import RankModel

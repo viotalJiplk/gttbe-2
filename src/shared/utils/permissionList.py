@@ -103,11 +103,19 @@ class UserRoles:
 class Permissions:
     listAll = "permission.listAll"
 
-class File:
+class Files:
     read = "file.read"
     upload = "file.upload"
     delete = "file.delete"
     listFiles = "file.listFiles"
+
+class Ranks:
+    create = "rank.create"
+    read = "rank.read"
+    update = "rank.update"
+    delete = "rank.delete"
+    listRanks = "rank.list"
+
 
 class PermissionList:
     """Permission name translation layer"""
@@ -126,6 +134,7 @@ class PermissionList:
     generatedRolePermission = GeneratedRolePermissions()
     userRole = UserRoles()
     permission = Permissions()
-    file = File()
+    file = Files()
+    rank = Ranks()
 
 perms = PermissionList()

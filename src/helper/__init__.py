@@ -9,3 +9,4 @@ from .assignedRolePermission import getAssignedRolePermission
 from .generatedRole import getGeneratedRole
 from .generatedRolePermission import getGeneratedRolePermission
 from .userRoles import getUserRole
+from .rank import getRank
