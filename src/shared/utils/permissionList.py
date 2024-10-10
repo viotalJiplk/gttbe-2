@@ -7,10 +7,10 @@ class EventPermissions:
     listMatches = "event.listMatches"
     listStages = "event.listStages"
 class GamePermissions:
-    # create = "game.create"
+    create = "game.create"
     read = "game.read"
     update = "game.update"
-    # delete = "game.delete"
+    delete = "game.delete"
     listAll = "game.listAll"
 class GamePagePermissions:
     # create = "gamePage.create"

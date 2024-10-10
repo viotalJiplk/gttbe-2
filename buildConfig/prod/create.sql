@@ -107,7 +107,9 @@ INSERT INTO `assignedRolePermissions` (`assignedRolePermissionId`, `permission`,
 (80,    'rank.read', NULL, 4),
 (81,    'rank.update', NULL, 1),
 (82,    'rank.delete', NULL, 1),
-(83,    'rank.list', NULL, 4);
+(83,    'rank.list', NULL, 4),
+(84,    'game.create', NULL 1),
+(85,    'game.delete', NULL, 1);
 
 
 DROP TABLE IF EXISTS `assignedRoles`;
@@ -145,7 +147,7 @@ CREATE TABLE `games` (
   `name` varchar(40) NOT NULL,
   `registrationStart` date NOT NULL,
   `registrationEnd` date NOT NULL,
-  `gamePage` mediumtext NOT NULL,
+  `gamePage` mediumtext NOT NULL DEFAULT '',
   `maxTeams` int(10) unsigned NOT NULL,
   `backdrop` varchar(40) DEFAULT NULL,
   `icon` varchar(40) DEFAULT NULL,
@@ -233,6 +235,8 @@ INSERT INTO `permissions` (`permission`) VALUES
 ('game.listAll'),
 ('game.read'),
 ('game.update'),
+('game.create'),
+('game.delete'),
 ('gamePage.read'),
 ('gamePage.update'),
 ('match.create'),

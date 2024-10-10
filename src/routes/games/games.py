@@ -1,8 +1,8 @@
 from flask_restx import Resource
-from utils import postJson, setAttributeFromList, AuthResult, errorList, jwsProtected, hasPermissionDecorator, returnParser, returnError
+from utils import postJson, setAttributeFromList, AuthResult, errorList, jwsProtected, hasPermissionDecorator, returnParser, returnError, postJsonParse
 from shared.models import GameModel
 from datetime import datetime, date, time
-from shared.utils import perms
+from shared.utils import perms, DatabaseError
 from typing import List
 from copy import deepcopy
 from helper import getGame
@@ -62,6 +62,25 @@ class Games(Resource):
         setAttributeFromList(game, data, accessibleAttributes)
         return game.toDict()
 
+    @returnParser({"gameId": [int]}, 200, False, False)
+    @returnError([errorList.data.doesNotExist, errorList.data.stillDepends])
+    @hasPermissionDecorator(perms.game.delete, True)
+    def delete(self, gameId, authResult: AuthResult, permissions: List[str]):
+        """Deletes game
+
+        Args:
+            gameId (str): id of the game
+
+        Returns:
+            dict: info about game
+        """
+        game = getGame(gameId)
+        try:
+            game.delete()
+        except DatabaseError as e:
+            raise errorList.data.stillDepends
+        return {"gameId": game.gameId}, 200
+
 gamePageAccessibleAttributes = {
     "gamePage": [str]
 }
@@ -102,3 +121,20 @@ class GamePage(Resource):
         game = getGame(gameId)
         game.gamePage = data["gamePage"]
         return {"game_id": game.gameId, "gamePage": game.getGamePage()}
+
+class CreateGame(Resource):
+    @returnParser(returnableAttributes, 201, False, False)
+    @postJsonParse(expectedJson=accessibleAttributes)
+    @hasPermissionDecorator([perms.game.create], False)
+    def post(self, data, authResult: AuthResult, permissions: List[str]):
+        """Creates games
+
+        Args:
+
+        Returns:
+            dict: info about games
+        """
+
+        game = GameModel.create(data["name"], data["registrationStart"], data["registrationEnd"], data["maxTeams"], data["backdrop"], data["icon"]).toDict()
+
+        return game, 201

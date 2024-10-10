@@ -31,7 +31,7 @@ class NullableInt(fields.Integer):
 
 class NullableString(fields.String):
     __schema_type__ = ['string', 'null']
-    __schema_example__ = 0
+    __schema_example__ = ""
 
 def toSwaggerDict(api: Namespace, prefix: str, expectedJson: dict|list = {}, required: bool = True, strict: bool = False):
     def __resolveKey(api, key, value):

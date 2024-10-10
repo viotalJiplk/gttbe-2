@@ -15,7 +15,7 @@ class Permission:
     missingPermission = ReturnableError("Missing required permissions.", "Perms", 401)
     missingId = ReturnableError("Missing gameId!", "Perms", 400)
 class Data:
-    stillDepends = ReturnableError("There are still data, that is dependent on this.", "DATA", 400)
+    stillDepends = ReturnableError("There are still data, that depends on this.", "DATA", 400)
     doesNotExist = ReturnableError("Resource does not exist.", "DATA", 404)
     couldNotConvertDate = ReturnableError("Unable to convert date or time.", "DATA", 400)
     couldNotConvertInt = ReturnableError("Unable to convert string to int.", "DATA", 400)
