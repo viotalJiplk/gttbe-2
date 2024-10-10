@@ -108,7 +108,7 @@ INSERT INTO `assignedRolePermissions` (`assignedRolePermissionId`, `permission`,
 (81,    'rank.update', NULL, 1),
 (82,    'rank.delete', NULL, 1),
 (83,    'rank.list', NULL, 4),
-(84,    'game.create', NULL 1),
+(84,    'game.create', NULL, 1),
 (85,    'game.delete', NULL, 1);
 
 
