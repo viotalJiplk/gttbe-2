@@ -9,6 +9,7 @@ from flask_restx import Api, Resource, fields
 from utils import registerRoutes
 from shared.utils import config
 from shared.utils import defaultLogger
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 # ROUTES
 from routes.discord import discordRoutes, jwsForTesting
@@ -45,6 +46,10 @@ authorizations = {
         "name": "Authorization"
     }
 }
+
+if "https://" in config.selfref.root_url:
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_port=1)
+
 
 api = Api(app, version='2.0', title='gtt-be',
           description='Gt tournament information system API',

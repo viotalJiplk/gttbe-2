@@ -11,19 +11,13 @@
     <p>list generatedRoles</p>
     <req-custom id="create" data-options=''></req-custom>
     <script>
-        let jws = localStorage.getItem("jws");
-        if(jws == ""){
-            alert("Go to login page to get jws");
-        }else{
-            document.getElementById("create").setAttribute("data-options", JSON.stringify({
-                "method":"GET",
-                "url":"/backend/assignedRole/listAll/",
-                "headers":JSON.stringify({
-                    "Authorization": "Bearer " + jws,
-                    "Content-Type": "application/json"
-                })
-            }));
-        }
+        document.getElementById("create").setAttribute("data-options", JSON.stringify({
+            "method":"GET",
+            "url":"/backend/assignedRole/listAll/",
+            "headers":JSON.stringify({
+                "Content-Type": "application/json"
+            })
+        }));
     </script>
 </body>
 </html>
