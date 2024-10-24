@@ -116,6 +116,12 @@ class Ranks:
     delete = "rank.delete"
     listRanks = "rank.list"
 
+class Sponsors:
+    create = "sponsor.create"
+    read = "sponsor.read"
+    update = "sponsor.update"
+    delete = "sponsor.delete"
+    listAll = "sponsor.listAll"
 
 class PermissionList:
     """Permission name translation layer"""
@@ -136,5 +142,6 @@ class PermissionList:
     permission = Permissions()
     file = Files()
     rank = Ranks()
+    sponsor = Sponsors()
 
 perms = PermissionList()

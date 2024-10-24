@@ -14,3 +14,4 @@ from .team import TeamModel
 from .user import UserModel
 from .userRoles import UserRoleModel
 from .rank import RankModel
+from .sponsor import SponsorModel

@@ -30,6 +30,7 @@ from routes.permissions import permissionsRoutes
 from tests import testRoutes
 from routes.file import fileRoutes
 from routes.ranks import rankRoutes
+from routes.sponsors import sponsorRoutes
 
 
 app = Flask(import_name=__name__)
@@ -80,6 +81,7 @@ registerRoutes(api.namespace('userRole', description='userRole'), userRolesRoute
 registerRoutes(api.namespace('permission', description='permissions'), permissionsRoutes)
 registerRoutes(api.namespace('file', description='files'), fileRoutes)
 registerRoutes(api.namespace('rank', description='ranks'), rankRoutes)
+registerRoutes(api.namespace('sponsor', description='sponsors'), sponsorRoutes)
 
 defaultLogger.info("Server started")
 if __name__ == "__main__":

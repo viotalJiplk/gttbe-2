@@ -22,6 +22,13 @@ CREATE TABLE `assignedRolePermissions` (
   CONSTRAINT `assignedRolePermissions_ibfk_3` FOREIGN KEY (`gameId`) REFERENCES `games` (`gameId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+DROP TABLE IF EXISTS `sponsors`;
+CREATE TABLE `sponsors` (
+  `sponsorId` int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `sponsorName` text NOT NULL,
+  `sponsorText` text NOT NULL,
+  `logo` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 
 INSERT INTO `assignedRolePermissions` (`assignedRolePermissionId`, `permission`, `gameId`, `assignedRoleId`) VALUES
@@ -109,7 +116,12 @@ INSERT INTO `assignedRolePermissions` (`assignedRolePermissionId`, `permission`,
 (82,    'rank.delete', NULL, 1),
 (83,    'rank.list', NULL, 4),
 (84,    'game.create', NULL, 1),
-(85,    'game.delete', NULL, 1);
+(85,    'game.delete', NULL, 1),
+(86,    'sponsor.create', NULL, 1),
+(87,    'sponsor.read', NULL, 4),
+(88,    'sponsor.update', NULL, 1),
+(89,    'sponsor.delete', NULL, 1),
+(90,    'sponsor.listAll', NULL, 4);
 
 
 DROP TABLE IF EXISTS `assignedRoles`;
@@ -310,7 +322,12 @@ INSERT INTO `permissions` (`permission`) VALUES
 ('rank.read'),
 ('rank.update'),
 ('rank.delete'),
-('rank.list');
+('rank.list'),
+('sponsor.create'),
+('sponsor.read'),
+('sponsor.update'),
+('sponsor.delete'),
+('sponsor.listAll');
 
 DROP TABLE IF EXISTS `registrations`;
 CREATE TABLE `registrations` (
