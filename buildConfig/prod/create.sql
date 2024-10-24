@@ -27,6 +27,7 @@ CREATE TABLE `sponsors` (
   `sponsorId` int NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `sponsorName` text NOT NULL,
   `sponsorText` text NOT NULL,
+  `sponsorLink` text NOT NULL,
   `logo` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 

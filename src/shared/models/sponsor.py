@@ -10,22 +10,24 @@ class SponsorModel(ObjectDbSync):
             sponsorId (int): sponsor id
             sponsorName (str): sponsor name
             sponsorText (str): sponsor text
+            sponsorLink (str): sponsor link
             logo (str): sponsor logo
     """
     tableName = "sponsors"
     tableId = "sponsorId"
 
-    def __init__(self, sponsorId=-1, sponsorName="", sponsorText="", logo=""):
+    def __init__(self, sponsorId=-1, sponsorName="", sponsorText="", sponsorLink="", logo=""):
         self.sponsorId = sponsorId
         self.sponsorName = sponsorName
         self.sponsorText = sponsorText
+        self.sponsorLink = sponsorLink
         self.logo = logo
         super().__init__()
 
 
     @classmethod
     @dbConn()
-    def create(cls, sponsorName, sponsorText, logo, cursor, db):
+    def create(cls, sponsorName, sponsorText, sponsorLink, logo, cursor, db):
         """Creates new sponsor
 
         Args:
@@ -35,9 +37,9 @@ class SponsorModel(ObjectDbSync):
         Returns:
             MatchModel: new match
         """
-        query = f"INSERT INTO  {cls.tableName} (sponsorName, sponsorText, logo) VALUES (%s, %s, %s)"
-        cursor.execute(query, (sponsorName, sponsorText, logo))
-        return cls(sponsorId=cursor.lastrowid , sponsorName=sponsorName, sponsorText = sponsorText, logo = logo)
+        query = f"INSERT INTO  {cls.tableName} (sponsorName, sponsorText, sponsorLink, logo) VALUES (%s, %s, %s, %s)"
+        cursor.execute(query, (sponsorName, sponsorText, sponsorLink, logo))
+        return cls(sponsorId=cursor.lastrowid , sponsorName=sponsorName, sponsorText = sponsorText, sponsorLink = sponsorLink, logo = logo)
 
     def toDict(self):
         """Returns dict representation of object.
@@ -49,6 +51,7 @@ class SponsorModel(ObjectDbSync):
             "sponsorId": self.sponsorId,
             "sponsorName": self.sponsorName,
             "sponsorText": self.sponsorText,
+            "sponsorLink": self.sponsorLink,
             "logo": self.logo
         }
 

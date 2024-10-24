@@ -10,6 +10,7 @@ from helper import getSponsor
 accessibleAttributes = {
     "sponsorName": [str],
     "sponsorText": [str],
+    "sponsorLink": [str],
     "logo": [str]
 }
 
@@ -90,4 +91,4 @@ class SponsorCreate(Resource):
         Returns:
             dict: info about sponsor
         """
-        return SponsorModel.create(data["sponsorName"], data["sponsorText"], data["logo"]).toDict(), 201
+        return SponsorModel.create(data["sponsorName"], data["sponsorText"], data["logo"], data["sponsorLink"]).toDict(), 201
