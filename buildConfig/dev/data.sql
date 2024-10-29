@@ -1461,3 +1461,9 @@ INSERT INTO `ranks` (`rankId`, `rankName`, `gameId`) VALUES
 (136,	'Diamond 4',	6),
 (137,	'Diamond 5',	6),
 (138,	'Champions',	6);
+
+INSERT INTO `sponsors` (`sponsorId`, `sponsorName`, `sponsorText`, `sponsorLink`, `logo`) VALUES
+(1,	'Fakaheda',	'',	'https://www.fakaheda.eu/',	'/backend/file/sponsors.fakaheda.png'),
+(2,	'Helkor',	'',	'https://helkor.eu/',	'/backend/file/sponsors.helkor.png'),
+(3,	'Artin',	'',	'https://artin.eu/',	'/backend/file/sponsors.artin.png'),
+(4,	'TEPfactor',	'',	'https://www.tepfactor.cz/cze/',	'/backend/file/sponsors.tepfactor.png');
