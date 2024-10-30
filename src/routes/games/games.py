@@ -1,7 +1,7 @@
 from flask_restx import Resource
 from utils import postJson, setAttributeFromList, AuthResult, errorList, jwsProtected, hasPermissionDecorator, returnParser, returnError, postJsonParse
 from shared.models import GameModel
-from datetime import datetime, date, time
+from datetime import datetime, time
 from shared.utils import perms, DatabaseError
 from typing import List
 from copy import deepcopy
@@ -9,8 +9,8 @@ from helper import getGame
 
 accessibleAttributes = {
     "name": [str],
-    "registrationStart": [date],
-    "registrationEnd": [date],
+    "registrationStart": [datetime],
+    "registrationEnd": [datetime],
     "maxTeams": [int],
     "backdrop": [str, type(None)],
     "icon": [str, type(None)]

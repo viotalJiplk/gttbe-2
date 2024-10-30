@@ -1,6 +1,23 @@
 from datetime import datetime, date, time
 from .errorListFile import errorList
 
+def datetimeFromString(date: str):
+    """Attempts to parse datetime from string
+
+    Args:
+        date (str): string that datetime is in
+
+    Raises:
+        errorList.data.couldNotConvertDate: unable to convert
+
+    Returns:
+        datetime.date: exported datetime
+    """
+    try:
+        return datetime.fromisoformat(date)
+    except ValueError as e:
+        raise errorList.data.couldNotConvertDate
+
 def dateFromString(date: str):
     """Attempts to parse date from string
 

@@ -1,4 +1,4 @@
-from .date import dateFromString, timeFromString
+from .date import dateFromString, timeFromString, datetimeFromString
 from .error import handleReturnableError, ReturnableError
 from .errorListFile import errorList
 from .jws import generateJWS, AuthResult, jwsProtected

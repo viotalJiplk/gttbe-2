@@ -1,11 +1,11 @@
 from functools import wraps
 from flask_restful import request
 from flask_restx import fields
-from .date import dateFromString, timeFromString
+from .date import dateFromString, timeFromString, datetimeFromString
 from .errorListFile import errorList
 from utils import ReturnableError
 from .error import handleReturnableError
-from datetime import date, time
+from datetime import date, time, datetime
 from .register import expectsJson, returnsJson
 from typing import Callable
 
@@ -68,6 +68,8 @@ def postJsonParse(expectedJson:dict={}):
                     raise ReturnableError(f"Missing key '{key}' in request.", "JSON", 401)
                 if type(data[key]) == str and date in value:
                     data[key] = dateFromString(data[key])
+                elif type(data[key]) == str and datetime in value:
+                    data[key] = datetimeFromString(data[key])
                 elif type(data[key]) == str and time in value:
                     data[key] = timeFromString(data[key])
                 elif type(data[key]) == str and int in value:
@@ -101,6 +103,8 @@ def setAttributeFromList(obj: object, data: dict, accessibleAttributes: dict):
                 setattr(obj, x, dateFromString(data[x]))
             elif type(data[x]) == str and time in accessibleAttributes[x]:
                 setattr(obj, x, timeFromString(data[x]))
+            elif type(data[x]) == str and datetime in accessibleAttributes[x]:
+                setattr(obj, x, datetimeFromString(data[x]))
             elif type(data[x]) == str and int in accessibleAttributes[x]:
                 try:
                     setattr(obj, x, int(data[x]))

@@ -1,6 +1,6 @@
 from ..utils import fetchAllWithNames, fetchOneWithNames, dbConn
 from json import dumps
-from datetime import date
+from datetime import datetime
 from ..utils import ObjectDbSync
 
 class GameModel(ObjectDbSync):
@@ -9,8 +9,8 @@ class GameModel(ObjectDbSync):
     Attributes:
             gameId (int): id of game
             name (str): name of game
-            registrationStart (date): date of start of registration for this game
-            registrationEnd (date): date of end of registration for this game
+            registrationStart (datetime): date of start of registration for this game
+            registrationEnd (datetime): date of end of registration for this game
             gamePage (str): page for this game
             maxTeams (int): maximum teams for this game
             backdrop (str|None): backdrop url for this game
@@ -19,7 +19,7 @@ class GameModel(ObjectDbSync):
     tableName = "games"
     tableId = "gameId"
 
-    def __init__(self, name=None, registrationStart=date.fromisocalendar(1,1,1), registrationEnd=date.fromisocalendar(9999,1,1), gameId=None, gamePage=None, maxTeams=None, backdrop=None, icon=None):
+    def __init__(self, name=None, registrationStart=datetime.now(), registrationEnd=datetime.now(), gameId=None, gamePage=None, maxTeams=None, backdrop=None, icon=None):
         """Initializes representation of game
 
         Args:
@@ -48,7 +48,7 @@ class GameModel(ObjectDbSync):
         Returns:
             bool: can be registered
         """
-        return (date.today() >= self.registrationStart) & (date.today() < self.registrationEnd)
+        return (datetime.now() >= self.registrationStart) & (datetime.now() <= self.registrationEnd)
 
     def getGamePage(self):
         """Returns page for the game
@@ -79,14 +79,14 @@ class GameModel(ObjectDbSync):
 
     @classmethod
     @dbConn()
-    def create(cls, name: str, registrationStart: date, registrationEnd: date, maxTeams: int, backdrop: str, icon: str, cursor, db):
+    def create(cls, name: str, registrationStart: datetime, registrationEnd: datetime, maxTeams: int, backdrop: str, icon: str, cursor, db):
         """Initializes representation of game
 
         Args:
             gameId (int): id of game
             name (str): name of game
-            registrationStart (date): date of start of registration for this game
-            registrationEnd (date): date of end of registration for this game
+            registrationStart (datetime): date of start of registration for this game
+            registrationEnd (datetime): date of end of registration for this game
             maxTeams (int): maximum teams for this game
         Returns:
             GameModel: representation of game

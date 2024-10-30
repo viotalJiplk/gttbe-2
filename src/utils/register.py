@@ -50,6 +50,8 @@ def toSwaggerDict(api: Namespace, prefix: str, expectedJson: dict|list = {}, req
                 return Null(required=required)
             elif value[0] is datetime.date:
                 return fields.Date(required=required)
+            elif value[0] is datetime.datetime:
+                return fields.DateTime(required=required)
             elif value[0] is datetime.time:
                 return fields.String(required=required, pattern=r"((0?\d)|(1[0-2])):[0-5]?\d:[0-5]?\d")
             else:
