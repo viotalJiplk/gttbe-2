@@ -158,8 +158,8 @@ DROP TABLE IF EXISTS `games`;
 CREATE TABLE `games` (
   `gameId` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(40) NOT NULL,
-  `registrationStart` date NOT NULL,
-  `registrationEnd` date NOT NULL,
+  `registrationStart` datetime NOT NULL,
+  `registrationEnd` datetime NOT NULL,
   `gamePage` mediumtext NOT NULL DEFAULT '',
   `maxTeams` int(10) unsigned NOT NULL,
   `backdrop` varchar(40) DEFAULT NULL,
