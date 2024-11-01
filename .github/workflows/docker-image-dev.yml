@@ -17,7 +17,10 @@ jobs:
       contents: read
 
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        submodules: 'true'
     - name: Checkout branch
       run: git checkout dev
     - name: Set up QEMU
