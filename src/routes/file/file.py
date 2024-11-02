@@ -29,7 +29,7 @@ class File(Resource):
             f.write(file)
         return {
                 "fileName": fileName,
-                "address": f"/backend/file/{fileName}"
+                "address": f"/file/{fileName}"
             }
     @hasPermissionDecorator([perms.file.delete], False)
     @returnError([errorList.file.wrongFileName, errorList.file.missingPermission])
