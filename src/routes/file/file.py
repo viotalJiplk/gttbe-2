@@ -53,6 +53,6 @@ class FileList(Resource):
         for file in fileList:
             result.append({
                 "fileName": file,
-                "address": f"/backend/file/{file}"
+                "address": f"/file/{file}"
             })
         return result
