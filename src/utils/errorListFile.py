@@ -27,7 +27,7 @@ class Team:
     missingGameIdOrName = ReturnableError("Missing game_id or name.", "JOIN", 400)
     registrationNotOpened = ReturnableError("Registration is not opened for this game", "JOIN", 410)
     alreadyRegistered = ReturnableError("Already registered for game.", "JOIN", 403)
-    noSpaceLeft = ReturnableError("Team full or you are in another team for this game.", "JOIN", 403)
+    noSpaceLeft = ReturnableError("This team already has the maximum number of players permitted in this role.", "JOIN", 403)
     invalidPayload = ReturnableError("Missing fields in payload.", "PAYLOAD", 400)
     notCaptain = ReturnableError("You are not Captain of this team.", "TEAMROLE", 403)
     wrongJoinString = ReturnableError("Wrong joinString.", "JOIN", 403)
