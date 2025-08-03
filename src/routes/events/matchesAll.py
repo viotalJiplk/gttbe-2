@@ -10,6 +10,8 @@ returnableAttributes = {
     "stageId": [int],
     "firstTeamId": [int],
     "secondTeamId": [int],
+    "firstTeamName": [str],
+    "secondTeamName": [str],
     "firstTeamResult": [int, type(None)],
     "secondTeamResult": [int, type(None)],
     "eventId": [int],
