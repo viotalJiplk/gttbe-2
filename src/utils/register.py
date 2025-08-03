@@ -96,9 +96,25 @@ def registerRoutes(api: Namespace, routes: list[Tuple[Resource, str]]):
         api (Api): api to register endpoints to
         routes (list[Tuple[Resource, str]]): endpoint to register
     """
+
+    knownModels = []
+
+    def createOrReturnModel(api: Namespace, name: str, modelDict: dict, required: bool, strict: bool):
+        for model in knownModels:
+            if model["modelDict"] == modelDict and model["strict"] == strict and model["required"] == required:
+                return model["model"]
+        model = api.model(name=name, model=toSwaggerDict(api, name, modelDict, required, strict), strict=strict)
+        knownModels.append({
+            "modelDict": modelDict,
+            "required": required,
+            "strict": strict,
+            "model": model
+            })
+        return model
+
     def __expect(method):
         if hasattr(method, "__expect") and isinstance(method.__expect, ExpectParams):
-            model = api.model(name=method.__expect.name, model=toSwaggerDict(api, method.__expect.name, method.__expect.expect, method.__expect.required, method.__expect.strict), strict=method.__expect.strict)
+            model = createOrReturnModel(api, method.__expect.name, method.__expect.expect, method.__expect.required, method.__expect.strict)
             method = api.expect(model, validate=method.__expect.validate)(method)
         return method
     def __return(method):
@@ -108,7 +124,7 @@ def registerRoutes(api: Namespace, routes: list[Tuple[Resource, str]]):
                 if isinstance(ret, ReturnParams):
                     model = None
                     if isinstance(ret.returns, dict):
-                        model = api.model(name=ret.name, model=toSwaggerDict(api, ret.name, ret.returns, ret.required, ret.strict), strict=ret.strict)
+                        model = createOrReturnModel(api, ret.name, ret.returns, ret.required, ret.strict)
                     else:
                         model = ret.returns
                     if ret.asList:
