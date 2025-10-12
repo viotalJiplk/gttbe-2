@@ -19,7 +19,7 @@ def hasPermissionDecorator(permissions: Union[List[str], str], detectGame=False)
         errorList.permission.missingId: Missing gameId
         errorList.permission.missingPermission: Missing permission
     """
-    errors = [errorList.jws.invalidToken, errorList.jws.InvalidSignature, errorList.jws.expired, errorList.jws.untrusted, errorList.jws.missingUserId, errorList.permission.missingPermission]
+    errors = [errorList.jws.invalidToken, errorList.jws.InvalidSignature, errorList.jws.expired, errorList.jws.untrusted, errorList.jws.missingUserId, errorList.permission.missingPermission, errorList.jws.malformedToken, errorList.jws.issuedInFuture, errorList.jws.wrongAudience]
     if detectGame:
         errors.append(errorList.permission.missingId)
     if isinstance(permissions, str):
@@ -49,9 +49,11 @@ def hasPermissionDecorator(permissions: Union[List[str], str], detectGame=False)
                         raise errorList.permission.missingId
             try:
                 result = getAuth(request.headers)
+                if "backend" not in result.audience:
+                    raise errorList.jws.wrongAudience
             except ReturnableError as e:
                 if e.message == "Missing Authorization header!":
-                    result = AuthResult(None, None)
+                    result = AuthResult(None, None, None, None, None, None, None, None, None)
                     pass
                 else:
                     raise

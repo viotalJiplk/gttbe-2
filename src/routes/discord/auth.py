@@ -1,12 +1,12 @@
 from flask_restx import Resource
 from flask import Response
 from shared.models import StateModel
-from shared.utils import config
-from utils import generateJWS, returnParser, errorList, returnError, handleReturnableError, postJsonParse
+from shared.utils import config, genState
+from utils import generateJWS, returnParser, errorList, returnError, handleReturnableError, postJsonParse, postJson
 from shared.models import UserModel
-from utils import postJson
 import urllib
 import json
+from datetime import datetime, timezone
 
 discordUserObject = {
         "id": [str],
@@ -77,7 +77,7 @@ class TokenEndpoint(Resource):
 
         claims = {}
         claims[config.discord.userid_claim] = user[0].userId
-        jws = generateJWS(claims)
+        jws = generateJWS(claims, user[0].userId, ["backend"], datetime.now(timezone.utc), data["state"])
 
         return {"jws":jws, "userObject": user[1]}
 
@@ -85,6 +85,6 @@ class TestGetJWS(Resource):
     def get(self, userId):
         claims = {}
         claims[config.discord.userid_claim] = userId
-        jws = generateJWS(claims)
+        jws = generateJWS(claims, user[0].userId, ["backend"], datetime.now(timezone.utc), genState(20))
 
         return Response(f'Bearer {jws}', status=200, mimetype="text/plain")

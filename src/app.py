@@ -12,7 +12,7 @@ from shared.utils import defaultLogger
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 # ROUTES
-from routes.discord import discordRoutes, jwsForTesting
+from routes.discord import discordRoutes, jwsForTesting, externalLogin
 from routes.schools import schoolsRoutes
 from routes.user import userRoutes
 from routes.team import teamRoutes
@@ -65,6 +65,7 @@ if not config.production:
     defaultLogger.warning("Test build NEVER EVER USE THIS IN PRODUCTION!")
 
 registerRoutes(api.namespace('discord', description="login"), discordRoutes)
+registerRoutes(api.namespace('externalLogin', description="external login"), externalLogin)
 registerRoutes(api.namespace('school', description='schools'), schoolsRoutes)
 registerRoutes(api.namespace('user', description='user'), userRoutes)
 registerRoutes(api.namespace('team', description='team'), teamRoutes)

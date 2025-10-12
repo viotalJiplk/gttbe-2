@@ -7,6 +7,9 @@ class Jws:
     expired = ReturnableError("Expired!", "JWS", 401)
     untrusted = ReturnableError("Untrusted issuer!", "JWS", 401)
     missingUserId = ReturnableError("Missing userId!", "JWS", 401)
+    malformedToken = ReturnableError("Something is missing from token!", "JWS", 400)
+    issuedInFuture = ReturnableError("The JWT is issued in future!", 400)
+    wrongAudience = ReturnableError("Wrong audience!", 400)
 class Json:
     notValidJson = ReturnableError("The data you sent is not a valid json.", "JSON", 401)
 class Auth:

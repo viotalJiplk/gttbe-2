@@ -40,7 +40,7 @@ class UserEndpoint(Resource):
         else:
             if perms.user.read not in permissions:
                 raise errorList.permission.missingPermission
-            user = getUser(AuthResult(userId, None))
+            user = getUser(AuthResult(userId, None, None, None, None, None, None, None, None))
         return user.toDict()
 
     @returnParser(returnableAttributes, 200, False, False)
@@ -66,7 +66,7 @@ class UserEndpoint(Resource):
         else:
             if perms.user.update not in permissions:
                 raise errorList.permission.missingPermission
-            user = getUser(AuthResult(userId, None))
+            user = getUser(AuthResult(userId, None, None, None, None, None, None, None, None))
         setAttributeFromList(user, data, accessibleAttributes)
         return user.toDict()
 
@@ -93,7 +93,7 @@ class UserEndpoint(Resource):
         else:
             if perms.user.delete not in permissions:
                 raise errorList.permission.missingPermission
-            user = getUser(AuthResult(userId, None))
+            user = getUser(AuthResult(userId, None, None, None, None, None, None, None, None))
         try:
             user.delete()
         except DatabaseError as e:
@@ -141,7 +141,7 @@ class UserPermissions(Resource):
         else:
             if perms.user.permissionList not in permissions:
                 raise errorList.permission.missingPermission
-            user = getUser(AuthResult(userId, None))
+            user = getUser(AuthResult(userId, None, None, None, None, None, None, None, None))
         if gameId == "all":
             gameId = None
         elif gameId == "any":
@@ -181,7 +181,7 @@ class UserGeneratedRoles(Resource):
         else:
             if perms.user.generatedRolesList not in permissions:
                 raise errorList.permission.missingPermission
-            user = getUser(AuthResult(userId, None))
+            user = getUser(AuthResult(userId, None, None, None, None, None, None, None, None))
         return user.listGeneratedRoles()
 
 class UserAssignedRoles(Resource):
@@ -211,7 +211,7 @@ class UserAssignedRoles(Resource):
         else:
             if perms.user.assignedRolesList not in permissions:
                 raise errorList.permission.missingPermission
-            user = getUser(AuthResult(userId, None))
+            user = getUser(AuthResult(userId, None, None, None, None, None, None, None, None))
         return user.listAssignedRoles()
 
 class ListTeam(Resource):
@@ -245,5 +245,5 @@ class ListTeam(Resource):
         else:
             if perms.user.listTeams not in permissions:
                 raise errorList.permission.missingPermission
-            user = getUser(AuthResult(userId, None))
+            user = getUser(AuthResult(userId, None, None, None, None, None, None, None, None))
         return TeamModel.listUsersTeams(user.userId, withJoinString), 200
