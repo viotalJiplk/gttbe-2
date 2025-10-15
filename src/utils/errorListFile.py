@@ -13,7 +13,7 @@ class Jws:
 class Json:
     notValidJson = ReturnableError("The data you sent is not a valid json.", "JSON", 401)
 class Auth:
-    invalidState = ReturnableError("Invalid state.", 401)
+    invalidState = ReturnableError("Invalid state.", "Auth", 401)
 class Permission:
     missingPermission = ReturnableError("Missing required permissions.", "Perms", 401)
     missingId = ReturnableError("Missing gameId!", "Perms", 400)
