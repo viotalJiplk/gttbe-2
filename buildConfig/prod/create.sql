@@ -123,6 +123,7 @@ INSERT INTO `assignedRolePermissions` (`assignedRolePermissionId`, `permission`,
 (88,    'sponsor.update', NULL, 1),
 (89,    'sponsor.delete', NULL, 1),
 (90,    'sponsor.listAll', NULL, 4);
+(91, 	'school.create', NULL,	1),
 
 
 DROP TABLE IF EXISTS `assignedRoles`;
@@ -259,6 +260,7 @@ INSERT INTO `permissions` (`permission`) VALUES
 ('match.listAll'),
 ('page.read'),
 ('school.listAll'),
+('school.create'),
 ('stage.create'),
 ('stage.delete'),
 ('stage.read'),

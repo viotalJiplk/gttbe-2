@@ -1,3 +1,3 @@
-from .schools import Schools
+from .schools import Schools, SchoolsList
 
-schoolsRoutes = [(Schools, '/listAll/')]
+schoolsRoutes = [(Schools, '/'), (SchoolsList, '/listAll/')]
