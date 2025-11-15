@@ -486,7 +486,9 @@ END;;
 DROP TRIGGER IF EXISTS registrations_restrict_user_update;
 DELIMITER ;;
 CREATE TRIGGER `registrations_restrict_user_update` BEFORE UPDATE ON `registrations` FOR EACH ROW BEGIN
-    CALL registrations_restrict_user(NEW.userId, NEW.teamId);
+    IF(OLD.teamId <> NEW.teamId) THEN
+       CALL registrations_restrict_user(NEW.userId, NEW.teamId);
+    END IF;
     CALL registrations_restrict_rank(NEW.teamId, NEW.rank);
     CALL registrations_restrict_rank(NEW.teamId, NEW.maxRank);
 END;;
@@ -518,7 +520,9 @@ END;;
 DROP TRIGGER IF EXISTS registrations_restrict_role_update;
 DELIMITER ;;
 CREATE TRIGGER `registrations_restrict_role_update` BEFORE UPDATE ON `registrations` FOR EACH ROW BEGIN
-    CALL registrations_restrict_role(NEW.generatedRoleId, NEW.teamId);
+    IF(OLD.generatedRoleId <> NEW.generatedRoleId OR OLD.teamId <> NEW.teamId) THEN
+       CALL registrations_restrict_role(NEW.generatedRoleId, NEW.teamId);
+    END IF;
 END;;
 
 DROP PROCEDURE IF EXISTS canPlay;
