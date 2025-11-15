@@ -4,9 +4,9 @@ from utils import jwsProtected, hasPermissionDecorator, returnParser
 from shared.utils import perms
 from helper import getGame
 
-class ListParticipatingTeam(Resource):
-    @hasPermissionDecorator([perms.team.listParticipating, perms.team.listParticipatingDiscord], True)
-    def get(self, gameId, withDiscord, authResult, permissions):
+class ListParticipatingTeamsWithPlayers(Resource):
+    @hasPermissionDecorator(perms.team.listParticipating, True)
+    def get(self, gameId, authResult, permissions):
         """List teams currently able to participate in tournament
 
         Args:
@@ -17,4 +17,19 @@ class ListParticipatingTeam(Resource):
             dict: list of teams
         """
         game = getGame(gameId)
-        return TeamModel.listParticipatingTeams(game.gameId, perms.team.listParticipatingDiscord in permissions, withDiscord == 'true')
+        return TeamModel.listParticipatingTeamsWithPlayers(game.gameId)
+
+class ListParticipatingTeamsWithPlayersAdmin(Resource):
+    @hasPermissionDecorator(perms.team.listParticipatingAdmin, True)
+    def get(self, gameId, withDiscord, authResult, permissions):
+        """List teams currently able to participate in tournament with admin info
+
+        Args:
+            gameId (str): id of game
+            withDiscord (bool): get discord info (could be slow)
+
+        Returns:
+            dict: list of teams
+        """
+        game = getGame(gameId)
+        return TeamModel.listParticipatingTeamsWithPlayersAdmin(game.gameId, withDiscord == "true")
