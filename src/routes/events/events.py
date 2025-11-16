@@ -60,7 +60,7 @@ class Events(Resource):
             raise errorList.permission.missingPermission
         try:
             event.delete()
-        except e:
+        except Exception as e:
             raise errorList.data.stillDepends
         return {"eventId": event.eventId}
 
