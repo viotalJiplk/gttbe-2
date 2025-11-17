@@ -471,7 +471,7 @@ CREATE PROCEDURE `registrations_restrict_rank`(teamIdIN INT, rankIdIN INT)
 BEGIN
     IF ((SELECT gameId FROM teams WHERE teamId=teamIdIN) != (SELECT gameId FROM ranks WHERE rankId=rankIdIN)) THEN
         SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Wrong role';
+        SET MESSAGE_TEXT = 'Wrong rank';
     END IF;
 END;;
 
